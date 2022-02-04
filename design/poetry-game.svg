@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
+   sodipodi:docname="poetry-game.svg"
+   id="svg220"
+   viewBox="0, 0, 308.976, 53.858"
+   height="53.858"
+   width="308.976"
+   y="0"
+   x="0"
+   version="1.1">
+  <metadata
+     id="metadata226">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs224" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg220"
+     inkscape:window-maximized="0"
+     inkscape:window-y="214"
+     inkscape:window-x="477"
+     inkscape:cy="26.929001"
+     inkscape:cx="154.48801"
+     inkscape:zoom="1.5697011"
+     showgrid="false"
+     id="namedview222"
+     inkscape:window-height="1007"
+     inkscape:window-width="1472"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     inkscape:document-rotation="0"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <g
+     id="poetry-game-icon">
+    <g
+       id="g143">
+      <path
+         id="path139"
+         fill="#FFFFFF"
+         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z" />
+      <path
+         id="path141"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="1.5"
+         stroke="#000000"
+         fill-opacity="0"
+         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z" />
+    </g>
+    <path
+       id="path145"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="1.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M20.615,17.767 L40.149,17.767" />
+    <path
+       id="path147"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="1.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M20.615,21.631 L33.938,21.631" />
+    <path
+       id="path149"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="1.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M20.615,25.45 L31.875,25.45" />
+    <g
+       id="g155">
+      <path
+         id="path151"
+         fill="#F70000"
+         d="M36.738,32.486 C36.738,32.486 38.609,30.6 39.92,32.566 C41.174,34.448 36.873,37.761 36.738,37.77 C36.603,37.778 32.321,34.448 33.576,32.566 C34.886,30.6 36.738,32.486 36.738,32.486 L36.738,32.486 z" />
+      <path
+         id="path153"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="1.5"
+         stroke="#000000"
+         fill-opacity="0"
+         d="M36.738,32.486 C36.738,32.486 38.609,30.6 39.92,32.566 C41.174,34.448 36.873,37.761 36.738,37.77 C36.603,37.778 32.321,34.448 33.576,32.566 C34.886,30.6 36.738,32.486 36.738,32.486 L36.738,32.486 z" />
+    </g>
+    <path
+       id="path157"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="1.485"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M25.944,31.691 L25.96,37.763" />
+    <path
+       id="path159"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="1.485"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M25.944,31.691 C25.944,31.691 30.415,31.427 30.415,33.341 C30.415,35.255 25.944,35.585 25.944,35.585" />
+    <path
+       id="path161"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M61.717,18.43 L61.767,36.83" />
+    <path
+       id="path163"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M61.717,18.43 C61.717,18.43 75.267,17.63 75.267,23.43 C75.267,29.23 61.717,30.23 61.717,30.23" />
+    <g
+       id="g169">
+      <path
+         id="path165"
+         fill="#F70000"
+         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z" />
+      <path
+         id="path167"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="4.5"
+         stroke="#000000"
+         fill-opacity="0"
+         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z" />
+    </g>
+    <path
+       id="path171"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M110.317,18.482 L110.367,36.882" />
+    <path
+       id="path173"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M123.292,18.482 L110.317,18.482" />
+    <path
+       id="path175"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M123.292,36.882 L110.317,36.882" />
+    <path
+       id="path177"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M121.292,27.682 L110.317,27.682" />
+    <g
+       id="g181">
+      <path
+         id="path179"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="4.5"
+         stroke="#000000"
+         fill-opacity="0"
+         d="M136.788,18.482 L136.838,36.882" />
+    </g>
+    <path
+       id="path183"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M143.3,18.482 L130.325,18.482" />
+    <path
+       id="path185"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M150.75,18.5 L150.8,36.9" />
+    <path
+       id="path187"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M150.75,18.5 C150.75,18.5 164.3,17.7 164.3,23.5 C164.3,29.3 150.75,29.8 150.75,29.8" />
+    <path
+       id="path189"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M150.75,29.8 L164.3,36.83" />
+    <path
+       id="path191"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M179.3,28.366 L179.237,36.9" />
+    <path
+       id="path193"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M179.3,28.366 L186.7,18.463" />
+    <path
+       id="path195"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M179.3,28.295 L171.9,18.392" />
+    <path
+       id="path197"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M220.45,29.35 L220.5,35.78" />
+    <path
+       id="path199"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M219.267,18.392 C219.267,18.392 205.75,15.879 205.75,27.682 C205.75,39.485 220.5,36.9 220.5,36.9" />
+    <path
+       id="path201"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M220.45,29.418 L216.75,29.35" />
+    <path
+       id="path203"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M229.5,36.9 C229.5,36.9 231,18.331 237.25,18.168 C243.5,18.004 245,36.9 245,36.9" />
+    <path
+       id="path205"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M243.25,30.23 L232,30.23" />
+    <path
+       id="path207"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M253.08,37.039 C253.08,37.039 253.445,17.98 257.819,18.067 C262.193,18.153 263.383,37.039 263.383,37.039" />
+    <path
+       id="path209"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M273.686,37.334 C273.686,37.334 273.322,18.275 268.948,18.362 C264.574,18.448 263.383,37.334 263.383,37.334" />
+    <path
+       id="path211"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M280.858,18.392 L280.908,36.792" />
+    <path
+       id="path213"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M293.833,18.392 L280.858,18.392" />
+    <path
+       id="path215"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M293.833,36.792 L280.858,36.792" />
+    <path
+       id="path217"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="4.5"
+       stroke="#000000"
+       fill-opacity="0"
+       d="M291.833,27.592 L280.858,27.592" />
+  </g>
+</svg>

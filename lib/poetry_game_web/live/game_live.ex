@@ -121,8 +121,6 @@ defmodule PoetryGame.GameLive do
   end
 
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
-    IO.inspect("OK")
-
     socket =
       socket
       |> assign(:width, width)

@@ -1,9 +1,33 @@
 /* This file is for your main application CSS */
-@import "./normalize.css";
 
-html, body, .phx-connected, .container { height: 100%; margin: 0; padding: 0; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply text-xl;
+    @apply font-semibold;
+    @apply mb-2;
+  }
+  a {
+    @apply text-blue-900;
+  }
+  main > .container {
+    @apply pt-4;
+  }
+}
 
 * { box-sizing: border-box; }
+
+html, body, .container, main, main > .phx-connected { height: 100%; }
+
+.container {
+  margin: 0 auto;
+  max-width: 80.0rem;
+  padding: 0 2.0rem;
+  position: relative;
+}
 
 .live-alerts {
   position: absolute;

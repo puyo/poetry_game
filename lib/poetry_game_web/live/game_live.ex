@@ -83,7 +83,7 @@ defmodule PoetryGame.GameLive do
   end
 
   def mount(_params, %{"id" => id} = session, socket) do
-    state =
+    socket =
       socket
       |> assign(:id, Map.get(session, "id"))
       |> assign(:user_id, Map.get(session, "user_id"))
@@ -130,7 +130,7 @@ defmodule PoetryGame.GameLive do
       ])
       |> assign(:timer, Process.send_after(self(), :tick, 0))
 
-    {:ok, state}
+    {:ok, socket}
   end
 
   def handle_event("message", %{"message" => message_params}, socket) do

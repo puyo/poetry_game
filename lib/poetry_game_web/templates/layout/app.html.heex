@@ -1,7 +1,14 @@
-<main class="container">
-  <%# <div class="alerts"> %>
-  <%#   <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %1></p> %>
-  <%#   <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %1></p> %>
-  <%# </div> %>
+<header>
+  <%= live_render(@conn, PoetryGame.PresenceLive) %>
+</header>
+<main>
+  <div class="alerts">
+    <%= if Map.has_key?(@conn.assigns, :flash) do %>
+      <div class="alert alert-info" role="alert" phx-click="lv:clear-flash" phx-value-key="info"><%= live_flash(@flash, :info) %></div>
+      <div class="alert alert-danger" role="alert" phx-click="lv:clear-flash" phx-value-key="error"><%= live_flash(@flash, :error) %></div>
+    <% end %>
+    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+  </div>
   <%= @inner_content %>
 </main>

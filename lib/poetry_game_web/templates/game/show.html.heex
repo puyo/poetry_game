@@ -1,1 +1,1 @@
-<%= live_render(@conn, PoetryGame.GameLive) %>
+<%= live_render(@conn, PoetryGame.GameLive, session: %{"id" => @game.uuid}) %>

@@ -2,17 +2,21 @@ defmodule PoetryGame.GameLive do
   use PoetryGameWeb, :live_view
 
   def render(assigns) do
+    cx = assigns.width / 2
+    cy = assigns.height / 3
+    radius = assigns.width / 3
+    nplayers = length(assigns.players)
+    angle_offset = 0.5 * :math.pi()
+
     ~H"""
-    <div id="game_id_123" class="game" phx-hook="GameSize">
-      <% cx = @width / 2 %>
-      <% cy = @height / 3 %>
-      <% radius = @width / 3 %>
+    <div id={"game_#{@id}"} class="game" phx-hook="GameSize">
+      Game ID: <%= @id %>
+      User ID: <%= @user_id %>
+      User Name: <%= @user_name %>
       <div class="origin"
         style={"position: absolute; top: #{cy}px; left: #{cx}px; width: 10px; height: 10px; background-color: blue; z-index: 1000; transform: translate(-50%, -50%)"}>
       </div>
 
-      <% nplayers = length(@players) %>
-      <% angle_offset = 0.5 * :math.pi %>
       <%= for {player, i} <- Enum.with_index(@players) do %>
         <% player_angle = 2.0 * :math.pi * i / nplayers %>
         <% playerx = cx + radius * :math.cos(angle_offset + player_angle) %>
@@ -64,11 +68,12 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  def mount(_params, _session, socket) do
-    IO.inspect(socket.id)
-
+  def mount(_params, %{"id" => id, "user_id" => user_id} = session, socket) do
     state =
       socket
+      |> assign(:id, Map.get(session, "id"))
+      |> assign(:user_id, Map.get(session, "user_id"))
+      |> assign(:user_name, Map.get(session, "user_name"))
       |> assign(:rotate, 0.0)
       |> assign(:squish, 0.25)
       |> assign(:width, 0)

@@ -14,7 +14,7 @@ defmodule PoetryGameWeb.GameController do
   end
 
   def create(conn, _params) do
-    case Games.create_game(%{}) do
+    case Games.create_game() do
       {:ok, game} ->
         conn
         |> put_flash(:info, "Game created successfully.")

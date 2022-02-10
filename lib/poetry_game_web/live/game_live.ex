@@ -17,6 +17,20 @@ defmodule PoetryGame.GameLive do
         style={"position: absolute; top: #{cy}px; left: #{cx}px; width: 10px; height: 10px; background-color: blue; z-index: 1000; transform: translate(-50%, -50%)"}>
       </div>
 
+      <div class="chat">
+        <%= for message <- @chat do %>
+          <p><%= Map.get(message, "content") %></p>
+        <% end %>
+        <div class="form-group">
+          <form action="#" phx-submit="message">
+            <%= text_input :message, :content, placeholder: "write your message here..." %>
+            <%= hidden_input :message, :user_id, value: @user_id  %>
+            <%= hidden_input :message, :game_id, value: @id %>
+            <%= submit "submit" %>
+          </form>
+        </div>
+      </div>
+
       <%= for {player, i} <- Enum.with_index(@players) do %>
         <% player_angle = 2.0 * :math.pi * i / nplayers %>
         <% playerx = cx + radius * :math.cos(angle_offset + player_angle) %>
@@ -68,7 +82,7 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  def mount(_params, %{"id" => id, "user_id" => user_id} = session, socket) do
+  def mount(_params, %{"id" => id} = session, socket) do
     state =
       socket
       |> assign(:id, Map.get(session, "id"))
@@ -76,6 +90,8 @@ defmodule PoetryGame.GameLive do
       |> assign(:user_name, Map.get(session, "user_name"))
       |> assign(:rotate, 0.0)
       |> assign(:squish, 0.25)
+      |> assign(:chat, [])
+      |> assign(:message, "")
       |> assign(:width, 0)
       |> assign(:height, 0)
       |> assign(:players, [
@@ -115,6 +131,10 @@ defmodule PoetryGame.GameLive do
       |> assign(:timer, Process.send_after(self(), :tick, 0))
 
     {:ok, state}
+  end
+
+  def handle_event("message", %{"message" => message_params}, socket) do
+    {:noreply, assign(socket, chat: [message_params | socket.assigns.chat], message: "")}
   end
 
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do

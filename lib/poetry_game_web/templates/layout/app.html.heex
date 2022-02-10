@@ -1,7 +1,20 @@
-<header>
-  <%= live_render(@conn, PoetryGame.PresenceLive) %>
+<header class="shrink">
+  <div class="bg-slate-50 border-b-2 border-slate-300">
+    <div class="container">
+      <div class="flex justify-between items-center">
+        <a href="/" class="logo justify-start py-2">
+          <img src={Routes.static_path(@conn, "/images/poetry-game.svg")} alt="Poetry Game"/>
+        </a>
+        <div class="current-user justify-end">
+          <span class="text-xl"><%= Plug.Conn.get_session(@conn, :user_name) %></span>
+          <a href="#" class="p-3 text-xl hover:bg-slate-300 rounded-full"><img style="height: 1em" src={Routes.static_path(@conn, "/images/quill.svg")} alt="Rename" class="inline"/></a>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
-<main>
+
+<main class="grow">
   <div class="alerts">
     <%= if Map.has_key?(@conn.assigns, :flash) do %>
       <div class="alert alert-info" role="alert" phx-click="lv:clear-flash" phx-value-key="info"><%= live_flash(@flash, :info) %></div>

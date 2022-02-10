@@ -1,5 +1,7 @@
 defmodule PoetryGame.GameLive do
-  use PoetryGameWeb, :live_view
+  use Phoenix.LiveView,
+    container: {:div, class: "game h-full flex"},
+    layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   def render(assigns) do
     cx = assigns.width / 2
@@ -8,27 +10,16 @@ defmodule PoetryGame.GameLive do
     nplayers = length(assigns.players)
     angle_offset = 0.5 * :math.pi()
 
-    ~H"""
-    <div id={"game_#{@id}"} class="game" phx-hook="GameSize">
-      Game ID: <%= @id %>
-      User ID: <%= @user_id %>
-      User Name: <%= @user_name %>
-      <div class="origin"
-        style={"position: absolute; top: #{cy}px; left: #{cx}px; width: 10px; height: 10px; background-color: blue; z-index: 1000; transform: translate(-50%, -50%)"}>
-      </div>
+    # Game ID: <%= @id %>
+    # User ID: <%= @user_id %>
+    # User Name: <%= @user_name %>
 
-      <div class="chat">
-        <%= for message <- @chat do %>
-          <p><%= Map.get(message, "content") %></p>
-        <% end %>
-        <div class="form-group">
-          <form action="#" phx-submit="message">
-            <%= text_input :message, :content, placeholder: "write your message here..." %>
-            <%= hidden_input :message, :user_id, value: @user_id  %>
-            <%= hidden_input :message, :game_id, value: @id %>
-            <%= submit "submit" %>
-          </form>
-        </div>
+    ~H"""
+    <div id={"game_board_#{@id}"} class="board grow" phx-hook="GameSize">
+      <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@id}", session: %{"topic" => @id}) %>
+
+      <div class="origin hidden"
+        style={"position: absolute; top: #{cy}px; left: #{cx}px; width: 10px; height: 10px; background-color: blue; z-index: 1000; transform: translate(-50%, -50%)"}>
       </div>
 
       <%= for {player, i} <- Enum.with_index(@players) do %>
@@ -79,71 +70,67 @@ defmodule PoetryGame.GameLive do
         <% end %>
       <% end %>
     </div>
+    <div class="chat shrink">
+      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@id}", session: %{"topic" => @id}) %>
+    </div>
     """
   end
 
-  def mount(_params, %{"id" => id} = session, socket) do
-    socket =
-      socket
-      |> assign(:id, Map.get(session, "id"))
-      |> assign(:user_id, Map.get(session, "user_id"))
-      |> assign(:user_name, Map.get(session, "user_name"))
-      |> assign(:rotate, 0.0)
-      |> assign(:squish, 0.25)
-      |> assign(:chat, [])
-      |> assign(:message, "")
-      |> assign(:width, 0)
-      |> assign(:height, 0)
-      |> assign(:players, [
-        %{
-          name: "A",
-          papers: [
-            %{
-              word: "kentucket",
-              question: "what would you do if I stole your dish?",
-              poem:
-                "There once was a man from kentucket\nwho had a very big bucket\nhe ate lots of fish\nand stole a big dish\nand everybody shrugged and said oh well"
-            }
-          ]
-        },
-        %{
-          name: "B",
-          papers: [
-            %{
-              word: "jobkeeper but for bees",
-              question: "Don't you even dare and no this is not a question",
-              poem: nil
-            }
-          ]
-        },
-        %{
-          name: "C",
-          papers: [
-            %{
-              word: "pen",
-              question:
-                "How long can a question even be? Like, is it OK to write a short novel in here?",
-              poem: nil
-            }
-          ]
-        }
-      ])
-      |> assign(:timer, Process.send_after(self(), :tick, 0))
-
-    {:ok, socket}
-  end
-
-  def handle_event("message", %{"message" => message_params}, socket) do
-    {:noreply, assign(socket, chat: [message_params | socket.assigns.chat], message: "")}
+  def mount(
+        _params,
+        %{"id" => id, "user_id" => user_id, "user_name" => user_name} = session,
+        socket
+      ) do
+    {:ok,
+     assign(
+       socket,
+       id: Map.get(session, "id"),
+       user_id: user_id,
+       user_name: user_name,
+       rotate: 0.0,
+       squish: 0.25,
+       width: 0,
+       height: 0,
+       timer: Process.send_after(self(), :tick, 0),
+       players: [
+         %{
+           name: "A",
+           papers: [
+             %{
+               word: "kentucket",
+               question: "what would you do if I stole your dish?",
+               poem:
+                 "There once was a man from kentucket\nwho had a very big bucket\nhe ate lots of fish\nand stole a big dish\nand everybody shrugged and said oh well"
+             }
+           ]
+         },
+         %{
+           name: "B",
+           papers: [
+             %{
+               word: "jobkeeper but for bees",
+               question: "Don't you even dare and no this is not a question",
+               poem: nil
+             }
+           ]
+         },
+         %{
+           name: "C",
+           papers: [
+             %{
+               word: "pen",
+               question:
+                 "How long can a question even be? Like, is it OK to write a short novel in here?",
+               poem: nil
+             }
+           ]
+         }
+       ]
+     )}
   end
 
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
-    socket =
-      socket
-      |> assign(:width, width)
-      |> assign(:height, height)
-
-    {:noreply, socket}
+    {:noreply, assign(socket, width: width, height: height)}
   end
 
   def handle_info(:tick, socket) do
@@ -157,11 +144,10 @@ defmodule PoetryGame.GameLive do
         rotate
       end
 
-    socket =
-      socket
-      |> assign(:rotate, rotate)
-      |> assign(:timer, Process.send_after(self(), :tick, 100))
-
-    {:noreply, socket}
+    {:noreply,
+     assign(socket,
+       rotate: rotate,
+       timer: Process.send_after(self(), :tick, 100)
+     )}
   end
 end

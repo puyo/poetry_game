@@ -16,11 +16,8 @@
   main > .container {
     @apply pt-4;
   }
+  html, body { @apply h-full; }
 }
-
-* { box-sizing: border-box; }
-
-html, body, .container, main, main > .phx-connected { height: 100%; }
 
 .container {
   margin: 0 auto;
@@ -39,11 +36,6 @@ html, body, .container, main, main > .phx-connected { height: 100%; }
 .game {
   background-color: darkred;
   color: white;
-  height: 100%;
-}
-
-.origin {
-  display: none;
 }
 
 .game .buttons {

@@ -15,9 +15,9 @@ defmodule PoetryGame.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: PoetryGame.PubSub},
       # Start the Endpoint (http/https)
-      PoetryGameWeb.Endpoint
-      # Start a worker by calling: PoetryGame.Worker.start_link(arg)
-      # {PoetryGame.Worker, arg}
+      PoetryGameWeb.Endpoint,
+      # Presence to track people joining/leaving games
+      PoetryGameWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

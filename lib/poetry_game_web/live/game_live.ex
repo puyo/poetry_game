@@ -1,6 +1,5 @@
 defmodule PoetryGame.GameLive do
   use PoetryGameWeb, :live_view
-  alias PoetryGame.Room
 
   def render(assigns) do
     ~H"""
@@ -18,7 +17,7 @@ defmodule PoetryGame.GameLive do
         <% player_angle = 2.0 * :math.pi * i / nplayers %>
         <% playerx = cx + radius * :math.cos(angle_offset + player_angle) %>
         <% playery = cy + @squish * radius * :math.sin(angle_offset + player_angle) %>
-        <% playerz = trunc(100 * (1 + :math.cos(player_angle))) %>
+        <%# playerz = trunc(100 * (1 + :math.cos(player_angle))) %>
 
         <div class="player" id={"player-#{player.name}"} style={"top: #{playery}px; left: #{playerx}px"}>
           <span class="name">Player <%= player.name %></span>
@@ -32,9 +31,9 @@ defmodule PoetryGame.GameLive do
 
         <% visible = not (paper_angle > 0.1 && paper_angle < (2.0 * :math.pi - 0.1)) %>
 
-        <% paperscalemin = -1.0 %>
-        <% paperscalemax = 1.0 %>
-        <% paperscale = paperscalemin + (paperscalemax - paperscalemin) * (paperz / 200.0) %>
+        <%# paperscalemin = -1.0 %>
+        <%# paperscalemax = 1.0 %>
+        <%# paperscale = paperscalemin + (paperscalemax - paperscalemin) * (paperz / 200.0) %>
 
         <%= for {paper, paper_i} <- Enum.with_index(player.papers) do %>
           <div
@@ -65,14 +64,7 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  @initial_paper %{
-    word: "A word",
-    question: "A question?",
-    poem:
-      "There once was a man from kentucket\nwho had a very big bucket\nhe ate lots of fish\nand stole a big dish\nand everybody shrugged and said oh well"
-  }
-
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     IO.inspect(socket.id)
 
     state =

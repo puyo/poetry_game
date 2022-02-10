@@ -18,6 +18,7 @@ defmodule PoetryGameWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/games", GameController, only: [:index, :new, :create, :show]
   end
 
   # Other scopes may use custom stacks.

@@ -2,16 +2,17 @@ defmodule PoetryGame.Db.Game do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "games" do
-    field :state, :string
+  @derive {Phoenix.Param, key: :uuid}
 
-    timestamps()
+  schema "games" do
+    field :uuid, Ecto.UUID
+    field :created_at, :utc_datetime
+    field :updated_at, :utc_datetime
   end
 
   @doc false
-  def changeset(game, attrs) do
+  def changeset(%__MODULE__{} = game, attrs) do
     game
-    |> cast(attrs, [:state])
-    |> validate_required([:state])
+    |> cast(attrs, [:uuid])
   end
 end

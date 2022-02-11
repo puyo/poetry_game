@@ -63,6 +63,54 @@ defmodule PoetryGame.GameTest do
     end
   end
 
+  describe "set_question/3" do
+    test "success" do
+      game =
+        demo_game()
+        |> Game.start()
+
+      assert [
+               %{papers: [%{question: nil}]},
+               %{papers: [%{question: nil}]},
+               %{papers: [%{question: nil}]}
+             ] = game.seats
+
+      game =
+        game
+        |> Game.set_question("1", "foo")
+
+      assert [
+               %{papers: []},
+               %{papers: [%{question: nil}, %{question: "foo"}]},
+               %{papers: [%{question: nil}]}
+             ] = game.seats
+    end
+  end
+
+  describe "set_poem/3" do
+    test "success" do
+      game =
+        demo_game()
+        |> Game.start()
+
+      assert [
+               %{papers: [%{poem: nil}]},
+               %{papers: [%{poem: nil}]},
+               %{papers: [%{poem: nil}]}
+             ] = game.seats
+
+      game =
+        game
+        |> Game.set_poem("1", "foo")
+
+      assert [
+               %{papers: [%{poem: "foo"}]},
+               %{papers: [%{poem: nil}]},
+               %{papers: [%{poem: nil}]}
+             ] = game.seats
+    end
+  end
+
   defp demo_game() do
     Game.init()
     |> Game.add_member(%{id: "1", name: "A", color: 1})

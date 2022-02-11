@@ -59,17 +59,48 @@ defmodule PoetryGame.Game do
     |> move_paper_to_next_seat(user_id)
   end
 
-  def set_value(game, user_id, key, value) do
+  def set_question(game, user_id, question) do
+    game
+    |> set_value(user_id, :question, question)
+    |> move_paper_to_next_seat(user_id)
+  end
+
+  def set_poem(game, user_id, poem) do
+    game
+    |> set_value(user_id, :poem, poem)
+  end
+
+  def player_list(%{members: members}) do
+    members
+    |> Map.values()
+    |> Enum.filter(fn m -> Map.has_key?(m, :seat_index) end)
+  end
+
+  def paper_list(game) do
+    game.seats
+    |> Enum.flat_map(fn %{papers: papers} -> papers end)
+  end
+
+  defp initial_paper() do
+    %{
+      id: Ecto.UUID.generate(),
+      word: nil,
+      question: nil,
+      poem: nil
+    }
+  end
+
+  defp set_value(game, user_id, key, value) do
     index = user_seat_index(game, user_id)
     seats = put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], value)
     %{game | seats: seats}
   end
 
-  def user_seat_index(game, user_id) do
+  defp user_seat_index(game, user_id) do
     get_in(game.members, [user_id, :seat_index])
   end
 
-  def move_paper_to_next_seat(game, user_id) do
+  defp move_paper_to_next_seat(game, user_id) do
     old_index = user_seat_index(game, user_id)
     num_seats = length(game.seats)
     insert_index = rem(old_index + 1, num_seats)
@@ -87,50 +118,4 @@ defmodule PoetryGame.Game do
 
     %{game | seats: seats}
   end
-
-  def player_list(game) do
-    game.seats
-    |> Enum.filter(fn %{user_id: user_id} -> Map.has_key?(game.members, user_id) end)
-    |> Enum.map(fn %{user_id: user_id} -> Map.get(game.members, user_id) end)
-  end
-
-  def paper_list(game) do
-    game.seats
-    |> Enum.flat_map(fn %{papers: papers} -> papers end)
-  end
-
-  defp initial_paper() do
-    %{
-      id: Ecto.UUID.generate(),
-      word: nil,
-      question: nil,
-      poem: nil
-    }
-  end
-
-  # defp set_value(pid, user_name, key, value, is_last_key) do
-  #   Agent.get_and_update(pid, fn state ->
-  #     old_index =
-  #       state.game.players
-  #       |> Enum.find_index(fn u ->
-  #         user_name == u.name
-  #       end)
-
-  #     old_player = state.game.players |> Enum.at(old_index)
-
-  #     [old_paper | _] = old_player.papers
-
-  #     new_paper = %{old_paper | key => value}
-
-  #     new_players =
-  #       if is_last_key do
-  #         update_paper_in_place(state.game.players, old_index, new_paper)
-  #       else
-  #         update_paper_and_move(state.game.players, old_index, new_paper)
-  #       end
-
-  #     new_state = put_in(state, [:game, :players], new_players)
-  #     {{:ok, new_state}, new_state}
-  #   end)
-  # end
 end

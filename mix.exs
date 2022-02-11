@@ -33,14 +33,12 @@ defmodule PoetryGame.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:phoenix, "~> 1.6.6"},
-      {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -61,10 +59,7 @@ defmodule PoetryGame.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      setup: ["deps.get"],
       "assets.deploy": [
         "cmd --cd assets npm run deploy",
         "esbuild default --minify",

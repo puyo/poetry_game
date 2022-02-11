@@ -30,7 +30,7 @@ defmodule PoetryGame.ChatLive do
         </div>
       </div>
       <div class="entry-form shrink bg-white">
-        <form action="#" phx-submit="submit">
+        <form action="#" phx-submit="submit" autocomplete="off">
           <%= hidden_input :message, :user_id, value: @user_id  %>
           <%= hidden_input :message, :user_name, value: @user_name  %>
           <%= hidden_input :message, :color, value: @user_color  %>

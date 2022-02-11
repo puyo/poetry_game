@@ -8,8 +8,6 @@ defmodule PoetryGame.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
-      PoetryGame.Repo,
       # Start the Telemetry supervisor
       PoetryGameWeb.Telemetry,
       # Start the PubSub system

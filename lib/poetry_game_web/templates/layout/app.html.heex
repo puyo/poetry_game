@@ -7,7 +7,7 @@
         </a>
         <div class="current-user justify-end">
           <span class="text-xl"><%= Plug.Conn.get_session(@conn, :user_name) %></span>
-          <a href="#" class="p-3 text-xl hover:bg-slate-300 rounded-full"><img style="height: 1em" src={Routes.static_path(@conn, "/images/quill.svg")} alt="Rename" class="inline"/></a>
+          <a href="#" class="p-3 text-xl hover:bg-slate-300 rounded-md"><img style="height: 1em" src={Routes.static_path(@conn, "/images/quill.svg")} alt="Rename" class="inline"/></a>
         </div>
       </div>
     </div>

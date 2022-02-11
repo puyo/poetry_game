@@ -70,7 +70,7 @@ defmodule PoetryGame.GameLive do
         <% end %>
       <% end %>
     </div>
-    <div class="chat shrink">
+    <div class="chat w-[20em]">
       <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@id}", session: %{"topic" => @id}) %>
     </div>
     """

@@ -3,7 +3,7 @@ defmodule PoetryGame.ChatLive do
     container:
       {:div,
        class:
-         "chat-live h-full text-black bg-slate-50 max-w-sm border-l-2 border-slate-300 p-1 flex flex-col"},
+         "chat-live h-full text-black bg-white max-w-sm border-l-2 border-slate-300 flex flex-col"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   use Phoenix.HTML
@@ -12,13 +12,14 @@ defmodule PoetryGame.ChatLive do
 
   def render(assigns) do
     ~H"""
-    <div class="user-list shrink border-b-2 border-slate-300 border-dashed">
+    <div class="hidden"><%= @rerender %></div>
+    <div class="user-list shrink p-1 bg-slate-100 border-b-2 border-slate-300 border-solid">
       <%= for {id, user} <- Map.to_list(@users) do %>
         <span style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
       <% end %>
     </div>
-    <div class="messages grow border-b-2 border-slate-300 border-dashed overflow-y-scroll">
-      <%= for message <- Enum.reverse(@chat) do %>
+    <div class="messages grow text-sm border-b-2 border-slate-300 border-dashed p-1 overflow-y-scroll max-h-[50vh]">
+      <%= for message <- Enum.reverse(@messages) do %>
         <% name = message["user_name"] %>
         <% color = message["color"] %>
         <% content = message["content"] %>
@@ -27,11 +28,13 @@ defmodule PoetryGame.ChatLive do
     </div>
     <div class="entry-form shrink">
       <form action="#" phx-submit="submit">
-        <%= text_input :message, :content %>
         <%= hidden_input :message, :user_id, value: @user_id  %>
         <%= hidden_input :message, :user_name, value: @user_name  %>
         <%= hidden_input :message, :color, value: @user_color  %>
-        <%= submit "Send" %>
+        <div class="flex items-center justify-center rounded-md">
+          <%= text_input :message, :content, value: @message, class: "inline-flex grow p-2 focus:border-none outline-none border-none" %>
+          <%= submit "Send", class: "inline-flex shrink p-2 hover:bg-slate-300 rounded-md" %>
+        </div>
       </form>
     </div>
     """
@@ -58,12 +61,12 @@ defmodule PoetryGame.ChatLive do
         user_name: user_name,
         user_color: user_color,
         topic: topic,
-        chat: [
+        messages: [
           %{
             "color" => 30,
-            "content" => "second chat message",
+            "content" => String.duplicate("second chat message", 200),
             "user_id" => "123",
-            "user_name" => "ruby"
+            "user_name" => "demo"
           },
           %{
             "color" => user_color,
@@ -73,33 +76,51 @@ defmodule PoetryGame.ChatLive do
           }
         ],
         message: "",
+        rerender: false,
         users: %{}
       )
     }
   end
 
-  def handle_event("submit", %{"message" => message_params}, socket) do
+  def handle_event("submit", %{"message" => message}, %{assigns: %{topic: topic}} = socket) do
+    Phoenix.PubSub.broadcast(PoetryGame.PubSub, topic, %{event: "chat_message", message: message})
+
     {
       :noreply,
       assign(
         socket,
-        chat: [message_params | socket.assigns.chat],
+        rerender: !socket.assigns.rerender,
         message: ""
       )
     }
   end
 
   def handle_info(
-        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves} = payload},
+        %{event: "presence_diff", payload: payload},
         %{assigns: %{topic: topic}} = socket
       ) do
-    IO.inspect(payload: payload, users: users(topic))
+    IO.inspect(presence_diff: 1, payload: payload, users: users(topic))
 
     {
       :noreply,
       assign(
         socket,
         users: users(topic)
+      )
+    }
+  end
+
+  def handle_info(
+        %{event: "chat_message", message: message},
+        %{assigns: %{topic: topic}} = socket
+      ) do
+    IO.inspect(message_received: message, recipient: self())
+
+    {
+      :noreply,
+      assign(
+        socket,
+        messages: [message | socket.assigns.messages]
       )
     }
   end

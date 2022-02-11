@@ -13,7 +13,7 @@ defmodule PoetryGame.ChatLive do
       <div class="hidden"><%= @rerender %></div>
       <div class="user-list shrink p-1 bg-slate-100 border-b-2 border-slate-200 border-solid">
         <%= for {id, user} <- Map.to_list(@users) do %>
-          <span style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
+          <span class="font-semibold" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
         <% end %>
       </div>
       <div class="messages grow" style="position: relative;">
@@ -25,7 +25,7 @@ defmodule PoetryGame.ChatLive do
             <% name = message["user_name"] %>
             <% color = message["color"] %>
             <% content = message["content"] %>
-            <p><span style={"color: hsl(#{color}, 50%, 50%)"}><%= name %></span>&nbsp;: <%= content %></p>
+            <p><span class="font-semibold" style={"color: hsl(#{color}, 50%, 50%)"}><%= name %></span>&nbsp;: <%= content %></p>
           <% end %>
         </div>
       </div>

@@ -7,9 +7,6 @@
 # General application configuration
 import Config
 
-config :poetry_game,
-  ecto_repos: [PoetryGame.Repo]
-
 # Configures the endpoint
 config :poetry_game, PoetryGameWeb.Endpoint,
   url: [host: "localhost"],

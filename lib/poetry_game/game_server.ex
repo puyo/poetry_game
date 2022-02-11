@@ -45,7 +45,6 @@ defmodule PoetryGame.GameServer do
     {:reply, state, state}
   end
 
-  @spec via(String.t()) :: {:via, module(), {atom(), String.t()}}
   defp via(game_id) do
     {:via, Registry, {:game_registry, game_id}}
   end

@@ -7,15 +7,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)"
-   sodipodi:docname="poetry-game.svg"
-   id="svg220"
-   viewBox="0, 0, 308.976, 53.858"
-   height="53.858"
-   width="308.976"
-   y="0"
+   version="1.1"
    x="0"
-   version="1.1">
+   y="0"
+   width="308.976"
+   height="53.858"
+   viewBox="0, 0, 308.976, 53.858"
+   id="svg220"
+   sodipodi:docname="poetry-game.svg"
+   inkscape:version="1.0beta2 (2b71d25, 2019-12-03)">
   <metadata
      id="metadata226">
     <rdf:RDF>
@@ -24,322 +24,339 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs224" />
   <sodipodi:namedview
-     inkscape:current-layer="svg220"
-     inkscape:window-maximized="0"
-     inkscape:window-y="214"
-     inkscape:window-x="477"
-     inkscape:cy="26.929001"
-     inkscape:cx="154.48801"
-     inkscape:zoom="1.5697011"
-     showgrid="false"
-     id="namedview222"
-     inkscape:window-height="1007"
-     inkscape:window-width="1472"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     guidetolerance="10"
-     gridtolerance="10"
-     objecttolerance="10"
-     borderopacity="1"
-     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
      bordercolor="#666666"
-     pagecolor="#ffffff" />
+     inkscape:document-rotation="0"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1719"
+     inkscape:window-height="1194"
+     id="namedview222"
+     showgrid="false"
+     inkscape:zoom="3.6011588"
+     inkscape:cx="177.89704"
+     inkscape:cy="24.985182"
+     inkscape:window-x="477"
+     inkscape:window-y="192"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="poetry-game-icon" />
   <g
      id="poetry-game-icon">
     <g
        id="g143">
       <path
-         id="path139"
+         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z"
          fill="#FFFFFF"
-         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z" />
+         id="path139" />
       <path
-         id="path141"
-         stroke-linejoin="round"
-         stroke-linecap="round"
-         stroke-width="1.5"
-         stroke="#000000"
+         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z"
          fill-opacity="0"
-         d="M16.232,9.2 L44.765,9.2 L44.765,45.867 L16.232,45.867 L16.232,9.2 z" />
+         stroke="#000000"
+         stroke-width="1.5"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path141" />
     </g>
     <path
-       id="path145"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="1.5"
-       stroke="#000000"
+       d="M20.615,17.767 L40.149,17.767"
        fill-opacity="0"
-       d="M20.615,17.767 L40.149,17.767" />
+       stroke="#000000"
+       stroke-width="1.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path145" />
     <path
-       id="path147"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="1.5"
-       stroke="#000000"
+       d="M20.615,21.631 L33.938,21.631"
        fill-opacity="0"
-       d="M20.615,21.631 L33.938,21.631" />
+       stroke="#000000"
+       stroke-width="1.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path147" />
     <path
-       id="path149"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="1.5"
-       stroke="#000000"
+       d="M20.615,25.45 L31.875,25.45"
        fill-opacity="0"
-       d="M20.615,25.45 L31.875,25.45" />
+       stroke="#000000"
+       stroke-width="1.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path149" />
     <g
+       transform="translate(0,0.27768839)"
        id="g155">
       <path
-         id="path151"
+         inkscape:connector-curvature="0"
+         d="m 36.738,32.486 c 0,0 1.871,-1.886 3.182,0.08 1.254,1.882 -3.047,5.195 -3.182,5.204 -0.135,0.008 -4.417,-3.322 -3.162,-5.204 1.31,-1.966 3.162,-0.08 3.162,-0.08 z"
          fill="#F70000"
-         d="M36.738,32.486 C36.738,32.486 38.609,30.6 39.92,32.566 C41.174,34.448 36.873,37.761 36.738,37.77 C36.603,37.778 32.321,34.448 33.576,32.566 C34.886,30.6 36.738,32.486 36.738,32.486 L36.738,32.486 z" />
+         id="path151" />
       <path
-         id="path153"
-         stroke-linejoin="round"
-         stroke-linecap="round"
-         stroke-width="1.5"
-         stroke="#000000"
+         inkscape:connector-curvature="0"
+         d="m 36.738,32.486 c 0,0 1.871,-1.886 3.182,0.08 1.254,1.882 -3.047,5.195 -3.182,5.204 -0.135,0.008 -4.417,-3.322 -3.162,-5.204 1.31,-1.966 3.162,-0.08 3.162,-0.08 z"
          fill-opacity="0"
-         d="M36.738,32.486 C36.738,32.486 38.609,30.6 39.92,32.566 C41.174,34.448 36.873,37.761 36.738,37.77 C36.603,37.778 32.321,34.448 33.576,32.566 C34.886,30.6 36.738,32.486 36.738,32.486 L36.738,32.486 z" />
+         stroke="#000000"
+         stroke-width="1.5"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path153" />
     </g>
     <path
-       id="path157"
-       stroke-linejoin="round"
-       stroke-linecap="round"
+       d="M25.944,31.691 L25.96,37.763"
+       fill-opacity="0"
+       stroke="#000000"
        stroke-width="1.485"
-       stroke="#000000"
-       fill-opacity="0"
-       d="M25.944,31.691 L25.96,37.763" />
-    <path
-       id="path159"
-       stroke-linejoin="round"
        stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path157" />
+    <path
+       d="M25.944,31.691 C25.944,31.691 30.415,31.427 30.415,33.341 C30.415,35.255 25.944,35.585 25.944,35.585"
+       fill-opacity="0"
+       stroke="#000000"
        stroke-width="1.485"
-       stroke="#000000"
-       fill-opacity="0"
-       d="M25.944,31.691 C25.944,31.691 30.415,31.427 30.415,33.341 C30.415,35.255 25.944,35.585 25.944,35.585" />
-    <path
-       id="path161"
-       stroke-linejoin="round"
        stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
-       fill-opacity="0"
-       d="M61.717,18.43 L61.767,36.83" />
-    <path
-       id="path163"
        stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       id="path159" />
+    <path
+       d="M61.717,18.43 L61.767,36.83"
        fill-opacity="0"
-       d="M61.717,18.43 C61.717,18.43 75.267,17.63 75.267,23.43 C75.267,29.23 61.717,30.23 61.717,30.23" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path161" />
+    <path
+       d="M61.717,18.43 C61.717,18.43 75.267,17.63 75.267,23.43 C75.267,29.23 61.717,30.23 61.717,30.23"
+       fill-opacity="0"
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path163" />
     <g
        id="g169">
       <path
-         id="path165"
+         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z"
          fill="#F70000"
-         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z" />
+         id="path165" />
       <path
-         id="path167"
-         stroke-linejoin="round"
-         stroke-linecap="round"
-         stroke-width="4.5"
-         stroke="#000000"
+         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z"
          fill-opacity="0"
-         d="M92.517,20.98 C92.517,20.98 98.13,15.32 102.063,21.219 C105.827,26.865 92.922,36.805 92.517,36.83 C92.113,36.855 79.266,26.865 83.03,21.219 C86.963,15.32 92.517,20.98 92.517,20.98 L92.517,20.98 z" />
+         stroke="#000000"
+         stroke-width="4.5"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path167" />
     </g>
     <path
-       id="path171"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M110.317,18.482 L110.367,36.882"
        fill-opacity="0"
-       d="M110.317,18.482 L110.367,36.882" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path171" />
     <path
-       id="path173"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M123.292,18.482 L110.317,18.482"
        fill-opacity="0"
-       d="M123.292,18.482 L110.317,18.482" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path173" />
     <path
-       id="path175"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M123.292,36.882 L110.317,36.882"
        fill-opacity="0"
-       d="M123.292,36.882 L110.317,36.882" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path175" />
     <path
-       id="path177"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M121.292,27.682 L110.317,27.682"
        fill-opacity="0"
-       d="M121.292,27.682 L110.317,27.682" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path177" />
     <g
        id="g181">
       <path
-         id="path179"
-         stroke-linejoin="round"
-         stroke-linecap="round"
-         stroke-width="4.5"
-         stroke="#000000"
+         d="M136.788,18.482 L136.838,36.882"
          fill-opacity="0"
-         d="M136.788,18.482 L136.838,36.882" />
+         stroke="#000000"
+         stroke-width="4.5"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         id="path179" />
     </g>
     <path
-       id="path183"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M143.3,18.482 L130.325,18.482"
        fill-opacity="0"
-       d="M143.3,18.482 L130.325,18.482" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path183" />
     <path
-       id="path185"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M150.75,18.5 L150.8,36.9"
        fill-opacity="0"
-       d="M150.75,18.5 L150.8,36.9" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path185" />
     <path
-       id="path187"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M150.75,18.5 C150.75,18.5 164.3,17.7 164.3,23.5 C164.3,29.3 150.75,29.8 150.75,29.8"
        fill-opacity="0"
-       d="M150.75,18.5 C150.75,18.5 164.3,17.7 164.3,23.5 C164.3,29.3 150.75,29.8 150.75,29.8" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path187" />
     <path
-       id="path189"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       d="M150.75,29.8 L164.3,36.83"
        fill-opacity="0"
-       d="M150.75,29.8 L164.3,36.83" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path189" />
     <path
-       id="path191"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="M 177.3,28.366 177.237,36.9"
        fill-opacity="0"
-       d="M179.3,28.366 L179.237,36.9" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path191" />
     <path
-       id="path193"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 177.3,28.366 7.4,-9.903"
        fill-opacity="0"
-       d="M179.3,28.366 L186.7,18.463" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path193" />
     <path
-       id="path195"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 177.3,28.295 -7.4,-9.903"
        fill-opacity="0"
-       d="M179.3,28.295 L171.9,18.392" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path195" />
     <path
-       id="path197"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 216.45,29.35 0.05,6.43"
        fill-opacity="0"
-       d="M220.45,29.35 L220.5,35.78" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path197" />
     <path
-       id="path199"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 215.267,18.392 c 0,0 -13.517,-2.513 -13.517,9.29 0,11.803 14.75,9.218 14.75,9.218"
        fill-opacity="0"
-       d="M219.267,18.392 C219.267,18.392 205.75,15.879 205.75,27.682 C205.75,39.485 220.5,36.9 220.5,36.9" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path199" />
     <path
-       id="path201"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 216.45,29.418 -3.7,-0.068"
        fill-opacity="0"
-       d="M220.45,29.418 L216.75,29.35" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path201" />
     <path
-       id="path203"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 223.5,36.9 c 0,0 1.5,-18.569 7.75,-18.732 C 237.5,18.004 239,36.9 239,36.9"
        fill-opacity="0"
-       d="M229.5,36.9 C229.5,36.9 231,18.331 237.25,18.168 C243.5,18.004 245,36.9 245,36.9" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path203" />
     <path
-       id="path205"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="M 237.25,30.23 H 226"
        fill-opacity="0"
-       d="M243.25,30.23 L232,30.23" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path205" />
     <path
-       id="path207"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 247.08,37.039 c 0,0 0.365,-19.059 4.739,-18.972 4.374,0.086 5.564,18.972 5.564,18.972"
        fill-opacity="0"
-       d="M253.08,37.039 C253.08,37.039 253.445,17.98 257.819,18.067 C262.193,18.153 263.383,37.039 263.383,37.039" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path207" />
     <path
-       id="path209"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 267.686,37.334 c 0,0 -0.364,-19.059 -4.738,-18.972 -4.374,0.086 -5.565,18.972 -5.565,18.972"
        fill-opacity="0"
-       d="M273.686,37.334 C273.686,37.334 273.322,18.275 268.948,18.362 C264.574,18.448 263.383,37.334 263.383,37.334" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path209" />
     <path
-       id="path211"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 275.41338,18.669688 0.05,18.4"
        fill-opacity="0"
-       d="M280.858,18.392 L280.908,36.792" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path211" />
     <path
-       id="path213"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 288.38838,18.669688 h -12.975"
        fill-opacity="0"
-       d="M293.833,18.392 L280.858,18.392" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path213" />
     <path
-       id="path215"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 288.38838,37.069688 h -12.975"
        fill-opacity="0"
-       d="M293.833,36.792 L280.858,36.792" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path215" />
     <path
-       id="path217"
-       stroke-linejoin="round"
-       stroke-linecap="round"
-       stroke-width="4.5"
-       stroke="#000000"
+       inkscape:connector-curvature="0"
+       d="m 286.38838,27.869688 h -10.975"
        fill-opacity="0"
-       d="M291.833,27.592 L280.858,27.592" />
+       stroke="#000000"
+       stroke-width="4.5"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       id="path217" />
   </g>
 </svg>

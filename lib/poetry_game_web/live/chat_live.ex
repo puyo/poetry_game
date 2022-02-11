@@ -40,7 +40,7 @@ defmodule PoetryGame.ChatLive do
             </span>
             <%= text_input :message, :content, value: @message,
               class: "inline-flex grow focus:border-none outline-none border-none" %>
-            <%= submit "Send", class: "inline-flex shrink p-2 outline-none focus:bg-amber-200 hover:bg-amber-200" %>
+            <%= submit "Send", class: "inline-flex shrink p-2 font-semibold outline-none focus:bg-amber-200 hover:bg-amber-200" %>
           </div>
         </form>
       </div>

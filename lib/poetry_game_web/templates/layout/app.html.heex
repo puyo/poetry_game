@@ -6,7 +6,8 @@
           <img src={Routes.static_path(@conn, "/images/poetry-game.svg")} alt="Poetry Game"/>
         </a>
         <a href="#" class="user justify-end p-2 text-xl hover:bg-amber-300 rounded-md">
-          <span class="font-semibold text-black text-xl"><%= Plug.Conn.get_session(@conn, :user_name) %></span>
+          <% color = Plug.Conn.get_session(@conn, :user_color) %>
+          <span class="font-semibold text-black text-xl" style={"color: hsl(#{color}, 70%, 45%)"}><%= Plug.Conn.get_session(@conn, :user_name) %></span>
           <img style="height: 1em" src={Routes.static_path(@conn, "/images/quill.svg")} alt="Rename" class="inline"/>
         </a>
       </div>

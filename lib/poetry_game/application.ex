@@ -15,7 +15,9 @@ defmodule PoetryGame.Application do
       # Start the Endpoint (http/https)
       PoetryGameWeb.Endpoint,
       # Presence to track people joining/leaving games
-      PoetryGameWeb.Presence
+      PoetryGameWeb.Presence,
+      # Registry
+      {Registry, keys: :unique, name: :game_registry}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

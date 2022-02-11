@@ -9,35 +9,36 @@ defmodule PoetryGame.ChatLive do
 
   def render(assigns) do
     ~H"""
-    <div class="h-full flex flex-col text-black bg-white max-w-sm border-l-2 border-slate-300">
+    <div class="h-full flex flex-col text-black max-w-sm border-l-2 border-stone-300">
       <div class="hidden"><%= @rerender %></div>
-      <div class="user-list shrink p-1 bg-slate-100 border-b-2 border-slate-200 border-solid">
+      <div class="user-list shrink p-1 bg-stone-100 border-b-4 border-stone-200 border-solid">
         <%= for {id, user} <- Map.to_list(@users) do %>
-          <span class="font-semibold" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
+          <span class="font-semibold" style={"color: hsl(#{user.color}, 70%, 50%)"}><%= user.name %></span>
         <% end %>
       </div>
-      <div class="messages grow" style="position: relative;">
+      <div class="messages grow bg-stone-50" style="position: relative;">
         <div id={"scroll-to-bottom-#{@topic}"}
-            class="overflow-y-scroll p-1 text-sm border-b-2 border-slate-300 border-dashed"
+            class="overflow-y-scroll p-1 text-sm border-b-4 border-stone-200 border-solid"
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"
             phx-hook="ScrollToBottomOnInput">
           <%= for message <- Enum.reverse(@messages) do %>
             <% name = message["user_name"] %>
             <% color = message["color"] %>
             <% content = message["content"] %>
-            <p><span class="font-semibold" style={"color: hsl(#{color}, 50%, 50%)"}><%= name %></span>&nbsp;: <%= content %></p>
+            <p><span class="font-semibold" style={"color: hsl(#{color}, 70%, 50%)"}><%= name %></span>&nbsp;: <%= content %></p>
           <% end %>
         </div>
       </div>
-      <div class="entry-form shrink">
+      <div class="entry-form shrink bg-white">
         <form action="#" phx-submit="submit">
           <%= hidden_input :message, :user_id, value: @user_id  %>
           <%= hidden_input :message, :user_name, value: @user_name  %>
           <%= hidden_input :message, :color, value: @user_color  %>
           <div class="flex items-center justify-center">
+            <span class="inline-flex pl-2 font-semibold" style={"color: hsl(#{@user_color}, 70%, 50%)"}><%= @user_name %></span>&nbsp;:
             <%= text_input :message, :content, value: @message,
               class: "inline-flex grow p-2 focus:border-none outline-none border-none" %>
-            <%= submit "Send", class: "inline-flex shrink p-2 hover:bg-slate-300" %>
+            <%= submit "Send", class: "inline-flex shrink p-2 focus:bg-amber-200 hover:bg-amber-200" %>
           </div>
         </form>
       </div>
@@ -75,7 +76,12 @@ defmodule PoetryGame.ChatLive do
   end
 
   def handle_event("submit", %{"message" => message}, %{assigns: %{topic: topic}} = socket) do
-    Phoenix.PubSub.broadcast(PoetryGame.PubSub, topic, %{event: "chat_message", message: message})
+    if String.length(message["content"]) > 0 do
+      Phoenix.PubSub.broadcast(PoetryGame.PubSub, topic, %{
+        event: "chat_message",
+        message: message
+      })
+    end
 
     {
       :noreply,

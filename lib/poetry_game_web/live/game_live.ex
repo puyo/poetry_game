@@ -1,6 +1,6 @@
 defmodule PoetryGame.GameLive do
   use Phoenix.LiveView,
-    container: {:div, class: "game h-full flex"},
+    container: {:div, class: "game-live h-full flex bg-red-800 text-white"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   def render(assigns) do
@@ -15,7 +15,7 @@ defmodule PoetryGame.GameLive do
     # User Name: <%= @user_name %>
 
     ~H"""
-    <div id={"game_board_#{@id}"} class="board grow" phx-hook="GameSize">
+    <div id={"game_board_#{@id}"} class="grow" phx-hook="GameSize">
       <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@id}", session: %{"topic" => @id}) %>
 
       <div class="origin hidden"

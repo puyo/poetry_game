@@ -13,7 +13,7 @@ defmodule PoetryGame.ChatLive do
       <div class="hidden"><%= @rerender %></div>
       <div class="user-list shrink p-1 bg-stone-100 border-b-4 border-stone-200 border-solid">
         <%= for {id, user} <- Map.to_list(@users) do %>
-          <span class="font-semibold" style={"color: hsl(#{user.color}, 70%, 50%)"}><%= user.name %></span>
+          <span class="font-semibold" style={"color: #{user_hsl(user.color)}"}><%= user.name %></span>
         <% end %>
       </div>
       <div class="messages grow bg-stone-50" style="position: relative;">
@@ -25,7 +25,7 @@ defmodule PoetryGame.ChatLive do
             <% name = message["user_name"] %>
             <% color = message["color"] %>
             <% content = message["content"] %>
-            <p><span class="font-semibold" style={"color: hsl(#{color}, 70%, 50%)"}><%= name %></span>&nbsp;: <%= content %></p>
+            <p><span class="font-semibold" style={"color: #{user_hsl(color)}"}><%= name %></span>&nbsp;:&nbsp;<%= content %></p>
           <% end %>
         </div>
       </div>
@@ -35,16 +35,20 @@ defmodule PoetryGame.ChatLive do
           <%= hidden_input :message, :user_name, value: @user_name  %>
           <%= hidden_input :message, :color, value: @user_color  %>
           <div class="flex items-center justify-center">
-            <span class="inline-flex pl-2 font-semibold" style={"color: hsl(#{@user_color}, 70%, 50%)"}><%= @user_name %></span>&nbsp;:
+            <span class="inline-flex pl-2">
+              <span class="font-semibold" style={"color: #{user_hsl(@user_color)}"}><%= @user_name %></span>&nbsp;:&nbsp;
+            </span>
             <%= text_input :message, :content, value: @message,
-              class: "inline-flex grow p-2 focus:border-none outline-none border-none" %>
-            <%= submit "Send", class: "inline-flex shrink p-2 focus:bg-amber-200 hover:bg-amber-200" %>
+              class: "inline-flex grow focus:border-none outline-none border-none" %>
+            <%= submit "Send", class: "inline-flex shrink p-2 outline-none focus:bg-amber-200 hover:bg-amber-200" %>
           </div>
         </form>
       </div>
     </div>
     """
   end
+
+  defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
   def mount(
         _params,

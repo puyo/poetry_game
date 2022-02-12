@@ -5,45 +5,39 @@ defmodule PoetryGame.GameTest do
 
   describe "start/1" do
     test "successfully" do
-      game =
-        demo_game()
-        |> Game.start()
-
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
       assert length(Game.player_list(game)) == 3
     end
   end
 
   describe "add_member/2" do
     test "already added" do
-      assert {:error, :already_added} =
-               Game.init()
-               |> Game.add_member(%{id: "1", name: "A", color: 1})
-               |> Game.add_member(%{id: "1", name: "A", color: 1})
+      game = Game.init()
+      {:ok, game} = Game.add_member(game, %{id: "1", name: "A", color: 1})
+      assert {:ok, _} = Game.add_member(game, %{id: "1", name: "A", color: 1})
+      assert map_size(game.members) == 1
     end
   end
 
   describe "remove_member/2" do
     test "not found" do
-      assert {:error, :not_found} =
-               Game.init()
-               |> Game.remove_member("1")
+      game = Game.init()
+      assert {:error, :not_found} = Game.remove_member(game, "1")
     end
 
     test "success" do
-      game =
-        Game.init()
-        |> Game.add_member(%{id: "1", name: "A", color: 1})
-        |> Game.remove_member("1")
-
+      game = Game.init()
+      {:ok, game} = Game.add_member(game, %{id: "1", name: "A", color: 1})
+      {:ok, game} = Game.remove_member(game, "1")
       assert map_size(game.members) == 0
     end
   end
 
   describe "set_word/3" do
     test "success" do
-      game =
-        demo_game()
-        |> Game.start()
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
 
       assert [
                %{papers: [%{word: nil}]},
@@ -51,9 +45,7 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{word: nil}]}
              ] = game.seats
 
-      game =
-        game
-        |> Game.set_word("1", "foo")
+      {:ok, game} = Game.set_word(game, "1", "foo")
 
       assert [
                %{papers: []},
@@ -65,9 +57,8 @@ defmodule PoetryGame.GameTest do
 
   describe "set_question/3" do
     test "success" do
-      game =
-        demo_game()
-        |> Game.start()
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
 
       assert [
                %{papers: [%{question: nil}]},
@@ -75,9 +66,7 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{question: nil}]}
              ] = game.seats
 
-      game =
-        game
-        |> Game.set_question("1", "foo")
+      {:ok, game} = Game.set_question(game, "1", "foo")
 
       assert [
                %{papers: []},
@@ -89,9 +78,8 @@ defmodule PoetryGame.GameTest do
 
   describe "set_poem/3" do
     test "success" do
-      game =
-        demo_game()
-        |> Game.start()
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
 
       assert [
                %{papers: [%{poem: nil}]},
@@ -99,9 +87,7 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{poem: nil}]}
              ] = game.seats
 
-      game =
-        game
-        |> Game.set_poem("1", "foo")
+      {:ok, game} = Game.set_poem(game, "1", "foo")
 
       assert [
                %{papers: [%{poem: "foo"}]},
@@ -112,9 +98,11 @@ defmodule PoetryGame.GameTest do
   end
 
   defp demo_game() do
-    Game.init()
-    |> Game.add_member(%{id: "1", name: "A", color: 1})
-    |> Game.add_member(%{id: "2", name: "B", color: 2})
-    |> Game.add_member(%{id: "3", name: "C", color: 3})
+    with game = Game.init(),
+         {:ok, game} <- Game.add_member(game, %{id: "1", name: "A", color: 1}),
+         {:ok, game} <- Game.add_member(game, %{id: "2", name: "B", color: 2}),
+         {:ok, game} <- Game.add_member(game, %{id: "3", name: "C", color: 3}) do
+      {:ok, game}
+    end
   end
 end

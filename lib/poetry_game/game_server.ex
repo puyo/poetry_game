@@ -55,6 +55,16 @@ defmodule PoetryGame.GameServer do
 
   @min_players 3
 
+  defmacrop handle_game_change(game, do: expression) do
+    quote do
+      with {:ok, new_game} <- unquote(expression) do
+        {:reply, {:ok, new_game}, new_game}
+      else
+        error -> {:reply, error, unquote(game)}
+      end
+    end
+  end
+
   def init(_game_id) do
     {:ok, Game.init()}
   end
@@ -62,17 +72,11 @@ defmodule PoetryGame.GameServer do
   def handle_call(:get_game, _from, game), do: {:reply, game, game}
 
   def handle_call({:add_member, %{id: id, name: name, color: color}}, _from, game) do
-    case Game.add_member(game, %{id: id, name: name, color: color}) do
-      {:error, _} = error -> {:reply, error, game}
-      new_game -> {:reply, {:ok, new_game}, new_game}
-    end
+    handle_game_change(game, do: Game.add_member(game, %{id: id, name: name, color: color}))
   end
 
   def handle_call({:remove_member, user_id}, _from, game) do
-    case Game.remove_member(game, user_id) do
-      {:error, _} = error -> {:reply, error, game}
-      new_game -> {:reply, {:ok, new_game}, new_game}
-    end
+    handle_game_change(game, do: Game.remove_member(game, user_id))
   end
 
   def handle_call(:start_game, _from, %{members: members} = game)
@@ -81,29 +85,25 @@ defmodule PoetryGame.GameServer do
   end
 
   def handle_call(:start_game, _from, game) do
-    new_game = Game.start(game)
-    {:reply, {:ok, new_game}, new_game}
+    handle_game_change(game, do: Game.start(game))
   end
 
   def handle_call({:set_word, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_word, user_id, word}, _from, game) do
-    new_game = Game.set_word(game, user_id, word)
-    {:reply, {:ok, new_game}, new_game}
+    handle_game_change(game, do: Game.set_word(game, user_id, word))
   end
 
   def handle_call({:set_question, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_question, user_id, question}, _from, game) do
-    new_game = Game.set_question(game, user_id, question)
-    {:reply, {:ok, new_game}, new_game}
+    handle_game_change(game, do: Game.set_question(game, user_id, question))
   end
 
   def handle_call({:set_poem, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_poem, user_id, poem}, _from, game) do
-    new_game = Game.set_poem(game, user_id, poem)
-    {:reply, {:ok, new_game}, new_game}
+    handle_game_change(game, do: Game.set_poem(game, user_id, poem))
   end
 
   def handle_call(:player_list, _from, game) do

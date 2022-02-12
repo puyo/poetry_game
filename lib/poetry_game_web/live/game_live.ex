@@ -100,7 +100,7 @@ defmodule PoetryGame.GameLive do
           "OK"
         else
           {:error, code} ->
-            "ERROR: #{code}"
+            "ERROR: #{code}" |> IO.inspect()
         end
       end
 
@@ -138,21 +138,12 @@ defmodule PoetryGame.GameLive do
   end
 
   defp ensure_player_joins(game_id, user) do
-    game =
-      case GameServer.add_member(game_id, user) do
-        {:error, :already_added} ->
-          GameServer.game(game_id)
-
-        {:error, _} = error ->
-          error
+    with {:ok, game} <- GameServer.add_member(game_id, user) do
+      if Game.can_start?(game) do
+        Game.start(game)
+      else
+        {:ok, game}
       end
-
-    IO.inspect(game)
-
-    if Game.can_start?(game) do
-      {:ok, Game.start(game)}
-    else
-      {:ok, game}
     end
   end
 

@@ -34,7 +34,7 @@ defmodule PoetryGame.Game do
       end)
       |> Enum.into(%{})
 
-    %{game | seats: seats, members: members}
+    {:ok, %{game | seats: seats, members: members}}
   end
 
   def started?(game) do
@@ -47,37 +47,36 @@ defmodule PoetryGame.Game do
 
   def add_member(game, %{id: id, name: name, color: color}) do
     if Map.has_key?(game.members, id) do
-      {:error, :already_added}
+      {:ok, game}
     else
       members = Map.put(game.members, id, %{id: id, name: name, color: color})
-      %{game | members: members}
+      {:ok, %{game | members: members}}
     end
   end
 
   def remove_member(game, user_id) do
     if Map.has_key?(game.members, user_id) do
       members = Map.delete(game.members, user_id)
-      %{game | members: members}
+      {:ok, %{game | members: members}}
     else
       {:error, :not_found}
     end
   end
 
   def set_word(game, user_id, word) do
-    game
-    |> set_value(user_id, :word, word)
-    |> move_paper_to_next_seat(user_id)
+    with {:ok, game} <- set_value(game, user_id, :word, word) do
+      move_paper_to_next_seat(game, user_id)
+    end
   end
 
   def set_question(game, user_id, question) do
-    game
-    |> set_value(user_id, :question, question)
-    |> move_paper_to_next_seat(user_id)
+    with {:ok, game} <- set_value(game, user_id, :question, question) do
+      move_paper_to_next_seat(game, user_id)
+    end
   end
 
   def set_poem(game, user_id, poem) do
-    game
-    |> set_value(user_id, :poem, poem)
+    set_value(game, user_id, :poem, poem)
   end
 
   def player_list(%{members: members}) do
@@ -103,7 +102,9 @@ defmodule PoetryGame.Game do
   defp set_value(game, user_id, key, value) do
     index = user_seat_index(game, user_id)
     seats = put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], value)
-    %{game | seats: seats}
+    {:ok, %{game | seats: seats}}
+  rescue
+    e in KeyError -> {:error, :invalid}
   end
 
   defp user_seat_index(game, user_id) do
@@ -126,6 +127,8 @@ defmodule PoetryGame.Game do
         fn papers -> List.insert_at(papers, -1, paper) end
       )
 
-    %{game | seats: seats}
+    {:ok, %{game | seats: seats}}
+  rescue
+    e in KeyError -> {:error, :invalid}
   end
 end

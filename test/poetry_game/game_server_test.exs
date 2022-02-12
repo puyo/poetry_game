@@ -31,9 +31,7 @@ defmodule PoetryGame.GameServerTest do
   describe "add_member/2" do
     test "already added" do
       {:ok, _} = GameServer.add_member(@id, %{id: "1", name: "A", color: 1})
-
-      assert {:error, :already_added} =
-               GameServer.add_member(@id, %{id: "1", name: "A", color: 1})
+      assert {:ok, _} = GameServer.add_member(@id, %{id: "1", name: "A", color: 1})
     end
   end
 

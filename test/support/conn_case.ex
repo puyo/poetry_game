@@ -30,4 +30,8 @@ defmodule PoetryGameWeb.ConnCase do
       @endpoint PoetryGameWeb.Endpoint
     end
   end
+
+  setup _tags do
+    {:ok, conn: Phoenix.ConnTest.build_conn()}
+  end
 end

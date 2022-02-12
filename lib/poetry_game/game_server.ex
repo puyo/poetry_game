@@ -1,6 +1,8 @@
 defmodule PoetryGame.GameServer do
   use GenServer, restart: :transient
 
+  alias PoetryGame.Game
+
   # ----------------------------------------------------------------------
   # client
 
@@ -8,44 +10,107 @@ defmodule PoetryGame.GameServer do
     GenServer.start_link(__MODULE__, game_id, name: via(game_id))
   end
 
-  def state(game_id) do
-    # Agent.get(via(game_id), fn state -> state end)
-    GenServer.call(via(game_id), :get_state)
+  def game(game_id) do
+    GenServer.call(via(game_id), :get_game)
   end
 
-  def join_game(game_id, user_id) do
-    GenServer.call(via(game_id), {:join_game, user_id})
+  def player_list(game_id) do
+    GenServer.call(via(game_id), :player_list)
   end
 
-  def leave_game(game_id, user_id) do
-    GenServer.call(via(game_id), {:leave_game, user_id})
+  def paper_list(game_id) do
+    GenServer.call(via(game_id), :paper_list)
+  end
+
+  def add_member(game_id, %{id: _id, name: _name, color: _color} = user) do
+    GenServer.call(via(game_id), {:add_member, user})
+  end
+
+  def remove_member(game_id, user_id) do
+    GenServer.call(via(game_id), {:remove_member, user_id})
   end
 
   def start_game(game_id) do
-    GenServer.call(via(game_id), {:set_status, :playing})
+    GenServer.call(via(game_id), :start_game)
+  end
+
+  def set_word(game_id, user_id, word) do
+    GenServer.call(via(game_id), {:set_word, user_id, word})
+  end
+
+  def set_question(game_id, user_id, question) do
+    GenServer.call(via(game_id), {:set_question, user_id, question})
+  end
+
+  def set_poem(game_id, user_id, poem) do
+    GenServer.call(via(game_id), {:set_poem, user_id, poem})
+  end
+
+  defp via(game_id) do
+    {:via, Registry, {:game_registry, game_id}}
   end
 
   # ----------------------------------------------------------------------
   # server
 
-  @impl true
-  def init(game_id) do
-    {:ok,
-     %{
-       game_id: game_id,
-       game: %{},
-       players: %{},
-       non_players: %{},
-       chat_messages: []
-     }}
+  @min_players 3
+
+  def init(_game_id) do
+    {:ok, Game.init()}
   end
 
-  @impl true
-  def handle_call(:get_state, from, state) do
-    {:reply, state, state}
+  def handle_call(:get_game, _from, game), do: {:reply, game, game}
+
+  def handle_call({:add_member, %{id: id, name: name, color: color}}, _from, game) do
+    case Game.add_member(game, %{id: id, name: name, color: color}) do
+      {:error, _} = error -> {:reply, error, game}
+      new_game -> {:reply, {:ok, new_game}, new_game}
+    end
   end
 
-  defp via(game_id) do
-    {:via, Registry, {:game_registry, game_id}}
+  def handle_call({:remove_member, user_id}, _from, game) do
+    case Game.remove_member(game, user_id) do
+      {:error, _} = error -> {:reply, error, game}
+      new_game -> {:reply, {:ok, new_game}, new_game}
+    end
+  end
+
+  def handle_call(:start_game, _from, %{members: members} = game)
+      when map_size(members) < @min_players do
+    {:reply, {:error, :too_few_players}, game}
+  end
+
+  def handle_call(:start_game, _from, game) do
+    new_game = Game.start(game)
+    {:reply, {:ok, new_game}, new_game}
+  end
+
+  def handle_call({:set_word, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+
+  def handle_call({:set_word, user_id, word}, _from, game) do
+    new_game = Game.set_word(game, user_id, word)
+    {:reply, {:ok, new_game}, new_game}
+  end
+
+  def handle_call({:set_question, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+
+  def handle_call({:set_question, user_id, question}, _from, game) do
+    new_game = Game.set_question(game, user_id, question)
+    {:reply, {:ok, new_game}, new_game}
+  end
+
+  def handle_call({:set_poem, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+
+  def handle_call({:set_poem, user_id, poem}, _from, game) do
+    new_game = Game.set_poem(game, user_id, poem)
+    {:reply, {:ok, new_game}, new_game}
+  end
+
+  def handle_call(:player_list, _from, game) do
+    {:reply, {:ok, Game.player_list(game)}, game}
+  end
+
+  def handle_call(:paper_list, _from, game) do
+    {:reply, {:ok, Game.paper_list(game)}, game}
   end
 end

@@ -21,7 +21,7 @@ defmodule PoetryGame.Game do
 
     seats =
       players
-      |> Enum.map(fn {{user_id, _member}, _index} ->
+      |> Enum.map(fn _ ->
         %{papers: [initial_paper()]}
       end)
 

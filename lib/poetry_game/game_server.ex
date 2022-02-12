@@ -58,6 +58,7 @@ defmodule PoetryGame.GameServer do
   defmacrop handle_game_change(game, do: expression) do
     quote do
       with {:ok, new_game} <- unquote(expression) do
+        PoetryGame.PubSub.broadcast_game_update!(new_game.id, new_game)
         {:reply, {:ok, new_game}, new_game}
       else
         error -> {:reply, error, unquote(game)}
@@ -65,8 +66,8 @@ defmodule PoetryGame.GameServer do
     end
   end
 
-  def init(_game_id) do
-    {:ok, Game.init()}
+  def init(game_id) do
+    {:ok, Game.init(game_id)}
   end
 
   def handle_call(:get_game, _from, game), do: {:reply, game, game}

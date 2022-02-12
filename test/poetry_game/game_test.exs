@@ -22,7 +22,7 @@ defmodule PoetryGame.GameTest do
 
   describe "add_member/2" do
     test "already added" do
-      game = Game.init()
+      game = Game.init("game_id")
       {:ok, game} = Game.add_member(game, %{id: "1", name: "A", color: 1})
       assert {:ok, _} = Game.add_member(game, %{id: "1", name: "A", color: 1})
       assert map_size(game.members) == 1
@@ -31,12 +31,12 @@ defmodule PoetryGame.GameTest do
 
   describe "remove_member/2" do
     test "not found" do
-      game = Game.init()
+      game = Game.init("game_id")
       assert {:error, :not_found} = Game.remove_member(game, "1")
     end
 
     test "success" do
-      game = Game.init()
+      game = Game.init("game_id")
       {:ok, game} = Game.add_member(game, %{id: "1", name: "A", color: 1})
       {:ok, game} = Game.remove_member(game, "1")
       assert map_size(game.members) == 0
@@ -107,7 +107,7 @@ defmodule PoetryGame.GameTest do
   end
 
   defp demo_game() do
-    with game = Game.init(),
+    with game = Game.init("game_id"),
          {:ok, game} <- Game.add_member(game, %{id: "1", name: "A", color: 1}),
          {:ok, game} <- Game.add_member(game, %{id: "2", name: "B", color: 2}),
          {:ok, game} <- Game.add_member(game, %{id: "3", name: "C", color: 3}) do

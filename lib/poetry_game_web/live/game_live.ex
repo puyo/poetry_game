@@ -11,10 +11,11 @@ defmodule PoetryGame.GameLive do
     squish = 0.25
     radius = assigns.width / 3
     angle_offset = 0.5 * :math.pi()
+    game_finished = Game.finished?(assigns.game)
 
     ~H"""
-    <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@id}", session: %{"topic" => @id}) %>
-    <div id={"game_board_#{@id}"} class="grow" phx-hook="GameSize">
+    <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@game_id}", session: %{"topic" => @game_id}) %>
+    <div id={"game_board_#{@game_id}"} class="grow" phx-hook="GameSize">
       <%= if Game.started?(@game) do %>
         <% nseats = length(@game.seats) %>
         <% user_seat_index = Game.user_seat_index(@game, @user_id) %>
@@ -32,7 +33,7 @@ defmodule PoetryGame.GameLive do
           <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
 
           <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"}>
-            <ul class="xhidden">
+            <ul class="hidden">
               <li>Seat <%= seat_i %></li>
               <li>npapers <%= length(seat.papers) %></li>
             </ul>
@@ -51,28 +52,17 @@ defmodule PoetryGame.GameLive do
           <% paperz = trunc(100 * (1 + :math.cos(paper_angle))) %>
 
           <%= for {paper, paper_i} <- Enum.with_index(seat.papers) do %>
-            <% visible = paper_i == 0 && user_seat_index == seat_i %>
+            <% offset = paper_i * 10 %>
+            <% visible = game_finished || paper_i == 0 && user_seat_index == seat_i %>
 
             <div
                 class="paper"
                 id={"paper-#{paper.id}"}
-                style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz};"}  data-width={"#{@width}"}>
+                style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}  data-width={"#{@width}"}>
 
-              <p class="text-slate-400 text-xs mb-4"><%= paper.id %></p>
+              <p class="hidden text-slate-400 text-xs mb-4"><%= paper.id %></p>
               <%= if visible do %>
-                <div id={"paper-content-#{paper.id}"}>
-                  <div class="word">
-                    Word: <%= paper.word %>
-                  </div>
-                  <div class="question">
-                    Question: <%= paper.question %>
-                  </div>
-                  <div class="poem">
-                    <%= for line <- String.split(paper.poem || "", "\n") do %>
-                      <div class="line"><%= line %></div>
-                    <% end %>
-                  </div>
-                </div>
+                <%= render_paper(paper, assigns, game_finished) %>
               <% end %>
             </div>
           <% end %>
@@ -85,8 +75,63 @@ defmodule PoetryGame.GameLive do
       <%= Game.can_start?(@game) %>
       <% end %>
     </div>
-    <div class="chat w-[20em]">
-      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@id}", session: %{"topic" => @id}) %>
+    <div class="chat w-[20em]" style="z-index: 1000;">
+      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => @game_id}) %>
+    </div>
+    """
+  end
+
+  defp render_paper(paper, assigns, game_finished) do
+    ~H"""
+    <div id={"paper-content-#{paper.id}"}>
+      <form action="#" phx-submit="submit_value">
+        <%= if paper.word do %>
+          <div class="word">
+            Word: <%= paper.word %>
+          </div>
+        <% else %>
+          <div class="word">
+            <input type="text" name="word" placeholder="Enter a word"
+              class="focus:border-none outline-none border-none" />
+          </div>
+        <% end %>
+
+        <%= if paper.question do %>
+          <div class="question">
+            Question: <%= paper.question %>
+          </div>
+        <% else %>
+          <%= if paper.word do %>
+            <div class="question">
+              <input type="text" name="question" placeholder="Enter a question"
+                class="focus:border-none outline-none border-none" />
+            </div>
+          <% end %>
+        <% end %>
+
+        <%= if paper.poem do %>
+          <div class="poem">
+            <%= for line <- String.split(paper.poem || "", "\n") do %>
+              <div class="line"><%= line %></div>
+            <% end %>
+          </div>
+          <%= if !game_finished do %>
+            <p class="mt-4 text-slate-500">Waiting on other players...</p>
+          <% end %>
+        <% else %>
+          <%= if paper.word && paper.question do %>
+            <div class="poem">
+              <textarea name="poem" rows="5" placeholder="Write a poem using the word and question above"
+                class="focus:border-none outline-none border-none"
+              />
+              <button type="submit" 
+                  class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200">
+                Save
+              </button>
+            </div>
+          <% end %>
+        <% end %>
+      </form>
     </div>
     """
   end
@@ -104,15 +149,11 @@ defmodule PoetryGame.GameLive do
     user = %{id: user_id, name: user_name, color: user_color}
 
     with {:ok, game} <- setup_live_view_process(game_id, user) do
-      broadcast_game_state_update!(game_id, game)
-
-      IO.inspect(mount: user_id)
-
       {:ok,
        assign(
          socket,
          game: game,
-         id: game_id,
+         game_id: game_id,
          user_id: user_id,
          user_name: user_name,
          rotate: 0.0,
@@ -145,15 +186,32 @@ defmodule PoetryGame.GameLive do
   defp ensure_player_joins(game_id, user) do
     with {:ok, game} <- GameServer.add_member(game_id, user) do
       if length(game.seats) == 0 && Game.can_start?(game) do
-        Game.start(game)
+        GameServer.start_game(game_id)
       else
         {:ok, game}
       end
     end
   end
 
-  defp broadcast_game_state_update!(game_id, game) do
-    PoetryGame.PubSub.broadcast_game_update!(game_id, game)
+  def handle_event("submit_value", %{"word" => value}, socket) do
+    game_id = socket.assigns.game_id
+    user_id = socket.assigns.user_id
+    GameServer.set_word(game_id, user_id, value)
+    {:noreply, socket}
+  end
+
+  def handle_event("submit_value", %{"question" => value}, socket) do
+    game_id = socket.assigns.game_id
+    user_id = socket.assigns.user_id
+    GameServer.set_question(game_id, user_id, value)
+    {:noreply, socket}
+  end
+
+  def handle_event("submit_value", %{"poem" => value}, socket) do
+    game_id = socket.assigns.game_id
+    user_id = socket.assigns.user_id
+    GameServer.set_poem(game_id, user_id, value)
+    {:noreply, socket}
   end
 
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
@@ -161,7 +219,6 @@ defmodule PoetryGame.GameLive do
   end
 
   def handle_info(%{event: "game_state_update", payload: game}, socket) do
-    IO.inspect(game_state_update: socket.assigns.user_id)
     {:noreply, assign(socket, game: game)}
   end
 end

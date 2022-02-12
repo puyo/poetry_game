@@ -1,12 +1,14 @@
 defmodule PoetryGame.Game do
   defstruct(
+    id: nil,
     members: %{},
     seats: [],
     chat_messages: []
   )
 
-  def init() do
+  def init(game_id) do
     %__MODULE__{
+      id: game_id,
       members: %{},
       seats: [],
       chat_messages: []
@@ -39,6 +41,15 @@ defmodule PoetryGame.Game do
 
   def started?(game) do
     length(game.seats) > 0
+  end
+
+  def finished?(game) do
+    paper_list(game)
+    |> Enum.all?(&paper_finished?/1)
+  end
+
+  def paper_finished?(paper) do
+    paper.word && paper.question && paper.poem
   end
 
   def can_start?(game) do
@@ -114,7 +125,7 @@ defmodule PoetryGame.Game do
     seats = put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], value)
     {:ok, %{game | seats: seats}}
   rescue
-    e in KeyError -> {:error, :invalid}
+    KeyError -> {:error, :invalid}
   end
 
   defp move_paper_to_next_seat(game, user_id) do
@@ -135,6 +146,6 @@ defmodule PoetryGame.Game do
 
     {:ok, %{game | seats: seats}}
   rescue
-    e in KeyError -> {:error, :invalid}
+    KeyError -> {:error, :invalid}
   end
 end

@@ -17,7 +17,9 @@ defmodule PoetryGame.Application do
       # Presence to track people joining/leaving games
       PoetryGameWeb.Presence,
       # Registry
-      {Registry, keys: :unique, name: :game_registry}
+      {Registry, keys: :unique, name: :game_registry},
+      # Manage a stable of games being played
+      {PoetryGame.GameSupervisor, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

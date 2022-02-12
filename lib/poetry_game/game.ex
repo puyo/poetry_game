@@ -13,6 +13,8 @@ defmodule PoetryGame.Game do
     }
   end
 
+  @min_players 3
+
   def start(game) do
     players =
       game.members
@@ -33,6 +35,14 @@ defmodule PoetryGame.Game do
       |> Enum.into(%{})
 
     %{game | seats: seats, members: members}
+  end
+
+  def started?(game) do
+    length(game.seats) > 0
+  end
+
+  def can_start?(game) do
+    map_size(game.members) >= @min_players
   end
 
   def add_member(game, %{id: id, name: name, color: color}) do

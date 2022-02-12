@@ -27,8 +27,8 @@ defmodule PoetryGame.GameLive do
         </ul>
 
         <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
-          <% rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
-          <% seat_angle = 2.0 * :math.pi * rotation_i / nseats %>
+          <% seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
+          <% seat_angle = 2.0 * :math.pi * seat_rotation_i / nseats %>
           <% seatx = cx + radius * :math.cos(angle_offset + seat_angle) %>
           <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
 
@@ -44,28 +44,30 @@ defmodule PoetryGame.GameLive do
               <span class="user-name">(VACANT)</span>
             <% end %>
           </div>
+        <% end %>
 
-          <% paper_angle = @rotate + 2.0 * (:math.pi) * rotation_i / nseats %>
+        <%= for paper <- Game.paper_list(@game) |> Enum.sort_by(fn p -> p.id end) do %>
+          <% paper_i = Game.paper_index_within_seat(@game, paper.id) %>
+          <% seat_i = Game.paper_seat_index(@game, paper.id) %>
+          <% seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
+          <% paper_angle = @rotate + 2.0 * (:math.pi) * seat_rotation_i / nseats %>
           <% paper_angle = if paper_angle > 2.0 * :math.pi, do: paper_angle - 2.0 * :math.pi, else: paper_angle %>
           <% paperx = cx + radius * :math.cos(angle_offset + paper_angle) %>
           <% papery = cy + squish * radius * :math.sin(angle_offset + paper_angle) %>
           <% paperz = trunc(100 * (1 + :math.cos(paper_angle))) %>
+          <% offset = paper_i * 10 %>
+          <% visible = game_finished || paper_i == 0 && user_seat_index == seat_i %>
 
-          <%= for {paper, paper_i} <- Enum.with_index(seat.papers) do %>
-            <% offset = paper_i * 10 %>
-            <% visible = game_finished || paper_i == 0 && user_seat_index == seat_i %>
+          <div
+              class="paper"
+              id={"paper-#{paper.id}"}
+              style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}  data-width={"#{@width}"}>
 
-            <div
-                class="paper"
-                id={"paper-#{paper.id}"}
-                style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}  data-width={"#{@width}"}>
-
-              <p class="hidden text-slate-400 text-xs mb-4"><%= paper.id %></p>
-              <%= if visible do %>
-                <%= render_paper(paper, assigns, game_finished) %>
-              <% end %>
-            </div>
-          <% end %>
+            <p class="hidden text-slate-400 text-xs mb-4"><%= String.slice(paper.id, 0..5) %> P(<%= paper_i %>) S(<%= seat_i %>)</p>
+            <%= if visible do %>
+              <%= render_paper(paper, assigns, game_finished) %>
+            <% end %>
+          </div>
         <% end %>
 
       <% else %>

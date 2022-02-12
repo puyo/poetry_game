@@ -56,6 +56,18 @@ defmodule PoetryGame.Game do
     map_size(game.members) >= @min_players
   end
 
+  def paper_index_within_seat(game, paper_id) do
+    seat_index = paper_seat_index(game, paper_id)
+    seat = Enum.at(game.seats, seat_index)
+    Enum.find_index(seat.papers, fn p -> p.id == paper_id end)
+  end
+
+  def paper_seat_index(game, paper_id) do
+    Enum.find_index(game.seats, fn seat ->
+      Enum.find(seat.papers, fn p -> p.id == paper_id end)
+    end)
+  end
+
   def add_member(game, %{id: id, name: name, color: color}) do
     if Map.has_key?(game.members, id) do
       {:ok, game}

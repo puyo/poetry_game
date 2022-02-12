@@ -90,6 +90,16 @@ defmodule PoetryGame.Game do
     |> Enum.flat_map(fn %{papers: papers} -> papers end)
   end
 
+  def user_at_seat(game, seat_index) do
+    game.members
+    |> Map.values()
+    |> Enum.find(fn m -> m.seat_index == seat_index end)
+  end
+
+  def user_seat_index(game, user_id) do
+    get_in(game.members, [user_id, :seat_index])
+  end
+
   defp initial_paper() do
     %{
       id: Ecto.UUID.generate(),
@@ -105,10 +115,6 @@ defmodule PoetryGame.Game do
     {:ok, %{game | seats: seats}}
   rescue
     e in KeyError -> {:error, :invalid}
-  end
-
-  defp user_seat_index(game, user_id) do
-    get_in(game.members, [user_id, :seat_index])
   end
 
   defp move_paper_to_next_seat(game, user_id) do

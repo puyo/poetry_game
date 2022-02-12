@@ -16,57 +16,67 @@ defmodule PoetryGame.GameLive do
     <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@id}", session: %{"topic" => @id}) %>
     <div id={"game_board_#{@id}"} class="grow" phx-hook="GameSize">
       <%= if Game.started?(@game) do %>
-        STARTED
-      <% nseats = length(@game.seats) %>
+        <% nseats = length(@game.seats) %>
+        <% user_seat_index = Game.user_seat_index(@game, @user_id) %>
 
-      <%= for {seat, i} <- Enum.with_index(@game.seats) do %>
-        <% seat_angle = 2.0 * :math.pi * i / nseats %>
-        <% seatx = cx + radius * :math.cos(angle_offset + seat_angle) %>
-        <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
-        <%# seatz = trunc(100 * (1 + :math.cos(seat_angle))) %>
+        <ul class="hidden">
+          <li>User ID: <%= String.slice(@user_id, 0..3) %></li>
+          <li>nseats: <%= nseats %></li>
+          <li>user_seat_index: <%= user_seat_index %></li>
+        </ul>
 
-        <div class="seat" id={"seat-#{i}"} style={"top: #{seaty}px; left: #{seatx}px"}>
-          <span class="name">Player TODO</span>
-        </div>
+        <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
+          <% rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
+          <% seat_angle = 2.0 * :math.pi * rotation_i / nseats %>
+          <% seatx = cx + radius * :math.cos(angle_offset + seat_angle) %>
+          <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
 
-        <% paper_angle = @rotate + 2.0 * (:math.pi) * i / nseats %>
-        <% paper_angle = if paper_angle > 2.0 * :math.pi, do: paper_angle - 2.0 * :math.pi, else: paper_angle %>
-        <% paperx = cx + radius * :math.cos(angle_offset + paper_angle) %>
-        <% papery = cy + squish * radius * :math.sin(angle_offset + paper_angle) %>
-        <% paperz = trunc(100 * (1 + :math.cos(paper_angle))) %>
-
-        <% visible = not (paper_angle > 0.1 && paper_angle < (2.0 * :math.pi - 0.1)) %>
-
-        <%# paperscalemin = -1.0 %>
-        <%# paperscalemax = 1.0 %>
-        <%# paperscale = paperscalemin + (paperscalemax - paperscalemin) * (paperz / 200.0) %>
-
-        <%= for {paper, paper_i} <- Enum.with_index(seat.papers) do %>
-          <div
-            class="paper"
-            id={"paper-#{i}-#{paper_i}"}
-            style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz};"}>
-          <%= paper.id %>
-            <%= if visible do %>
-              <div id={"paper-content-#{i}-#{paper_i}"}>
-                <div class="word">
-                  Word: <%= paper.word %>
-                </div>
-                <div class="question">
-                  Question: <%= paper.question %>
-                </div>
-                <div class="poem">
-                  <%= for line <- String.split(paper.poem || "", "\n") do %>
-                    <div class="line"><%= line %></div>
-                  <% end %>
-                </div>
-              </div>
+          <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"}>
+            <ul class="xhidden">
+              <li>Seat <%= seat_i %></li>
+              <li>npapers <%= length(seat.papers) %></li>
+            </ul>
+            <% user = Game.user_at_seat(@game, seat_i) %>
+            <%= if user do %>
+              <span class="user-name" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
             <% else %>
-              FLIPPED
+              <span class="user-name">(VACANT)</span>
             <% end %>
           </div>
+
+          <% paper_angle = @rotate + 2.0 * (:math.pi) * rotation_i / nseats %>
+          <% paper_angle = if paper_angle > 2.0 * :math.pi, do: paper_angle - 2.0 * :math.pi, else: paper_angle %>
+          <% paperx = cx + radius * :math.cos(angle_offset + paper_angle) %>
+          <% papery = cy + squish * radius * :math.sin(angle_offset + paper_angle) %>
+          <% paperz = trunc(100 * (1 + :math.cos(paper_angle))) %>
+
+          <%= for {paper, paper_i} <- Enum.with_index(seat.papers) do %>
+            <% visible = paper_i == 0 && user_seat_index == seat_i %>
+
+            <div
+                class="paper"
+                id={"paper-#{paper.id}"}
+                style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz};"}  data-width={"#{@width}"}>
+
+              <p class="text-slate-400 text-xs mb-4"><%= paper.id %></p>
+              <%= if visible do %>
+                <div id={"paper-content-#{paper.id}"}>
+                  <div class="word">
+                    Word: <%= paper.word %>
+                  </div>
+                  <div class="question">
+                    Question: <%= paper.question %>
+                  </div>
+                  <div class="poem">
+                    <%= for line <- String.split(paper.poem || "", "\n") do %>
+                      <div class="line"><%= line %></div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         <% end %>
-      <% end %>
 
       <% else %>
         NOT STARTED
@@ -93,28 +103,23 @@ defmodule PoetryGame.GameLive do
       ) do
     user = %{id: user_id, name: user_name, color: user_color}
 
-    message =
-      if connected?(socket) do
-        with {:ok, game} <- setup_live_view_process(game_id, user) do
-          broadcast_game_state_update!(game_id, game)
-          "OK"
-        else
-          {:error, code} ->
-            "ERROR: #{code}" |> IO.inspect()
-        end
-      end
+    with {:ok, game} <- setup_live_view_process(game_id, user) do
+      broadcast_game_state_update!(game_id, game)
 
-    {:ok,
-     assign(
-       socket,
-       game: Game.init(),
-       id: game_id,
-       user_id: user_id,
-       user_name: user_name,
-       rotate: 0.0,
-       width: 0,
-       height: 0
-     )}
+      IO.inspect(mount: user_id)
+
+      {:ok,
+       assign(
+         socket,
+         game: game,
+         id: game_id,
+         user_id: user_id,
+         user_name: user_name,
+         rotate: 0.0,
+         width: 0,
+         height: 0
+       )}
+    end
   end
 
   defp setup_live_view_process(game_id, user) do
@@ -139,7 +144,7 @@ defmodule PoetryGame.GameLive do
 
   defp ensure_player_joins(game_id, user) do
     with {:ok, game} <- GameServer.add_member(game_id, user) do
-      if Game.can_start?(game) do
+      if length(game.seats) == 0 && Game.can_start?(game) do
         Game.start(game)
       else
         {:ok, game}
@@ -156,9 +161,7 @@ defmodule PoetryGame.GameLive do
   end
 
   def handle_info(%{event: "game_state_update", payload: game}, socket) do
-    {:noreply,
-     assign(socket,
-       game: game
-     )}
+    IO.inspect(game_state_update: socket.assigns.user_id)
+    {:noreply, assign(socket, game: game)}
   end
 end

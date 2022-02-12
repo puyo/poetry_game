@@ -11,6 +11,15 @@ defmodule PoetryGame.GameTest do
     end
   end
 
+  describe "user_at_seat/2" do
+    test "success" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      assert %{id: "1"} = Game.user_at_seat(game, 0)
+      assert Game.user_at_seat(game, 10) == nil
+    end
+  end
+
   describe "add_member/2" do
     test "already added" do
       game = Game.init()

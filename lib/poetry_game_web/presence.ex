@@ -9,8 +9,4 @@ defmodule PoetryGameWeb.Presence do
   use Phoenix.Presence,
     otp_app: :poetry_game,
     pubsub_server: PoetryGame.PubSub
-
-  def broadcast(topic, message) do
-    Phoenix.PubSub.broadcast(PoetryGame.PubSub, topic, message, __MODULE__)
-  end
 end

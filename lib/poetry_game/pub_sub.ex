@@ -9,7 +9,7 @@ defmodule PoetryGame.PubSub do
   @spec subscribe_to_game_updates(String.t()) :: String.t()
   def subscribe_to_game_updates(game_id) do
     game_id
-    |> topic()
+    |> game_topic()
     |> PoetryGameWeb.Endpoint.subscribe()
 
     game_id
@@ -18,12 +18,9 @@ defmodule PoetryGame.PubSub do
   @spec broadcast_game_update!(String.t(), PoetryGame.Game.t()) :: :ok
   def broadcast_game_update!(game_id, game) do
     game_id
-    |> topic()
+    |> game_topic()
     |> PoetryGameWeb.Endpoint.broadcast!("game_state_update", game)
   end
 
-  @spec topic(String.t()) :: String.t()
-  defp topic(game_id) do
-    game_id
-  end
+  defp game_topic(game_id), do: "game:#{game_id}"
 end

@@ -61,7 +61,6 @@ defmodule PoetryGame.ChatLive do
         socket
       ) do
     Endpoint.subscribe(topic)
-    IO.inspect("SUBSCRIBED TO USER CHANGES user:#{user_id}")
     Endpoint.subscribe("user:#{user_id}")
     Presence.track(self(), topic, user_id, %{id: user_id, name: user_name, color: user_color})
 

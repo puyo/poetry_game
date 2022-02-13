@@ -23,7 +23,7 @@ defmodule PoetryGame.GameLive do
     chat_topic = "chat:#{game.id}"
 
     ~H"""
-    <div id={"game_#{@game_id}"} class={"game #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div id={"game_#{@game_id}"} class={"game h-full #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
       <%= if @game_started do %>
         <div class="board">
           <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
@@ -33,6 +33,8 @@ defmodule PoetryGame.GameLive do
             <%= render_paper(paper, assigns) %>
           <% end %>
         </div>
+      <% else %>
+        GAME NOT STARTED YET
       <% end %>
     </div>
     """
@@ -40,7 +42,9 @@ defmodule PoetryGame.GameLive do
 
   def render(%{game: game, width: width, height: height} = assigns) do
     ~H"""
-    <div id={"game_#{@game_id}"} class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"} />
+    <div id={"game_#{@game_id}"} class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+      NO USER
+    </div>
     """
   end
 

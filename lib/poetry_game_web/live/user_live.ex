@@ -57,7 +57,7 @@ defmodule PoetryGame.UserLive do
   defp render_user_form(assigns) do
     ~H"""
     <%= render_header(assigns) %>
-    <div class="h-full bg-stone-300 py-20">
+    <div class="h-full bg-stone-300/75 py-20 absolute inset-0" style="z-index: 10000;">
       <form action="#"
         class="shadow overflow-hidden rounded-lg max-w-sm bg-white p-4 mx-auto"
         phx-change="change"
@@ -100,9 +100,15 @@ defmodule PoetryGame.UserLive do
         </div>
       </form>
     </div>
-      <div class="chat w-[20em]" style="z-index: 1000;">
-        <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
+    <main class="grow">
+      <div class="flex h-full">
+        <div class="game grow">
+        </div>
+        <div class="chat shrink w-[20em]" style="z-index: 1000;">
+          <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
+        </div>
       </div>
+    </main>
     """
   end
 
@@ -130,11 +136,9 @@ defmodule PoetryGame.UserLive do
 
   @impl true
   def handle_event("change", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    user = socket.assigns.user
-
     new_user =
       Map.merge(
-        user,
+        socket.assigns.user,
         %{name: name, color: String.to_integer(color)}
       )
 
@@ -142,15 +146,12 @@ defmodule PoetryGame.UserLive do
   end
 
   def handle_event("update-user", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    user = socket.assigns.user
-
     new_user =
       Map.merge(
-        user,
+        socket.assigns.user,
         %{name: name, color: String.to_integer(color)}
       )
 
-    IO.inspect("BROADCASTING USER CHANGE user:#{socket.assigns.user.id} update")
     Endpoint.local_broadcast("user:#{socket.assigns.user.id}", "update-user", new_user)
 
     {:noreply, assign(socket, user: new_user, show_form: false)}

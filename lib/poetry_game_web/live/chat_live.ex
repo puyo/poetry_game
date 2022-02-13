@@ -1,9 +1,7 @@
 defmodule PoetryGame.ChatLive do
   use Phoenix.LiveView,
-    container: {:div, class: "h-full"},
+    container: {:div, class: "chat-live h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
-
-  use Phoenix.HTML
 
   alias PoetryGameWeb.{Endpoint, Presence}
 
@@ -31,16 +29,19 @@ defmodule PoetryGame.ChatLive do
       </div>
       <div class="entry-form shrink bg-white">
         <form action="#" phx-submit="submit" autocomplete="off">
-          <%= hidden_input :message, :user_id, value: @user_id  %>
-          <%= hidden_input :message, :user_name, value: @user_name  %>
-          <%= hidden_input :message, :color, value: @user_color  %>
-          <div class="flex items-center justify-center">
-            <span class="inline-flex pl-2">
-              <span class="font-semibold" style={"color: #{user_hsl(@user_color)}"}><%= @user_name %></span>&nbsp;:&nbsp;
+          <input type="hidden" name="message[user_id]" value={@user_id}>
+          <input type="hidden" name="message[user_name]" value={@user_name}>
+          <input type="hidden" name="message[color]" value={@user_color}>
+          <div class="input-group inline-flex items-center justify-center">
+            <span class="shrink p-2">
+              <span class="font-semibold" style={"color: #{user_hsl(@user_color)}"}><%= @user_name %></span>&nbsp;:
             </span>
-            <%= text_input :message, :content, value: @message,
-              class: "inline-flex grow focus:border-none outline-none border-none" %>
-            <%= submit "Send", class: "inline-flex shrink p-2 font-semibold outline-none focus:bg-amber-200 hover:bg-amber-200" %>
+            <input class="w-full grow outline-none py-2" type="text" name="message[content]" value={@message} />
+            <button
+              class="p-2 shrink font-semibold outline-none focus:bg-amber-200 hover:bg-amber-200"
+              type="submit">
+                Send
+            </button>
           </div>
         </form>
       </div>

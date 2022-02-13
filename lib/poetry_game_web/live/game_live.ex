@@ -9,74 +9,33 @@ defmodule PoetryGame.GameLive do
   @impl true
   def render(%{width: width, height: height, game: game, user_id: user_id} = assigns)
       when width > 0 and height > 0 do
-    paper_height = 400
-    squish = 0.25
-    radius = width / 3
-    cx = width / 2
-    cy = (height - paper_height + squish * radius) / 2
-    angle_offset = 0.5 * :math.pi()
-    game_started = Game.started?(game)
-    game_finished = Game.finished?(game)
-
-    user_seat_index = Game.user_seat_index(game, user_id) || 0
-    nseats = length(assigns.game.seats)
+    assigns =
+      Map.merge(
+        assigns,
+        %{
+          game_started: Game.started?(game),
+          game_finished: Game.finished?(game),
+          user_seat_index: Game.user_seat_index(game, user_id) || 0,
+          nseats: length(game.seats)
+        }
+      )
 
     ~H"""
-    <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@game_id}", session: %{"topic" => @game_id}) %>
     <div id={"game_#{@game_id}"} class={"game grow #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
-      <%= if game_started do %>
+      <%= if @game_started do %>
 
-        <ul class="hidden">
-          <li>User ID: <%= String.slice(@user_id, 0..3) %></li>
-          <li>nseats: <%= nseats %></li>
-          <li>user_seat_index: <%= user_seat_index %></li>
-        </ul>
+        <div class="board">
 
-        <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
-          <% seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
-          <% seat_angle = 2.0 * :math.pi * seat_rotation_i / nseats %>
-          <% seatx = cx + radius * :math.cos(angle_offset + seat_angle) %>
-          <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
+          <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
+            <%= render_seat(seat, seat_i, assigns) %>
+          <% end %>
 
-          <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
-            <ul class="hidden">
-              <li>Seat <%= seat_i %></li>
-              <li>npapers <%= length(seat.papers) %></li>
-            </ul>
-            <% user = Game.user_at_seat(@game, seat_i) %>
-            <%= if user do %>
-              <span class="user-name" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
-            <% else %>
-              <span class="user-name text-black">(VACANT)</span>
-            <% end %>
-          </div>
-        <% end %>
+          <%= for paper <- Game.paper_list(@game) |> Enum.sort_by(fn p -> p.id end) do %>
+            <%= render_paper(paper, assigns) %>
+          <% end %>
 
-        <%= for paper <- Game.paper_list(@game) |> Enum.sort_by(fn p -> p.id end) do %>
-          <% paper_i = Game.paper_index_within_seat(@game, paper.id) %>
-          <% seat_i = Game.paper_seat_index(@game, paper.id) %>
-          <% seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats) %>
-          <% paper_angle = @rotate + 2.0 * (:math.pi) * seat_rotation_i / nseats %>
-          <% paper_angle = if paper_angle > 2.0 * :math.pi, do: paper_angle - 2.0 * :math.pi, else: paper_angle %>
-          <% paperx = cx + radius * :math.cos(angle_offset + paper_angle) %>
-          <% papery = cy + squish * radius * :math.sin(angle_offset + paper_angle) %>
-          <% paperz = trunc(100 * (1 + :math.cos(paper_angle))) %>
-          <% offset = paper_i * 10 %>
-          <% visible = game_finished || paper_i == 0 && user_seat_index == seat_i %>
+        </div>
 
-          <div
-            class="paper"
-            id={"paper-#{paper.id}"}
-            style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}
-            data-width={"#{@width}"}
-            data-height={"#{@height}"}>
-
-            <p class="hidden text-slate-400 text-xs mb-4"><%= String.slice(paper.id, 0..5) %> P(<%= paper_i %>) S(<%= seat_i %>)</p>
-            <%= if visible do %>
-              <%= render_paper(paper, assigns, game_finished) %>
-            <% end %>
-          </div>
-        <% end %>
       <% end %>
     </div>
     <div class="chat w-[20em]" style="z-index: 1000;">
@@ -96,62 +55,111 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  defp render_paper(paper, assigns, game_finished) do
+  defp render_seat(seat, seat_i, assigns) do
+    seat_rotation_i = rem(seat_i - assigns.user_seat_index + assigns.nseats, assigns.nseats)
+    seat_angle = 2.0 * :math.pi() * seat_rotation_i / assigns.nseats
+    seatx = assigns.cx + assigns.radius * :math.cos(assigns.angle_offset + seat_angle)
+
+    seaty =
+      assigns.cy + assigns.squish * assigns.radius * :math.sin(assigns.angle_offset + seat_angle)
+
     ~H"""
-    <form action="#" phx-submit="submit_value">
-      <%= if paper.word do %>
-        <section class="word">
-          <span class="label">Word: </span><span class="value"><%= paper.word %></span>
-        </section>
+    <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
+      <% user = Game.user_at_seat(@game, seat_i) %>
+      <%= if user do %>
+        <span class="user-name" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
       <% else %>
-        <section class="word">
-          <input type="text" name="word" placeholder="Enter a word" class="outline-none" />
-        </section>
+        <span class="user-name text-black">(VACANT)</span>
       <% end %>
+    </div>
+    """
+  end
 
-      <%= if paper.question do %>
-        <section class="question">
-          <span class="label">Question: </span><span class="value"><%= paper.question %></span>
-        </section>
-      <% else %>
-        <%= if paper.word do %>
-          <section class="question">
-            <input type="text" name="question" placeholder="Enter a question" class="outline-none" />
-          </section>
-        <% end %>
-      <% end %>
+  defp render_paper(paper, assigns) do
+    paper_i = Game.paper_index_within_seat(assigns.game, paper.id)
+    seat_i = Game.paper_seat_index(assigns.game, paper.id)
+    seat_rotation_i = rem(seat_i - assigns.user_seat_index + assigns.nseats, assigns.nseats)
+    paper_angle = assigns.rotate + 2.0 * :math.pi() * seat_rotation_i / assigns.nseats
+    offset = paper_i * 10
+    paperx = assigns.cx + assigns.radius * :math.cos(assigns.angle_offset + paper_angle) + offset
 
-      <%= if paper.poem do %>
-        <section class="poem">
-          <div class="poem">
-            <%= for line <- String.split(paper.poem || "", "\n") do %>
-              <div class="line"><%= line %></div>
+    papery =
+      assigns.cy + assigns.squish * assigns.radius * :math.sin(assigns.angle_offset + paper_angle) -
+        offset
+
+    paperz = trunc(100 * (1 + :math.cos(paper_angle))) - offset
+    visible = assigns.game_finished || (paper_i == 0 && assigns.user_seat_index == seat_i)
+
+    ~H"""
+    <div
+      class="paper"
+      id={"paper-#{paper.id}"}
+      style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz}; max-width: #{0.8 * @width}px; max-height: #{0.8 * @height}px;"}
+      data-width={"#{@width}"}
+      data-height={"#{@height}"}>
+
+      <%= if visible do %>
+
+        <form action="#" phx-submit="submit_value">
+          <%= if paper.word do %>
+            <section class="word">
+              <span class="label">Word: </span><span class="value"><%= paper.word %></span>
+            </section>
+          <% else %>
+            <section class="word">
+              <input type="text" name="word" placeholder="Enter a word" class="outline-none" />
+            </section>
+          <% end %>
+
+          <%= if paper.question do %>
+            <section class="question">
+              <span class="label">Question: </span><span class="value"><%= paper.question %></span>
+            </section>
+          <% else %>
+            <%= if paper.word do %>
+              <section class="question">
+                <input type="text" name="question" placeholder="Enter a question" class="outline-none" />
+              </section>
             <% end %>
-          </div>
-        </section>
-        <%= if !game_finished do %>
-          <section class="hint text-slate-500 text-sm">
-            <p>Waiting on other players...</p>
-          </section>
-        <% end %>
-      <% else %>
-        <%= if paper.word && paper.question do %>
-          <section class="poem">
-            <div
-              id={"poem_input-#{@game_id}"}
-              class="input outline-none"
-              contenteditable
-              data-placeholder="Write a poem using the word and question above" phx-hook="TextAreaSave" data-textarea-id={"poem_text_area-#{@game_id}"} />
-            <textarea name="poem" class="hidden" id={"poem_text_area-#{@game_id}"}></textarea>
-            <button
-              class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200"
-              >
-              Save
-            </button>
-          </section>
-        <% end %>
+          <% end %>
+
+          <%= if paper.poem do %>
+            <section class="poem">
+              <div class="poem">
+                <%= for line <- String.split(paper.poem || "", "\n") do %>
+                  <div class="line"><%= line %></div>
+                <% end %>
+              </div>
+            </section>
+            <%= if not @game_finished do %>
+              <section class="hint text-slate-500 text-sm">
+                <p>Waiting on other players...</p>
+              </section>
+            <% end %>
+          <% else %>
+            <%= if paper.word && paper.question do %>
+              <section class="poem">
+                <div
+                  id={"poem_input-#{@game_id}"}
+                  class="input outline-none"
+                  contenteditable
+                  data-placeholder="Write a poem using the word and question above"
+                  phx-hook="TextAreaSave"
+                  data-textarea-id={"poem_text_area-#{@game_id}"}
+                  phx-update="ignore"
+                ></div>
+                <textarea name="poem" style="display: none" id={"poem_text_area-#{@game_id}"}></textarea>
+                <button
+                  class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200"
+                  >
+                  Save
+                </button>
+              </section>
+            <% end %>
+          <% end %>
+        </form>
       <% end %>
-    </form>
+    </div>
     """
   end
 
@@ -184,7 +192,13 @@ defmodule PoetryGame.GameLive do
           rotate: 0.0,
           width: 0,
           height: 0,
-          settled: ""
+          settled: "",
+          paper_height: 400,
+          squish: 0.25,
+          angle_offset: 0.5 * :math.pi(),
+          cx: 0,
+          cy: 0,
+          radius: 0
         )
       }
     else
@@ -250,7 +264,24 @@ defmodule PoetryGame.GameLive do
     # Allow width/height to trigger, allow layout to settle, then apply card
     # transition css
     Process.send_after(self(), :tick, 100)
-    {:noreply, assign(socket, width: width, height: height, settled: "")}
+    radius = width / 3
+    cx = width / 2
+
+    cy =
+      (height - socket.assigns.paper_height + socket.assigns.squish * socket.assigns.radius) / 2
+
+    {
+      :noreply,
+      assign(
+        socket,
+        width: width,
+        height: height,
+        cx: cx,
+        cy: cy,
+        radius: radius,
+        settled: ""
+      )
+    }
   end
 
   @impl true

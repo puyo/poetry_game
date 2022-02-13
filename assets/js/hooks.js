@@ -48,7 +48,8 @@ Hooks.ScrollToBottomOnInput = {
 Hooks.TextAreaSave = {
   mounted() {
     const updateTextAreaValue = () => {
-      this.textArea.value = this.el.innerText;
+      const text = this.el.innerText;
+      this.textArea.value = text;
     };
     const textAreaId = this.el.dataset.textareaId;
     this.textArea = document.querySelector(`#${textAreaId}`);

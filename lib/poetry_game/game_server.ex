@@ -1,7 +1,7 @@
 defmodule PoetryGame.GameServer do
   use GenServer, restart: :transient
 
-  alias PoetryGame.Game
+  alias PoetryGame.{Game, GameSupervisor}
 
   # ----------------------------------------------------------------------
   # client
@@ -77,7 +77,25 @@ defmodule PoetryGame.GameServer do
   end
 
   def handle_call({:remove_member, user_id}, _from, game) do
-    handle_game_change(game, do: Game.remove_member(game, user_id))
+    handle_game_change(game) do
+      case Game.remove_member(game, user_id) do
+        {:ok, new_game} ->
+          if map_size(new_game.members) > 0 do
+            {:ok, new_game}
+          else
+            case GameSupervisor.terminate_child(game.id) do
+              :ok ->
+                {:ok, :terminated}
+
+              err ->
+                err
+            end
+          end
+
+        err ->
+          err
+      end
+    end
   end
 
   def handle_call(:start_game, _from, %{members: members} = game)

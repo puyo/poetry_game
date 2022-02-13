@@ -19,7 +19,9 @@ defmodule PoetryGame.Application do
       # Registry
       {Registry, keys: :unique, name: :game_registry},
       # Manage a stable of games being played
-      {PoetryGame.GameSupervisor, []}
+      {PoetryGame.GameSupervisor, []},
+      # LiveView unmount callback
+      {PoetryGame.LiveMonitor, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

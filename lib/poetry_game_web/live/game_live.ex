@@ -3,22 +3,29 @@ defmodule PoetryGame.GameLive do
     container: {:div, class: "game-live h-full flex bg-red-800 text-white"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
-  alias PoetryGame.{Game, GameServer, GameSupervisor}
+  alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
+  alias PoetryGameWeb.Presence
 
-  def render(assigns) do
-    cx = assigns.width / 2
-    cy = assigns.height / 3
+  @impl true
+  def render(%{width: width, height: height, game: game, user_id: user_id} = assigns)
+      when width > 0 and height > 0 do
+    cx = width / 2
+    cy = height / 3
     squish = 0.25
-    radius = assigns.width / 3
+    radius = width / 3
     angle_offset = 0.5 * :math.pi()
-    game_finished = Game.finished?(assigns.game)
+    game_started = Game.started?(game)
+    game_finished = Game.finished?(game)
+
+    user_seat_index = Game.user_seat_index(game, user_id) || 0
+    nseats = length(assigns.game.seats)
+
+    settled = assigns.settled
 
     ~H"""
     <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@game_id}", session: %{"topic" => @game_id}) %>
-    <div id={"game_board_#{@game_id}"} class="grow" phx-hook="GameSize">
-      <%= if Game.started?(@game) do %>
-        <% nseats = length(@game.seats) %>
-        <% user_seat_index = Game.user_seat_index(@game, @user_id) %>
+    <div id={"game_#{@game_id}"} class={"game grow #{settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+      <%= if game_started do %>
 
         <ul class="hidden">
           <li>User ID: <%= String.slice(@user_id, 0..3) %></li>
@@ -32,7 +39,7 @@ defmodule PoetryGame.GameLive do
           <% seatx = cx + radius * :math.cos(angle_offset + seat_angle) %>
           <% seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle) %>
 
-          <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"}>
+          <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
             <ul class="hidden">
               <li>Seat <%= seat_i %></li>
               <li>npapers <%= length(seat.papers) %></li>
@@ -41,7 +48,7 @@ defmodule PoetryGame.GameLive do
             <%= if user do %>
               <span class="user-name" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
             <% else %>
-              <span class="user-name">(VACANT)</span>
+              <span class="user-name text-black">(VACANT)</span>
             <% end %>
           </div>
         <% end %>
@@ -59,9 +66,11 @@ defmodule PoetryGame.GameLive do
           <% visible = game_finished || paper_i == 0 && user_seat_index == seat_i %>
 
           <div
-              class="paper"
-              id={"paper-#{paper.id}"}
-              style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}  data-width={"#{@width}"}>
+            class="paper"
+            id={"paper-#{paper.id}"}
+            style={"top: #{papery - offset}px; left: #{paperx + offset}px; z-index: #{paperz - offset};"}
+            data-width={"#{@width}"}
+            data-height={"#{@height}"}>
 
             <p class="hidden text-slate-400 text-xs mb-4"><%= String.slice(paper.id, 0..5) %> P(<%= paper_i %>) S(<%= seat_i %>)</p>
             <%= if visible do %>
@@ -69,17 +78,22 @@ defmodule PoetryGame.GameLive do
             <% end %>
           </div>
         <% end %>
-
-      <% else %>
-        NOT STARTED
-
-      CAN START =
-      <%= Game.can_start?(@game) %>
       <% end %>
     </div>
     <div class="chat w-[20em]" style="z-index: 1000;">
       <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => @game_id}) %>
     </div>
+    """
+  end
+
+  def render(%{width: width, height: height} = assigns) do
+    ~H"""
+    <div class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"} />
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
     """
   end
 
@@ -126,7 +140,7 @@ defmodule PoetryGame.GameLive do
               <textarea name="poem" rows="5" placeholder="Write a poem using the word and question above"
                 class="focus:border-none outline-none border-none"
               />
-              <button type="submit" 
+              <button type="submit"
                   class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200">
                 Save
               </button>
@@ -138,6 +152,7 @@ defmodule PoetryGame.GameLive do
     """
   end
 
+  @impl true
   def mount(
         _params,
         %{
@@ -150,26 +165,36 @@ defmodule PoetryGame.GameLive do
       ) do
     user = %{id: user_id, name: user_name, color: user_color}
 
-    with {:ok, game} <- setup_live_view_process(game_id, user) do
-      {:ok,
-       assign(
-         socket,
-         game: game,
-         game_id: game_id,
-         user_id: user_id,
-         user_name: user_name,
-         rotate: 0.0,
-         width: 0,
-         height: 0
-       )}
+    with true <- connected?(socket),
+         {:ok, pid} <- ensure_game_process_exists(game_id),
+         :ok <- subscribe_to_updates(game_id, user),
+         {:ok, game} <- ensure_player_joins(game_id, user),
+         :ok <- monitor_live_view_process(game_id, user) do
+      # Allow width/height to trigger, allow layout to settle, then apply card
+      # transition css
+      Process.send_after(self(), :tick, 100)
+
+      {
+        :ok,
+        assign(
+          socket,
+          game: game,
+          game_id: game_id,
+          user_id: user_id,
+          user_name: user_name,
+          rotate: 0.0,
+          width: 0,
+          height: 0,
+          settled: ""
+        )
+      }
+    else
+      _ -> {:ok, socket}
     end
   end
 
-  defp setup_live_view_process(game_id, user) do
-    game_id
-    |> ensure_game_process_exists()
-    |> subscribe_to_updates()
-    |> ensure_player_joins(user)
+  def unmount(_reason, %{user: user, game_id: game_id}) do
+    GameServer.remove_member(game_id, user.id)
   end
 
   defp ensure_game_process_exists(game_id) do
@@ -180,9 +205,14 @@ defmodule PoetryGame.GameLive do
     end
   end
 
-  defp subscribe_to_updates({:ok, game_id}) do
-    PoetryGame.PubSub.subscribe_to_game_updates(game_id)
-    game_id
+  defp monitor_live_view_process(game_id, user) do
+    LiveMonitor.monitor(self(), __MODULE__, %{game_id: game_id, user: user})
+  end
+
+  defp subscribe_to_updates(game_id, user) do
+    Presence.track(self(), game_id, user.id, user)
+    PubSub.subscribe_to_game_updates(game_id)
+    :ok
   end
 
   defp ensure_player_joins(game_id, user) do
@@ -195,6 +225,7 @@ defmodule PoetryGame.GameLive do
     end
   end
 
+  @impl true
   def handle_event("submit_value", %{"word" => value}, socket) do
     game_id = socket.assigns.game_id
     user_id = socket.assigns.user_id
@@ -220,7 +251,24 @@ defmodule PoetryGame.GameLive do
     {:noreply, assign(socket, width: width, height: height)}
   end
 
+  @impl true
   def handle_info(%{event: "game_state_update", payload: game}, socket) do
+    IO.inspect(game_live: self(), event: "game_state_update")
     {:noreply, assign(socket, game: game)}
+  end
+
+  # Presence.track callback
+  def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
+    IO.inspect(game_live: self(), joins: map_size(joins), leaves: map_size(leaves))
+
+    {:noreply, socket}
+  end
+
+  def handle_info(_, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(:tick, socket) do
+    {:noreply, assign(socket, settled: "settled")}
   end
 end

@@ -24,6 +24,6 @@ defmodule PoetryGame.PubSub do
 
   @spec topic(String.t()) :: String.t()
   defp topic(game_id) do
-    "game:#{game_id}"
+    game_id
   end
 end

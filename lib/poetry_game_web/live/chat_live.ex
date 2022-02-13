@@ -61,7 +61,7 @@ defmodule PoetryGame.ChatLive do
         socket
       ) do
     Endpoint.subscribe(topic)
-    Presence.track(self(), topic, user_id, %{name: user_name, color: user_color})
+    Presence.track(self(), topic, user_id, %{id: user_id, name: user_name, color: user_color})
 
     {
       :ok,
@@ -98,10 +98,10 @@ defmodule PoetryGame.ChatLive do
   end
 
   def handle_info(
-        %{event: "presence_diff", payload: payload},
+        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
         %{assigns: %{topic: topic}} = socket
       ) do
-    # IO.inspect(presence_diff: 1, payload: payload, users: users(topic))
+    IO.inspect(chat_live: self(), joins: map_size(joins), leaves: map_size(leaves))
 
     {
       :noreply,
@@ -112,12 +112,7 @@ defmodule PoetryGame.ChatLive do
     }
   end
 
-  def handle_info(
-        %{event: "chat_message", message: message},
-        %{assigns: %{topic: topic}} = socket
-      ) do
-    # IO.inspect(message_received: message, recipient: self())
-
+  def handle_info(%{event: "chat_message", message: message}, socket) do
     {
       :noreply,
       assign(
@@ -125,6 +120,11 @@ defmodule PoetryGame.ChatLive do
         messages: [message | socket.assigns.messages]
       )
     }
+  end
+
+  def handle_info(%{event: event}, socket) do
+    IO.inspect(chat_live: self(), event: event)
+    {:noreply, socket}
   end
 
   defp users(topic) do

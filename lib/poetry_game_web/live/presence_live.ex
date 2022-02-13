@@ -6,7 +6,7 @@ defmodule PoetryGame.PresenceLive do
 
   use PoetryGameWeb, :live_view
 
-  alias PoetryGameWeb.{Endpoint, Presence}
+  alias PoetryGameWeb.Endpoint
 
   def render(assigns) do
     ~H"""

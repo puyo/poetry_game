@@ -17,6 +17,8 @@ defmodule PoetryGame.GameSupervisor do
   def terminate_child(game_id) do
     with [{child_pid, _}] <- Registry.lookup(:game_registry, game_id) do
       DynamicSupervisor.terminate_child(__MODULE__, child_pid)
+    else
+      [] -> {:error, :not_found, game_id}
     end
   end
 

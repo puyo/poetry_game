@@ -67,6 +67,10 @@
   width: 100%;
 }
 
+.game.settled .paper {
+  transition: all 1s;
+}
+
 .paper {
   position: absolute;
   background-color: white;
@@ -79,5 +83,4 @@
   height: 300px;
   font-size: 10pt;
   transform: translate(-50%, 0);
-  transition: all 1s;
 }

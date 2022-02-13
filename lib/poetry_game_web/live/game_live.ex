@@ -4,7 +4,6 @@ defmodule PoetryGame.GameLive do
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
-  alias PoetryGameWeb.Presence
 
   @impl true
   def render(%{width: width, height: height, game: game, user_id: user_id} = assigns)
@@ -21,6 +20,7 @@ defmodule PoetryGame.GameLive do
       )
 
     papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
+    chat_topic = "chat:#{game.id}"
 
     ~H"""
     <div id={"game_#{@game_id}"} class={"game grow #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
@@ -36,7 +36,7 @@ defmodule PoetryGame.GameLive do
       <% end %>
     </div>
     <div class="chat w-[20em]" style="z-index: 1000;">
-      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => @game_id}) %>
+      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => chat_topic}) %>
     </div>
     """
   end
@@ -47,10 +47,7 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  def render(assigns) do
-    ~H"""
-    """
-  end
+  def render(assigns), do: ~H""
 
   defp render_seat(seat, seat_i, assigns) do
     %{
@@ -259,7 +256,6 @@ defmodule PoetryGame.GameLive do
   end
 
   defp subscribe_to_updates(game_id, user) do
-    Presence.track(self(), game_id, user.id, user)
     PubSub.subscribe_to_game_updates(game_id)
     :ok
   end
@@ -275,23 +271,29 @@ defmodule PoetryGame.GameLive do
   end
 
   @impl true
-  def handle_event("submit_value", %{"word" => value}, socket) do
-    game_id = socket.assigns.game_id
-    user_id = socket.assigns.user_id
+  def handle_event(
+        "submit_value",
+        %{"word" => value},
+        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+      ) do
     GameServer.set_word(game_id, user_id, value)
     {:noreply, socket}
   end
 
-  def handle_event("submit_value", %{"question" => value}, socket) do
-    game_id = socket.assigns.game_id
-    user_id = socket.assigns.user_id
+  def handle_event(
+        "submit_value",
+        %{"question" => value},
+        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+      ) do
     GameServer.set_question(game_id, user_id, value)
     {:noreply, socket}
   end
 
-  def handle_event("submit_value", %{"poem" => value}, socket) do
-    game_id = socket.assigns.game_id
-    user_id = socket.assigns.user_id
+  def handle_event(
+        "submit_value",
+        %{"poem" => value},
+        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+      ) do
     GameServer.set_poem(game_id, user_id, value)
     {:noreply, socket}
   end
@@ -299,7 +301,7 @@ defmodule PoetryGame.GameLive do
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
     # Allow width/height to trigger, allow layout to settle, then apply card
     # transition css
-    Process.send_after(self(), :tick, 1_000)
+    Process.send_after(self(), :settle, 1_000)
     radius = width / 3
     cx = width / 2
     cy = height / 2
@@ -319,23 +321,12 @@ defmodule PoetryGame.GameLive do
   end
 
   @impl true
+  # GameServer pubsub events (broadcast_game_update!)
   def handle_info(%{event: "game_state_update", payload: game}, socket) do
-    IO.inspect(game_live: self(), event: "game_state_update")
     {:noreply, assign(socket, game: game)}
   end
 
-  # Presence.track callback
-  def handle_info(%{event: "presence_diff", payload: %{joins: joins, leaves: leaves}}, socket) do
-    IO.inspect(game_live: self(), joins: map_size(joins), leaves: map_size(leaves))
-
-    {:noreply, socket}
-  end
-
-  def handle_info(:tick, socket) do
+  def handle_info(:settle, socket) do
     {:noreply, assign(socket, settled: "settled")}
-  end
-
-  def handle_info(_, socket) do
-    {:noreply, socket}
   end
 end

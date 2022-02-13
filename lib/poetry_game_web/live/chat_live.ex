@@ -101,30 +101,11 @@ defmodule PoetryGame.ChatLive do
         %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
         %{assigns: %{topic: topic}} = socket
       ) do
-    IO.inspect(chat_live: self(), joins: map_size(joins), leaves: map_size(leaves))
-
-    {
-      :noreply,
-      assign(
-        socket,
-        users: users(topic)
-      )
-    }
+    {:noreply, assign(socket, users: users(topic))}
   end
 
   def handle_info(%{event: "chat_message", message: message}, socket) do
-    {
-      :noreply,
-      assign(
-        socket,
-        messages: [message | socket.assigns.messages]
-      )
-    }
-  end
-
-  def handle_info(%{event: event}, socket) do
-    IO.inspect(chat_live: self(), event: event)
-    {:noreply, socket}
+    {:noreply, assign(socket, messages: [message | socket.assigns.messages])}
   end
 
   defp users(topic) do

@@ -25,18 +25,11 @@ defmodule PoetryGame.Game do
 
     seats =
       players
-      |> Enum.map(fn _ ->
-        %{papers: [initial_paper()]}
+      |> Enum.map(fn {{id, _}, _i} ->
+        %{member_id: id, papers: [initial_paper()]}
       end)
 
-    members =
-      players
-      |> Enum.map(fn {{user_id, member}, index} ->
-        {user_id, Map.put(member, :seat_index, index)}
-      end)
-      |> Enum.into(%{})
-
-    {:ok, %{game | seats: seats, members: members}}
+    {:ok, %{game | seats: seats}}
   end
 
   def started?(game) do
@@ -62,6 +55,7 @@ defmodule PoetryGame.Game do
     Enum.find_index(seat.papers, fn p -> p.id == paper_id end)
   end
 
+  @doc "Given a paper_id, find which seat is it at"
   def paper_seat_index(game, paper_id) do
     Enum.find_index(game.seats, fn seat ->
       Enum.find(seat.papers, fn p -> p.id == paper_id end)
@@ -102,10 +96,11 @@ defmodule PoetryGame.Game do
     set_value(game, user_id, :poem, poem)
   end
 
-  def player_list(%{members: members}) do
-    members
-    |> Map.values()
-    |> Enum.filter(fn m -> Map.has_key?(m, :seat_index) end)
+  def player_list(game) do
+    game.seats
+    |> Enum.map(fn seat ->
+      Map.get(game.members, seat && seat.member_id)
+    end)
   end
 
   def paper_list(game) do
@@ -114,13 +109,12 @@ defmodule PoetryGame.Game do
   end
 
   def user_at_seat(game, seat_index) do
-    game.members
-    |> Map.values()
-    |> Enum.find(fn m -> m.seat_index == seat_index end)
+    seat = Enum.at(game.seats, seat_index)
+    Map.get(game.members, seat && seat.member_id)
   end
 
   def user_seat_index(game, user_id) do
-    get_in(game.members, [user_id, :seat_index])
+    Enum.find_index(game.seats, fn seat -> seat.member_id == user_id end)
   end
 
   defp initial_paper() do

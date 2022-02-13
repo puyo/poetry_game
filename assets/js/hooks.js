@@ -31,7 +31,7 @@ Hooks.GameSize = {
 
 Hooks.ScrollToBottomOnInput = {
   mounted() {
-    const scrollToBottom = (_e) => {
+    const scrollToBottom = () => {
       this.el.scrollTop = this.el.scrollHeight - this.el.clientHeight;
     };
     const config = { childList: true };
@@ -42,6 +42,17 @@ Hooks.ScrollToBottomOnInput = {
   },
   unmounted() {
     this.resizeObserver.unobserve(this.el);
+  },
+};
+
+Hooks.TextAreaSave = {
+  mounted() {
+    const updateTextAreaValue = () => {
+      this.textArea.value = this.el.innerText;
+    };
+    const textAreaId = this.el.dataset.textareaId;
+    this.textArea = document.querySelector(`#${textAreaId}`);
+    this.el.addEventListener("input", updateTextAreaValue);
   },
 };
 

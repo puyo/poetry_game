@@ -9,10 +9,11 @@ defmodule PoetryGame.GameLive do
   @impl true
   def render(%{width: width, height: height, game: game, user_id: user_id} = assigns)
       when width > 0 and height > 0 do
-    cx = width / 2
-    cy = height / 3
+    paper_height = 400
     squish = 0.25
     radius = width / 3
+    cx = width / 2
+    cy = (height - paper_height + squish * radius) / 2
     angle_offset = 0.5 * :math.pi()
     game_started = Game.started?(game)
     game_finished = Game.finished?(game)
@@ -84,9 +85,9 @@ defmodule PoetryGame.GameLive do
     """
   end
 
-  def render(%{width: width, height: height} = assigns) do
+  def render(%{game: game, width: width, height: height} = assigns) do
     ~H"""
-    <div class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"} />
+    <div id={"game_#{@game_id}"} class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"} />
     """
   end
 
@@ -97,56 +98,60 @@ defmodule PoetryGame.GameLive do
 
   defp render_paper(paper, assigns, game_finished) do
     ~H"""
-    <div id={"paper-content-#{paper.id}"}>
-      <form action="#" phx-submit="submit_value">
+    <form action="#" phx-submit="submit_value">
+      <%= if paper.word do %>
+        <section class="word">
+          <span class="label">Word: </span><span class="value"><%= paper.word %></span>
+        </section>
+      <% else %>
+        <section class="word">
+          <input type="text" name="word" placeholder="Enter a word" class="outline-none" />
+        </section>
+      <% end %>
+
+      <%= if paper.question do %>
+        <section class="question">
+          <span class="label">Question: </span><span class="value"><%= paper.question %></span>
+        </section>
+      <% else %>
         <%= if paper.word do %>
-          <div class="word">
-            Word: <%= paper.word %>
-          </div>
-        <% else %>
-          <div class="word">
-            <input type="text" name="word" placeholder="Enter a word"
-              class="focus:border-none outline-none border-none" />
-          </div>
+          <section class="question">
+            <input type="text" name="question" placeholder="Enter a question" class="outline-none" />
+          </section>
         <% end %>
+      <% end %>
 
-        <%= if paper.question do %>
-          <div class="question">
-            Question: <%= paper.question %>
-          </div>
-        <% else %>
-          <%= if paper.word do %>
-            <div class="question">
-              <input type="text" name="question" placeholder="Enter a question"
-                class="focus:border-none outline-none border-none" />
-            </div>
-          <% end %>
-        <% end %>
-
-        <%= if paper.poem do %>
+      <%= if paper.poem do %>
+        <section class="poem">
           <div class="poem">
             <%= for line <- String.split(paper.poem || "", "\n") do %>
               <div class="line"><%= line %></div>
             <% end %>
           </div>
-          <%= if !game_finished do %>
-            <p class="mt-4 text-slate-500">Waiting on other players...</p>
-          <% end %>
-        <% else %>
-          <%= if paper.word && paper.question do %>
-            <div class="poem">
-              <textarea name="poem" rows="5" placeholder="Write a poem using the word and question above"
-                class="focus:border-none outline-none border-none"
-              />
-              <button type="submit"
-                  class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200">
-                Save
-              </button>
-            </div>
-          <% end %>
+        </section>
+        <%= if !game_finished do %>
+          <section class="hint text-slate-500 text-sm">
+            <p>Waiting on other players...</p>
+          </section>
         <% end %>
-      </form>
-    </div>
+      <% else %>
+        <%= if paper.word && paper.question do %>
+          <section class="poem">
+            <div
+              id={"poem_input-#{@game_id}"}
+              class="input outline-none"
+              contenteditable
+              data-placeholder="Write a poem using the word and question above" phx-hook="TextAreaSave" data-textarea-id={"poem_text_area-#{@game_id}"} />
+            <textarea name="poem" class="hidden" id={"poem_text_area-#{@game_id}"}></textarea>
+            <button
+              class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200"
+              >
+              Save
+            </button>
+          </section>
+        <% end %>
+      <% end %>
+    </form>
     """
   end
 
@@ -168,10 +173,6 @@ defmodule PoetryGame.GameLive do
          :ok <- subscribe_to_updates(game_id, user),
          {:ok, game} <- ensure_player_joins(game_id, user),
          :ok <- monitor_live_view_process(game_id, user) do
-      # Allow width/height to trigger, allow layout to settle, then apply card
-      # transition css
-      Process.send_after(self(), :tick, 100)
-
       {
         :ok,
         assign(
@@ -246,7 +247,10 @@ defmodule PoetryGame.GameLive do
   end
 
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
-    {:noreply, assign(socket, width: width, height: height)}
+    # Allow width/height to trigger, allow layout to settle, then apply card
+    # transition css
+    Process.send_after(self(), :tick, 100)
+    {:noreply, assign(socket, width: width, height: height, settled: "")}
   end
 
   @impl true

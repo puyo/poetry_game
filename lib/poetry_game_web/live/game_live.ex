@@ -20,11 +20,9 @@ defmodule PoetryGame.GameLive do
     user_seat_index = Game.user_seat_index(game, user_id) || 0
     nseats = length(assigns.game.seats)
 
-    settled = assigns.settled
-
     ~H"""
     <%= live_render(@socket, PoetryGame.PresenceLive, id: "presence-#{@game_id}", session: %{"topic" => @game_id}) %>
-    <div id={"game_#{@game_id}"} class={"game grow #{settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div id={"game_#{@game_id}"} class={"game grow #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
       <%= if game_started do %>
 
         <ul class="hidden">
@@ -264,11 +262,11 @@ defmodule PoetryGame.GameLive do
     {:noreply, socket}
   end
 
-  def handle_info(_, socket) do
-    {:noreply, socket}
-  end
-
   def handle_info(:tick, socket) do
     {:noreply, assign(socket, settled: "settled")}
+  end
+
+  def handle_info(_, socket) do
+    {:noreply, socket}
   end
 end

@@ -3,6 +3,8 @@ defmodule PoetryGame.GameServer do
 
   alias PoetryGame.{Game, GameSupervisor}
 
+  @terminate_timeout_ms 60_000
+
   # ----------------------------------------------------------------------
   # client
 
@@ -83,13 +85,8 @@ defmodule PoetryGame.GameServer do
           if map_size(new_game.members) > 0 do
             {:ok, new_game}
           else
-            case GameSupervisor.terminate_child(game.id) do
-              :ok ->
-                {:ok, :terminated}
-
-              err ->
-                err
-            end
+            Process.send_after(self(), :terminate, @terminate_timeout_ms)
+            {:ok, new_game}
           end
 
         err ->
@@ -131,5 +128,14 @@ defmodule PoetryGame.GameServer do
 
   def handle_call(:paper_list, _from, game) do
     {:reply, {:ok, Game.paper_list(game)}, game}
+  end
+
+  def handle_info(:terminate, game) do
+    if map_size(game.members) == 0 do
+      IO.puts("Game timed out, terminating: #{game.id}")
+      GameSupervisor.terminate_child(game.id)
+    end
+
+    {:noreply, game}
   end
 end

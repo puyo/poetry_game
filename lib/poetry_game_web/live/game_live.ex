@@ -20,22 +20,19 @@ defmodule PoetryGame.GameLive do
         }
       )
 
+    papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
+
     ~H"""
     <div id={"game_#{@game_id}"} class={"game grow #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
       <%= if @game_started do %>
-
         <div class="board">
-
           <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
             <%= render_seat(seat, seat_i, assigns) %>
           <% end %>
-
-          <%= for paper <- Game.paper_list(@game) |> Enum.sort_by(fn p -> p.id end) do %>
+          <%= for paper <- papers do %>
             <%= render_paper(paper, assigns) %>
           <% end %>
-
         </div>
-
       <% end %>
     </div>
     <div class="chat w-[20em]" style="z-index: 1000;">
@@ -56,12 +53,20 @@ defmodule PoetryGame.GameLive do
   end
 
   defp render_seat(seat, seat_i, assigns) do
-    seat_rotation_i = rem(seat_i - assigns.user_seat_index + assigns.nseats, assigns.nseats)
-    seat_angle = 2.0 * :math.pi() * seat_rotation_i / assigns.nseats
-    seatx = assigns.cx + assigns.radius * :math.cos(assigns.angle_offset + seat_angle)
+    %{
+      cx: cx,
+      cy: cy,
+      nseats: nseats,
+      squish: squish,
+      user_seat_index: user_seat_index,
+      radius: radius,
+      angle_offset: angle_offset
+    } = assigns
 
-    seaty =
-      assigns.cy + assigns.squish * assigns.radius * :math.sin(assigns.angle_offset + seat_angle)
+    seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats)
+    seat_angle = 2.0 * :math.pi() * seat_rotation_i / nseats
+    seatx = cx + radius * :math.cos(angle_offset + seat_angle)
+    seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle)
 
     ~H"""
     <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
@@ -76,25 +81,56 @@ defmodule PoetryGame.GameLive do
   end
 
   defp render_paper(paper, assigns) do
-    paper_i = Game.paper_index_within_seat(assigns.game, paper.id)
-    seat_i = Game.paper_seat_index(assigns.game, paper.id)
-    seat_rotation_i = rem(seat_i - assigns.user_seat_index + assigns.nseats, assigns.nseats)
-    paper_angle = assigns.rotate + 2.0 * :math.pi() * seat_rotation_i / assigns.nseats
+    %{
+      cx: cx,
+      cy: cy,
+      nseats: nseats,
+      squish: squish,
+      user_seat_index: user_seat_index,
+      radius: radius,
+      angle_offset: angle_offset,
+      game: game,
+      rotate: rotate,
+      game_finished: game_finished,
+      width: width,
+      height: height
+    } = assigns
+
+    paper_i = Game.paper_index_within_seat(game, paper.id)
+    seat_i = Game.paper_seat_index(game, paper.id)
+    seat_rotation_i = rem(seat_i - user_seat_index + nseats, nseats)
+    paper_angle = rotate + 2.0 * :math.pi() * seat_rotation_i / nseats
     offset = paper_i * 10
-    paperx = assigns.cx + assigns.radius * :math.cos(assigns.angle_offset + paper_angle) + offset
+
+    own_paper = paper_i == 0 && user_seat_index == seat_i
+    poetry_time = own_paper && paper.word && paper.question && !paper.poem
+
+    paperx =
+      if poetry_time do
+        cx
+      else
+        cx + radius * :math.cos(angle_offset + paper_angle) + offset
+      end
 
     papery =
-      assigns.cy + assigns.squish * assigns.radius * :math.sin(assigns.angle_offset + paper_angle) -
-        offset
+      if poetry_time do
+        cy
+      else
+        cy + squish * radius * :math.sin(angle_offset + paper_angle) -
+          offset
+      end
 
     paperz = trunc(100 * (1 + :math.cos(paper_angle))) - offset
-    visible = assigns.game_finished || (paper_i == 0 && assigns.user_seat_index == seat_i)
+    visible = game_finished || own_paper
+
+    max_width = width
+    max_height = height - papery / 2
 
     ~H"""
     <div
       class="paper"
       id={"paper-#{paper.id}"}
-      style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz}; max-width: #{0.8 * @width}px; max-height: #{0.8 * @height}px;"}
+      style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz}; max-width: #{max_width}px; max-height: #{max_height}px;"}
       data-width={"#{@width}"}
       data-height={"#{@height}"}>
 
@@ -263,12 +299,10 @@ defmodule PoetryGame.GameLive do
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
     # Allow width/height to trigger, allow layout to settle, then apply card
     # transition css
-    Process.send_after(self(), :tick, 100)
+    Process.send_after(self(), :tick, 1_000)
     radius = width / 3
     cx = width / 2
-
-    cy =
-      (height - socket.assigns.paper_height + socket.assigns.squish * socket.assigns.radius) / 2
+    cy = height / 2
 
     {
       :noreply,

@@ -1,1 +1,5 @@
-<%= live_render(@conn, PoetryGame.GameLive, session: %{"id" => @id}) %>
+<%= if Plug.Conn.get_session(@conn, :user) do %>
+  <%= live_render(@conn, PoetryGame.GameLive, session: %{"id" => @id}) %>
+<% else %>
+  <%= live_render(@conn, PoetryGame.UserLive) %>
+<% end %>

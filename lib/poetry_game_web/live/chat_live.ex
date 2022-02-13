@@ -20,8 +20,7 @@ defmodule PoetryGame.ChatLive do
             style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"
             phx-hook="ScrollToBottomOnInput">
           <%= for message <- Enum.reverse(@messages) do %>
-            <% name = message["user_name"] %>
-            <% color = message["color"] %>
+            <% name = message["user_name"] %> <% color = message["color"] %>
             <% content = message["content"] %>
             <p><span class="font-semibold" style={"color: #{user_hsl(color)}"}><%= name %></span>&nbsp;:&nbsp;<%= content %></p>
           <% end %>
@@ -62,6 +61,8 @@ defmodule PoetryGame.ChatLive do
         socket
       ) do
     Endpoint.subscribe(topic)
+    IO.inspect("SUBSCRIBED TO USER CHANGES user:#{user_id}")
+    Endpoint.subscribe("user:#{user_id}")
     Presence.track(self(), topic, user_id, %{id: user_id, name: user_name, color: user_color})
 
     {
@@ -98,6 +99,11 @@ defmodule PoetryGame.ChatLive do
     }
   end
 
+  def handle_event("update-user", %{"user" => %{"color" => color, "name" => name}}, socket) do
+    IO.inspect(chat_live: self(), color: color, name: name)
+    {:noreply, socket}
+  end
+
   def handle_info(
         %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
         %{assigns: %{topic: topic}} = socket
@@ -107,6 +113,18 @@ defmodule PoetryGame.ChatLive do
 
   def handle_info(%{event: "chat_message", message: message}, socket) do
     {:noreply, assign(socket, messages: [message | socket.assigns.messages])}
+  end
+
+  def handle_info(%{event: "update-user", payload: user}, socket) do
+    Presence.update(self(), socket.assigns.topic, user.id, user)
+
+    {:noreply,
+     assign(socket,
+       user_id: user.id,
+       user_name: user.name,
+       user_color: user.color,
+       users: Map.merge(socket.assigns.users, %{user.id => user})
+     )}
   end
 
   defp users(topic) do

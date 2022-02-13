@@ -13,6 +13,7 @@ defmodule PoetryGameWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
   end
 
   scope "/", PoetryGameWeb do
@@ -22,10 +23,11 @@ defmodule PoetryGameWeb.Router do
     resources "/games", GameController, only: [:index, :new, :create, :show]
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", PoetryGameWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", PoetryGameWeb do
+    pipe_through :api
+
+    post "/session", SessionController, :set
+  end
 
   # Enables LiveDashboard only for development
   #

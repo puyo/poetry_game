@@ -1,4 +1,4 @@
-Hooks = {};
+const Hooks = {};
 
 Hooks.GameSize = {
   mounted() {
@@ -57,6 +57,24 @@ Hooks.TextAreaSave = {
     const textAreaId = this.el.dataset.textareaId;
     this.textArea = document.querySelector(`#${textAreaId}`);
     this.el.addEventListener("input", updateTextAreaValue);
+  },
+};
+
+Hooks.SaveSessionOnSubmit = {
+  mounted() {
+    this.el.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      fetch(`/api/session`, { method: "post", body: data }).then(() => {
+        const obj = Object.fromEntries(data.entries());
+        this.pushEvent("update-user", {
+          user: {
+            name: data.get("user[name]"),
+            color: data.get("user[color]"),
+          },
+        });
+      });
+    });
   },
 };
 

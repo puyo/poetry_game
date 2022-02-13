@@ -1,6 +1,6 @@
 defmodule PoetryGame.GameLive do
   use Phoenix.LiveView,
-    container: {:div, class: "game-live h-full flex bg-red-800 text-white"},
+    container: {:div, class: "game-live h-full bg-red-800 text-white"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
@@ -23,7 +23,7 @@ defmodule PoetryGame.GameLive do
     chat_topic = "chat:#{game.id}"
 
     ~H"""
-    <div id={"game_#{@game_id}"} class={"game grow #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div id={"game_#{@game_id}"} class={"game #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
       <%= if @game_started do %>
         <div class="board">
           <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
@@ -34,9 +34,6 @@ defmodule PoetryGame.GameLive do
           <% end %>
         </div>
       <% end %>
-    </div>
-    <div class="chat w-[20em]" style="z-index: 1000;">
-      <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => chat_topic}) %>
     </div>
     """
   end

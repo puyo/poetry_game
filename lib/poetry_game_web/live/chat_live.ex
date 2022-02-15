@@ -35,7 +35,7 @@ defmodule PoetryGame.Live.ChatLive do
           <input type="hidden" name="message[color]" value={@user.color}>
           <div class="input-group flex items-center justify-center">
             <div class="grow">
-              <input class="w-full outline-none p-2" type="text" name="message[content]" value={@message} />
+              <input class="w-full outline-none p-2 shadow-inner bg-stone-50" type="text" name="message[content]" value={@message} />
             </div>
             <div class="shrink">
               <button class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200" type="submit">Send</button>

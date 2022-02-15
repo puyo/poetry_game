@@ -26,10 +26,10 @@ defmodule PoetryGame.Live.UserLive do
           <p class="mb-4 text-sm text-slate-500">You will need to set your name before you can join a game.</p>
         <% end %>
 
-        <div class="mb-4 flex-inline">
-          <label for="user[name]" class="shrink font-bold text-gray-700">Name:&nbsp;</label>
+        <div class="mb-4">
+          <label for="user[name]" class="font-bold text-gray-700">Name</label>
           <input type="text" name="user[name]" id="first-name" autocomplete="given-name" maxlength={max_name_length}
-            class="text-xl py-2 font-semibold focus:ring-indigo-500 focus:border-indigo-500 w-full grow"
+            class="text-xl p-2 font-semibold shadow-inner focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-md border border-stone-300"
             style={user_hsl(@user.color)}
             value={@user.name}>
         </div>

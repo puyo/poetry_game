@@ -9,7 +9,7 @@ defmodule PoetryGame.Live.HeaderLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <header class="shrink" style="z-index: 1000;">
+    <header style="z-index: 1000;">
       <div class="bg-white border-b-4 border-black border-solid">
         <div class="container mx-auto">
           <div class="flex justify-between items-center">
@@ -28,9 +28,6 @@ defmodule PoetryGame.Live.HeaderLive do
         </div>
       </div>
     </header>
-    <%= if @show_form do %>
-      <%= live_render(@socket, PoetryGame.Live.UserLive, id: "user-#{@user.id}", session: %{"user" => @user, "game_id" => @game_id}) %>
-    <% end %>
     """
   end
 
@@ -38,39 +35,26 @@ defmodule PoetryGame.Live.HeaderLive do
 
   @impl true
   def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do
-    # updates
-    Endpoint.subscribe("users")
-    # show/hide form
+    # show/hide form, update user
     Endpoint.subscribe("user:#{user.id}")
 
-    {:ok,
-     assign(
-       socket,
-       user: user,
-       game_id: game_id,
-       show_form: false
-     )}
+    {
+      :ok,
+      assign(
+        socket,
+        user: user,
+        game_id: game_id
+      )
+    }
   end
 
   @impl true
   def handle_event("show_form", _, socket) do
-    Endpoint.local_broadcast("user:#{socket.assigns.user.id}", "user_form", %{show: true})
+    Endpoint.local_broadcast("user_form:#{socket.assigns.user.id}", "user_form", %{show: true})
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_info(%{event: "user_form", payload: %{show: show_form}}, socket) do
-    {:noreply, assign(socket, show_form: show_form)}
   end
 
   def handle_info(%{event: "update_user", payload: user}, socket) do
-    socket =
-      if user.id == socket.assigns.user.id do
-        assign(socket, user: user)
-      else
-        socket
-      end
-
-    {:noreply, socket}
+    {:noreply, assign(socket, user: user)}
   end
 end

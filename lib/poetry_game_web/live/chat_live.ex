@@ -56,8 +56,8 @@ defmodule PoetryGame.Live.ChatLive do
     # chat messages
     Endpoint.subscribe(topic)
 
-    # user updates like name/color changes
-    Endpoint.subscribe("users")
+    # all user updates like name/color changes
+    Endpoint.subscribe("user:all")
 
     # user joins/leaves
     Presence.track(self(), topic, user.id, user)

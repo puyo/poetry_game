@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.UserLive do
   use Phoenix.LiveView,
-    container: {:div, class: "user-live h-full flex flex-col"},
+    container: {:div, class: "user-live"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.Endpoint
@@ -8,7 +8,7 @@ defmodule PoetryGame.Live.UserLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="h-full bg-stone-300/75 py-20 absolute inset-0" style="z-index: 10000;">
+    <div class="h-full bg-stone-300/75 py-20 absolute inset-0" style={"z-index: 10000; #{if @show, do: "display: block;", else: "display: none;"}"}>
       <form action="#"
         class="shadow overflow-hidden rounded-lg max-w-sm bg-white p-4 mx-auto"
         phx-change="change"
@@ -50,12 +50,15 @@ defmodule PoetryGame.Live.UserLive do
 
   @impl true
   def mount(_params, %{"user" => user, "game_id" => game_id}, socket) do
+    Endpoint.subscribe("user_form:#{user.id}")
+
     {
       :ok,
       assign(
         socket,
         user: user,
-        game_id: game_id
+        game_id: game_id,
+        show: false
       )
     }
   end
@@ -73,10 +76,24 @@ defmodule PoetryGame.Live.UserLive do
 
   def handle_event("submit", %{"user" => %{"color" => color, "name" => name}}, socket) do
     new_user = Map.merge(socket.assigns.user, %{name: name, color: String.to_integer(color)})
+    Endpoint.local_broadcast("user:all", "update_user", new_user)
+    Endpoint.local_broadcast("user:#{new_user.id}", "update_user", new_user)
+    {:noreply, assign(socket, user: new_user, show: false)}
+  end
 
-    Endpoint.local_broadcast("user:#{new_user.id}", "user_form", %{show: false})
-    Endpoint.local_broadcast("users", "update_user", new_user)
+  @impl true
+  def handle_info(%{event: "update_user", payload: user}, socket) do
+    socket =
+      if user.id == socket.assigns.user.id do
+        assign(socket, user: user)
+      else
+        socket
+      end
 
-    {:noreply, assign(socket, user: new_user)}
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "user_form", payload: %{show: show}}, socket) do
+    {:noreply, assign(socket, show: show)}
   end
 end

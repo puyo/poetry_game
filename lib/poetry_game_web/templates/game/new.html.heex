@@ -1,6 +1,7 @@
 <h1>New Game</h1>
 
-<form action={Routes.game_path(@conn, :create)}>
+<form action={Routes.game_path(@conn, :create)} method="post">
+  <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
   <input type="submit"/>
 </form>
 

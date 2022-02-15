@@ -21,14 +21,13 @@ defmodule PoetryGame.Live.GameLive do
       )
 
     papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
-    chat_topic = "chat:#{game.id}"
 
     ~H"""
-    <div id={"game_#{@game_id}"} class={"game h-full #{@settled}"} phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div id={"game_#{@game_id}"} class={"game h-full #{@settled}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
       <%= if @game_started do %>
         <div class="board">
-          <%= for {seat, seat_i} <- Enum.with_index(@game.seats) do %>
-            <%= render_seat(seat, seat_i, assigns) %>
+          <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
+            <%= render_seat(seat_i, assigns) %>
           <% end %>
           <%= for paper <- papers do %>
             <%= render_paper(paper, assigns) %>
@@ -41,9 +40,9 @@ defmodule PoetryGame.Live.GameLive do
     """
   end
 
-  def render(%{game: game, width: width, height: height} = assigns) do
+  def render(%{game_id: game_id, width: width, height: height} = assigns) do
     ~H"""
-    <div id={"game_#{@game_id}"} class="grow" phx-hook="GameSize" data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div id={"game_#{game_id}"} class="grow" phx-hook="GameSize" data-width={width} data-height={height}>
       NO USER
     </div>
     """
@@ -51,7 +50,7 @@ defmodule PoetryGame.Live.GameLive do
 
   def render(assigns), do: ~H""
 
-  defp render_seat(seat, seat_i, assigns) do
+  defp render_seat(seat_i, assigns) do
     %{
       cx: cx,
       cy: cy,
@@ -199,21 +198,15 @@ defmodule PoetryGame.Live.GameLive do
   end
 
   @impl true
-  def mount(
-        _params,
-        %{
-          "id" => game_id,
-          "user" => user
-        } = session,
-        socket
-      ) do
+  def mount(_params, %{"id" => game_id, "user" => user}, socket) do
     topic = "game:#{game_id}"
+
     # user joins/leaves
     Presence.track(self(), topic, user.id, user)
 
     with true <- connected?(socket),
-         {:ok, pid} <- ensure_game_process_exists(game_id),
-         :ok <- subscribe_to_updates(game_id, user),
+         {:ok, _pid} <- ensure_game_process_exists(game_id),
+         :ok <- subscribe_to_updates(game_id),
          {:ok, game} <- ensure_player_joins(game_id, user),
          :ok <- monitor_live_view_process(game_id, user) do
       {
@@ -257,7 +250,7 @@ defmodule PoetryGame.Live.GameLive do
     LiveMonitor.monitor(self(), __MODULE__, %{game_id: game_id, user: user})
   end
 
-  defp subscribe_to_updates(game_id, user) do
+  defp subscribe_to_updates(game_id) do
     PubSub.subscribe_to_game_updates(game_id)
     :ok
   end
@@ -343,10 +336,7 @@ defmodule PoetryGame.Live.GameLive do
     {:noreply, assign(socket, user: new_user)}
   end
 
-  def handle_info(
-        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves} = payload},
-        socket
-      ) do
+  def handle_info(%{event: "presence_diff", payload: payload}, socket) do
     IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
     {:noreply, assign(socket, users: users)}

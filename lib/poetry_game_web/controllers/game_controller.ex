@@ -11,7 +11,7 @@ defmodule PoetryGameWeb.GameController do
   end
 
   def create(conn, _params) do
-    Routes.game_path(conn, :show, id: Ecto.UUID.generate())
+    redirect(conn, to: Routes.game_path(conn, :show, Ecto.UUID.generate()))
   end
 
   def show(conn, %{"id" => id}) do

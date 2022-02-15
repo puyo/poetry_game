@@ -48,28 +48,6 @@ defmodule PoetryGame.Live.HeaderLive do
   end
 
   @impl true
-  def handle_event("change", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    new_user =
-      Map.merge(
-        socket.assigns.user,
-        %{name: name, color: String.to_integer(color)}
-      )
-
-    {:noreply, assign(socket, user: new_user)}
-  end
-
-  def handle_event("update-user", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    new_user =
-      Map.merge(
-        socket.assigns.user,
-        %{name: name, color: String.to_integer(color)}
-      )
-
-    Endpoint.local_broadcast("user:#{socket.assigns.user.id}", "update-user", new_user)
-
-    {:noreply, assign(socket, user: new_user, show_form: false)}
-  end
-
   def handle_event("show-form", _, socket) do
     {:noreply, assign(socket, show_form: true)}
   end

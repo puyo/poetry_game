@@ -3,7 +3,7 @@ defmodule PoetryGame.Live.UserLive do
     container: {:div, class: "user-live h-full flex flex-col"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
-  alias PoetryGameWeb.Endpoint
+  alias PoetryGameWeb.Presence
   alias PoetryGameWeb.Router.Helpers, as: Routes
 
   def render(assigns) do
@@ -82,7 +82,7 @@ defmodule PoetryGame.Live.UserLive do
         %{name: name, color: String.to_integer(color)}
       )
 
-    Endpoint.local_broadcast("user:#{socket.assigns.user.id}", "update-user", new_user)
+    Presence.update(self(), socket.assigns.user, new_user.id, new_user)
 
     {:noreply, assign(socket, user: new_user)}
   end

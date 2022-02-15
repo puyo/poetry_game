@@ -14,7 +14,7 @@ defmodule PoetryGameWeb.LiveHelpers do
 
       <.modal return_to={Routes.game_index_path(@socket, :index)}>
         <.live_component
-          module={PoetryGameWeb.GameLive.FormComponent}
+          module={PoetryGameWeb.Live.GameLive.FormComponent}
           id={@game.id || :new}
           title={@page_title}
           action={@live_action}

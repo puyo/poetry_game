@@ -1,4 +1,4 @@
-defmodule PoetryGame.UserLive do
+defmodule PoetryGame.Live.UserLive do
   use Phoenix.LiveView,
     container: {:div, class: "user-live h-full flex flex-col"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
@@ -44,10 +44,10 @@ defmodule PoetryGame.UserLive do
     <main class="grow">
       <div class="flex h-full">
         <div class="grow">
-          <%= live_render(@socket, PoetryGame.GameLive, session: %{"id" => @game_id, "user_name" => @user.name, "user_color" => @user.color}, id: @game_id) %>
+          <%= live_render(@socket, PoetryGame.Live.GameLive, session: %{"id" => @game_id, "user_name" => @user.name, "user_color" => @user.color}, id: @game_id) %>
         </div>
         <div class="chat w-[20em]" style="z-index: 1000;">
-          <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
+          <%= live_render(@socket, PoetryGame.Live.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
         </div>
       </div>
     </main>
@@ -105,7 +105,7 @@ defmodule PoetryGame.UserLive do
         <div class="game grow">
         </div>
         <div class="chat shrink w-[20em]" style="z-index: 1000;">
-          <%= live_render(@socket, PoetryGame.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
+          <%= live_render(@socket, PoetryGame.Live.ChatLive, id: "chat-#{@game_id}", session: %{"topic" => "chat:#{@game_id}"}) %>
         </div>
       </div>
     </main>

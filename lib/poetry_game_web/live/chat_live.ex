@@ -28,12 +28,12 @@ defmodule PoetryGame.Live.ChatLive do
       </div>
       <div class="entry-form shrink bg-white">
         <form action="#" phx-submit="submit" autocomplete="off">
-          <input type="hidden" name="message[user_id]" value={@user_id}>
-          <input type="hidden" name="message[user_name]" value={@user_name}>
-          <input type="hidden" name="message[color]" value={@user_color}>
+          <input type="hidden" name="message[user_id]" value={@user.id}>
+          <input type="hidden" name="message[user_name]" value={@user.name}>
+          <input type="hidden" name="message[color]" value={@user.color}>
           <div class="input-group inline-flex items-center justify-center">
             <span class="shrink p-2">
-              <span class="font-semibold" style={"color: #{user_hsl(@user_color)}"}><%= @user_name %></span>&nbsp;:
+              <span class="font-semibold" style={"color: #{user_hsl(@user.color)}"}><%= @user.name %></span>&nbsp;:
             </span>
             <input class="w-full grow outline-none py-2" type="text" name="message[content]" value={@message} />
             <button
@@ -50,28 +50,25 @@ defmodule PoetryGame.Live.ChatLive do
 
   defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
-  def mount(
-        _params,
-        %{
-          "topic" => topic,
-          "user_id" => user_id,
-          "user_name" => user_name,
-          "user_color" => user_color
-        },
-        socket
-      ) do
+  def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do
+    topic = "chat:#{game_id}"
+
+    # chat messages
     Endpoint.subscribe(topic)
-    Endpoint.subscribe("user:#{user_id}")
-    Presence.track(self(), topic, user_id, %{id: user_id, name: user_name, color: user_color})
+
+    # user updates like name/color changes
+    Endpoint.subscribe("users")
+
+    # user joins/leaves
+    Presence.track(self(), topic, user.id, user)
 
     {
       :ok,
       assign(
         socket,
-        user_id: user_id,
-        user_name: user_name,
-        user_color: user_color,
+        user: user,
         topic: topic,
+        game_id: game_id,
         messages: [],
         message: "",
         rerender: false,
@@ -82,10 +79,7 @@ defmodule PoetryGame.Live.ChatLive do
 
   def handle_event("submit", %{"message" => message}, %{assigns: %{topic: topic}} = socket) do
     if String.length(message["content"]) > 0 do
-      Phoenix.PubSub.broadcast(PoetryGame.PubSub, topic, %{
-        event: "chat_message",
-        message: message
-      })
+      Endpoint.broadcast(topic, "chat_message", %{message: message})
     end
 
     {
@@ -98,32 +92,30 @@ defmodule PoetryGame.Live.ChatLive do
     }
   end
 
-  def handle_event("update-user", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    IO.inspect(chat_live: self(), color: color, name: name)
-    {:noreply, socket}
-  end
-
   def handle_info(
-        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves}},
-        %{assigns: %{topic: topic}} = socket
+        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves} = payload},
+        socket
       ) do
-    {:noreply, assign(socket, users: users(topic))}
+    IO.inspect(chat_live: socket.assigns.user.name, presence_diff: payload)
+    users = users(socket.assigns.topic)
+    {:noreply, assign(socket, users: users)}
   end
 
-  def handle_info(%{event: "chat_message", message: message}, socket) do
+  def handle_info(%{event: "chat_message", payload: %{message: message}}, socket) do
     {:noreply, assign(socket, messages: [message | socket.assigns.messages])}
   end
 
-  def handle_info(%{event: "update-user", payload: user}, socket) do
+  def handle_info(%{event: "update_user", payload: user}, socket) do
     Presence.update(self(), socket.assigns.topic, user.id, user)
 
-    {:noreply,
-     assign(socket,
-       user_id: user.id,
-       user_name: user.name,
-       user_color: user.color,
-       users: Map.merge(socket.assigns.users, %{user.id => user})
-     )}
+    new_user =
+      if user.id == socket.assigns.user.id do
+        user
+      else
+        socket.assigns.user
+      end
+
+    {:noreply, assign(socket, user: new_user)}
   end
 
   defp users(topic) do

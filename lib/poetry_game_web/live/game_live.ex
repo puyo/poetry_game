@@ -3,10 +3,11 @@ defmodule PoetryGame.Live.GameLive do
     container: {:div, class: "game-live h-full bg-red-800 text-white"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
+  alias PoetryGameWeb.Presence
   alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
 
   @impl true
-  def render(%{width: width, height: height, game: game, user_id: user_id} = assigns)
+  def render(%{width: width, height: height, game: game, user: user} = assigns)
       when width > 0 and height > 0 do
     assigns =
       Map.merge(
@@ -14,7 +15,7 @@ defmodule PoetryGame.Live.GameLive do
         %{
           game_started: Game.started?(game),
           game_finished: Game.finished?(game),
-          user_seat_index: Game.user_seat_index(game, user_id) || 0,
+          user_seat_index: Game.user_seat_index(game, user.id) || 0,
           nseats: length(game.seats)
         }
       )
@@ -202,13 +203,13 @@ defmodule PoetryGame.Live.GameLive do
         _params,
         %{
           "id" => game_id,
-          "user_id" => user_id,
-          "user_name" => user_name,
-          "user_color" => user_color
+          "user" => user
         } = session,
         socket
       ) do
-    user = %{id: user_id, name: user_name, color: user_color}
+    topic = "game:#{game_id}"
+    # user joins/leaves
+    Presence.track(self(), topic, user.id, user)
 
     with true <- connected?(socket),
          {:ok, pid} <- ensure_game_process_exists(game_id),
@@ -221,8 +222,8 @@ defmodule PoetryGame.Live.GameLive do
           socket,
           game: game,
           game_id: game_id,
-          user_id: user_id,
-          user_name: user_name,
+          topic: topic,
+          user: user,
           rotate: 0.0,
           width: 0,
           height: 0,
@@ -275,27 +276,27 @@ defmodule PoetryGame.Live.GameLive do
   def handle_event(
         "submit_value",
         %{"word" => value},
-        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+        %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_word(game_id, user_id, value)
+    GameServer.set_word(game_id, user.id, value)
     {:noreply, socket}
   end
 
   def handle_event(
         "submit_value",
         %{"question" => value},
-        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+        %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_question(game_id, user_id, value)
+    GameServer.set_question(game_id, user.id, value)
     {:noreply, socket}
   end
 
   def handle_event(
         "submit_value",
         %{"poem" => value},
-        %{assigns: %{game_id: game_id, user_id: user_id}} = socket
+        %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_poem(game_id, user_id, value)
+    GameServer.set_poem(game_id, user.id, value)
     {:noreply, socket}
   end
 
@@ -329,5 +330,33 @@ defmodule PoetryGame.Live.GameLive do
 
   def handle_info(:settle, socket) do
     {:noreply, assign(socket, settled: "settled")}
+  end
+
+  def handle_info(%{event: "update_user", payload: user}, socket) do
+    new_user =
+      if user.id == socket.assigns.user.id do
+        user
+      else
+        socket.assigns.user
+      end
+
+    {:noreply, assign(socket, user: new_user)}
+  end
+
+  def handle_info(
+        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves} = payload},
+        socket
+      ) do
+    IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
+    users = users(socket.assigns.topic)
+    {:noreply, assign(socket, users: users)}
+  end
+
+  defp users(topic) do
+    Presence.list(topic)
+    |> Enum.map(fn {id, %{metas: [%{name: name, color: color} | _others]}} ->
+      {id, %{name: name, color: color}}
+    end)
+    |> Enum.into(%{})
   end
 end

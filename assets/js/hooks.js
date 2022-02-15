@@ -67,7 +67,7 @@ Hooks.SaveSessionOnSubmit = {
       const data = new FormData(e.target);
       fetch(`/api/session`, { method: "post", body: data }).then(() => {
         const obj = Object.fromEntries(data.entries());
-        this.pushEvent("update-user", {
+        this.pushEventTo(".user-live", "submit", {
           user: {
             name: data.get("user[name]"),
             color: data.get("user[color]"),

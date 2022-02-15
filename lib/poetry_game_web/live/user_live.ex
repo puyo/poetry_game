@@ -3,8 +3,7 @@ defmodule PoetryGame.Live.UserLive do
     container: {:div, class: "user-live h-full flex flex-col"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
-  alias PoetryGameWeb.{Endpoint, Presence}
-  alias PoetryGameWeb.Router.Helpers, as: Routes
+  alias PoetryGameWeb.Endpoint
 
   @impl true
   def render(assigns) do
@@ -50,13 +49,15 @@ defmodule PoetryGame.Live.UserLive do
   defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
   @impl true
-  def mount(_params, %{"user" => user, "game_id" => game_id} = session, socket) do
-    {:ok,
-     assign(
-       socket,
-       user: user,
-       game_id: game_id
-     )}
+  def mount(_params, %{"user" => user, "game_id" => game_id}, socket) do
+    {
+      :ok,
+      assign(
+        socket,
+        user: user,
+        game_id: game_id
+      )
+    }
   end
 
   @impl true

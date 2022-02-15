@@ -10,7 +10,7 @@ defmodule PoetryGame.Live.ChatLive do
     <div class="h-full flex flex-col text-black max-w-sm border-l-2 border-stone-300">
       <div class="hidden"><%= @rerender %></div>
       <div class="user-list shrink p-1 bg-stone-100 border-b-4 border-stone-200 border-solid">
-        <%= for {id, user} <- Map.to_list(@users) do %>
+        <%= for {_id, user} <- Map.to_list(@users) do %>
           <span class="font-semibold" style={"color: #{user_hsl(user.color)}"}><%= user.name %></span>
         <% end %>
       </div>
@@ -92,10 +92,7 @@ defmodule PoetryGame.Live.ChatLive do
     }
   end
 
-  def handle_info(
-        %{event: "presence_diff", payload: %{joins: joins, leaves: leaves} = payload},
-        socket
-      ) do
+  def handle_info(%{event: "presence_diff", payload: payload}, socket) do
     IO.inspect(chat_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
     {:noreply, assign(socket, users: users)}

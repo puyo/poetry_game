@@ -19,7 +19,7 @@ defmodule PoetryGame.Live.HeaderLive do
             <a href="#" class="user justify-end p-2 text-xl hover:bg-amber-300 rounded-md" phx-click="show_form">
               <% color = @user.color %>
               <% name = @user.name %>
-              <span class="font-semibold text-black text-xl"
+              <span class="font-semibold text-xl"
                 style={"color: #{user_hsl(color)}"}><%= name %></span>
               <img style="vertical-align: baseline; height: 1em"
                 src={Routes.static_path(@socket, "/images/quill.svg")} alt="Rename" class="inline"/>

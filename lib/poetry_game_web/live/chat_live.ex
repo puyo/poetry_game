@@ -26,14 +26,14 @@ defmodule PoetryGame.Live.ChatLive do
           <% end %>
         </div>
       </div>
-      <div class="entry-form shrink bg-white">
+      <div class="entry-form shrink bg-white text-sm">
         <form action="#" phx-submit="submit" autocomplete="off">
           <input type="hidden" name="message[user_id]" value={@user.id}>
           <input type="hidden" name="message[user_name]" value={@user.name}>
           <input type="hidden" name="message[color]" value={@user.color}>
           <div class="input-group inline-flex items-center justify-center">
-            <span class="shrink p-2">
-              <span class="font-semibold" style={"color: #{user_hsl(@user.color)}"}><%= @user.name %></span>&nbsp;:
+            <span class="shrink p-2 whitespace-nowrap">
+              <span class="font-semibold" style={"color: #{user_hsl(@user.color)}"}><%= @user.name %></span> :
             </span>
             <input class="w-full grow outline-none py-2" type="text" name="message[content]" value={@message} />
             <button

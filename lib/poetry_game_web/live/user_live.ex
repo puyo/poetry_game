@@ -5,8 +5,12 @@ defmodule PoetryGame.Live.UserLive do
 
   alias PoetryGameWeb.Endpoint
 
+  @max_name_length 12
+
   @impl true
   def render(assigns) do
+    max_name_length = @max_name_length
+
     ~H"""
     <div class="h-full bg-stone-300/75 py-20 absolute inset-0" style={"z-index: 10000; #{if @show, do: "display: block;", else: "display: none;"}"}>
       <form action="#"
@@ -22,7 +26,7 @@ defmodule PoetryGame.Live.UserLive do
 
         <div class="mb-4 flex-inline">
           <label for="user[name]" class="shrink font-bold text-gray-700">Name:&nbsp;</label>
-          <input type="text" name="user[name]" id="first-name" autocomplete="given-name"
+          <input type="text" name="user[name]" id="first-name" autocomplete="given-name" maxlength={max_name_length}
             class="text-xl py-2 font-semibold focus:ring-indigo-500 focus:border-indigo-500 w-full grow"
             style={"color: #{user_hsl(@user.color)}"}
             value={@user.name}>
@@ -64,18 +68,13 @@ defmodule PoetryGame.Live.UserLive do
   end
 
   @impl true
-  def handle_event("change", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    new_user =
-      Map.merge(
-        socket.assigns.user,
-        %{name: name, color: String.to_integer(color)}
-      )
-
+  def handle_event("change", input, socket) do
+    new_user = Map.merge(socket.assigns.user, sanitize_input(input))
     {:noreply, assign(socket, user: new_user)}
   end
 
-  def handle_event("submit", %{"user" => %{"color" => color, "name" => name}}, socket) do
-    new_user = Map.merge(socket.assigns.user, %{name: name, color: String.to_integer(color)})
+  def handle_event("submit", input, socket) do
+    new_user = Map.merge(socket.assigns.user, sanitize_input(input))
     Endpoint.local_broadcast("user:all", "update_user", new_user)
     Endpoint.local_broadcast("user:#{new_user.id}", "update_user", new_user)
     {:noreply, assign(socket, user: new_user, show: false)}
@@ -95,5 +94,21 @@ defmodule PoetryGame.Live.UserLive do
 
   def handle_info(%{event: "user_form", payload: %{show: show}}, socket) do
     {:noreply, assign(socket, show: show)}
+  end
+
+  defp sanitize_input(%{"user" => %{"name" => name, "color" => color}}) do
+    %{name: sanitize_name(name), color: sanitize_color(color)}
+  end
+
+  defp sanitize_name(name) do
+    name
+    |> String.trim()
+    |> String.slice(0..@max_name_length)
+  end
+
+  defp sanitize_color(color) do
+    color
+    |> String.to_integer()
+    |> rem(360)
   end
 end

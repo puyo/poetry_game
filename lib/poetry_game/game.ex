@@ -62,11 +62,11 @@ defmodule PoetryGame.Game do
     end)
   end
 
-  def add_member(game, %{id: id, name: name, color: color}) do
+  def add_member(game, %{id: id}) do
     if Map.has_key?(game.members, id) do
       {:ok, game}
     else
-      members = Map.put(game.members, id, %{id: id, name: name, color: color})
+      members = Map.put(game.members, id, %{id: id})
       {:ok, %{game | members: members}}
     end
   end

@@ -1,8 +1,6 @@
 defmodule PoetryGameWeb.GameController do
   use PoetryGameWeb, :controller
 
-  # alias PoetryGame.{Db, Games}
-
   def index(conn, _params) do
     games = []
     render(conn, "index.html", games: games)
@@ -17,7 +15,12 @@ defmodule PoetryGameWeb.GameController do
   end
 
   def show(conn, %{"id" => id}) do
-    # game = Games.get_game!(id)
-    render(conn, "show.html", id: id)
+    user = %{
+      id: get_session(conn, :user_id),
+      color: get_session(conn, :user_color),
+      name: get_session(conn, :user_name)
+    }
+
+    render(conn, "show.html", id: id, user: user)
   end
 end

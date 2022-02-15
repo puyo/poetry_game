@@ -1,1 +1,9 @@
-<%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"game_id" => @id}) %>
+<%= live_render(@conn, PoetryGame.Live.HeaderLive, session: %{"game_id" => @id, "user" => @user}) %>
+<div class="flex h-full">
+  <div class="game grow">
+    <%= live_render(@conn, PoetryGame.Live.GameLive, session: %{"id" => @id, "user" => @user}, id: @id) %>
+  </div>
+  <div class="chat shrink w-[20em]" style="z-index: 1000;">
+    <%= live_render(@conn, PoetryGame.Live.ChatLive, id: "chat-#{@id}", session: %{"topic" => "chat:#{@id}"}) %>
+  </div>
+</div>

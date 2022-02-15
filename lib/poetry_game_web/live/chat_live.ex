@@ -5,13 +5,15 @@ defmodule PoetryGame.Live.ChatLive do
 
   alias PoetryGameWeb.{Endpoint, Presence}
 
+  import PoetryGameWeb.LiveHelpers
+
   def render(assigns) do
     ~H"""
     <div class="h-full flex flex-col text-black max-w-sm border-l-2 border-stone-300">
       <div class="hidden"><%= @rerender %></div>
       <div class="user-list shrink p-1 bg-stone-100 border-b-4 border-stone-200 border-solid">
         <%= for {_id, user} <- Map.to_list(@users) do %>
-          <span class="font-semibold" style={"color: #{user_hsl(user.color)}"}><%= user.name %></span>
+          <span class="font-semibold" style={user_hsl(user.color)}><%= user.name %></span>
         <% end %>
       </div>
       <div class="messages grow bg-stone-50" style="position: relative;">
@@ -22,7 +24,7 @@ defmodule PoetryGame.Live.ChatLive do
           <%= for message <- Enum.reverse(@messages) do %>
             <% name = message["user_name"] %> <% color = message["color"] %>
             <% content = message["content"] %>
-            <p><span class="font-semibold" style={"color: #{user_hsl(color)}"}><%= name %></span>&nbsp;:&nbsp;<%= content %></p>
+            <p><span class="font-semibold" style={user_hsl(color)}><%= name %></span>&nbsp;:&nbsp;<%= content %></p>
           <% end %>
         </div>
       </div>
@@ -31,24 +33,19 @@ defmodule PoetryGame.Live.ChatLive do
           <input type="hidden" name="message[user_id]" value={@user.id}>
           <input type="hidden" name="message[user_name]" value={@user.name}>
           <input type="hidden" name="message[color]" value={@user.color}>
-          <div class="input-group inline-flex items-center justify-center">
-            <span class="shrink p-2 whitespace-nowrap">
-              <span class="font-semibold" style={"color: #{user_hsl(@user.color)}"}><%= @user.name %></span> :
-            </span>
-            <input class="w-full grow outline-none py-2" type="text" name="message[content]" value={@message} />
-            <button
-              class="p-2 shrink font-semibold outline-none focus:bg-amber-200 hover:bg-amber-200"
-              type="submit">
-                Send
-            </button>
+          <div class="input-group flex items-center justify-center">
+            <div class="grow">
+              <input class="w-full outline-none p-2" type="text" name="message[content]" value={@message} />
+            </div>
+            <div class="shrink">
+              <button class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200" type="submit">Send</button>
+            </div>
           </div>
         </form>
       </div>
     </div>
     """
   end
-
-  defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
   def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do
     topic = "chat:#{game_id}"

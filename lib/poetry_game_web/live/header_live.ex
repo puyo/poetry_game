@@ -6,6 +6,8 @@ defmodule PoetryGame.Live.HeaderLive do
   alias PoetryGameWeb.Endpoint
   alias PoetryGameWeb.Router.Helpers, as: Routes
 
+  import PoetryGameWeb.LiveHelpers
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -19,8 +21,7 @@ defmodule PoetryGame.Live.HeaderLive do
             <a href="#" class="user justify-end p-2 text-xl hover:bg-amber-300 rounded-md" phx-click="show_form">
               <% color = @user.color %>
               <% name = @user.name %>
-              <span class="font-semibold text-xl"
-                style={"color: #{user_hsl(color)}"}><%= name %></span>
+              <span class="font-semibold text-xl" style={user_hsl(color)}><%= name %></span>
               <img style="vertical-align: baseline; height: 1em"
                 src={Routes.static_path(@socket, "/images/quill.svg")} alt="Rename" class="inline"/>
             </a>
@@ -30,8 +31,6 @@ defmodule PoetryGame.Live.HeaderLive do
     </header>
     """
   end
-
-  defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
   @impl true
   def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do

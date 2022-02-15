@@ -5,6 +5,8 @@ defmodule PoetryGame.Live.UserLive do
 
   alias PoetryGameWeb.Endpoint
 
+  import PoetryGameWeb.LiveHelpers
+
   @max_name_length 12
 
   @impl true
@@ -28,7 +30,7 @@ defmodule PoetryGame.Live.UserLive do
           <label for="user[name]" class="shrink font-bold text-gray-700">Name:&nbsp;</label>
           <input type="text" name="user[name]" id="first-name" autocomplete="given-name" maxlength={max_name_length}
             class="text-xl py-2 font-semibold focus:ring-indigo-500 focus:border-indigo-500 w-full grow"
-            style={"color: #{user_hsl(@user.color)}"}
+            style={user_hsl(@user.color)}
             value={@user.name}>
         </div>
 
@@ -49,8 +51,6 @@ defmodule PoetryGame.Live.UserLive do
     </div>
     """
   end
-
-  defp user_hsl(color), do: "hsl(#{color}, 70%, 45%)"
 
   @impl true
   def mount(_params, %{"user" => user, "game_id" => game_id}, socket) do

@@ -3,8 +3,10 @@ defmodule PoetryGame.Live.GameLive do
     container: {:div, class: "game-live h-full bg-red-800 text-white"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
-  alias PoetryGameWeb.Presence
+  alias PoetryGameWeb.{Endpoint, Presence}
   alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
+
+  import PoetryGameWeb.LiveHelpers
 
   @impl true
   def render(%{width: width, height: height, game: game, user: user} = assigns)
@@ -70,12 +72,26 @@ defmodule PoetryGame.Live.GameLive do
     <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
       <% user = Game.user_at_seat(@game, seat_i) %>
       <%= if user do %>
-        <span class="user-name" style={"color: hsl(#{user.color}, 50%, 50%)"}><%= user.name %></span>
+        <span class="user-name" style={user_hsl(user_color(assigns, user.id))}><%= user_name(assigns, user.id) %></span>
       <% else %>
         <span class="user-name text-black">(VACANT)</span>
       <% end %>
     </div>
     """
+  end
+
+  defp user_name(assigns, user_id) do
+    case Map.get(assigns.users, user_id) do
+      nil -> ""
+      user -> user.name
+    end
+  end
+
+  defp user_color(assigns, user_id) do
+    case Map.get(assigns.users, user_id) do
+      nil -> 0
+      user -> user.color
+    end
   end
 
   defp render_paper(paper, assigns) do
@@ -201,6 +217,9 @@ defmodule PoetryGame.Live.GameLive do
   def mount(_params, %{"id" => game_id, "user" => user}, socket) do
     topic = "game:#{game_id}"
 
+    # all user updates like name/color changes
+    Endpoint.subscribe("user:all")
+
     # user joins/leaves
     Presence.track(self(), topic, user.id, user)
 
@@ -226,7 +245,8 @@ defmodule PoetryGame.Live.GameLive do
           angle_offset: 0.5 * :math.pi(),
           cx: 0,
           cy: 0,
-          radius: 0
+          radius: 0,
+          users: users(topic)
         )
       }
     else
@@ -326,6 +346,8 @@ defmodule PoetryGame.Live.GameLive do
   end
 
   def handle_info(%{event: "update_user", payload: user}, socket) do
+    Presence.update(self(), socket.assigns.topic, user.id, user)
+
     new_user =
       if user.id == socket.assigns.user.id do
         user
@@ -337,7 +359,7 @@ defmodule PoetryGame.Live.GameLive do
   end
 
   def handle_info(%{event: "presence_diff", payload: payload}, socket) do
-    IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
+    # IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
     {:noreply, assign(socket, users: users)}
   end

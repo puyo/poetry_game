@@ -90,7 +90,7 @@ defmodule PoetryGame.Live.ChatLive do
   end
 
   def handle_info(%{event: "presence_diff", payload: payload}, socket) do
-    IO.inspect(chat_live: socket.assigns.user.name, presence_diff: payload)
+    # IO.inspect(chat_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
     {:noreply, assign(socket, users: users)}
   end

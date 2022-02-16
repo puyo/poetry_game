@@ -1,0 +1,4 @@
+# Heroku compile commands
+cd $phoenix_dir
+mix assets.deploy
+mix phx.digest.clean

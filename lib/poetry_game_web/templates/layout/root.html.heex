@@ -8,7 +8,7 @@
     <% title = "Poetry Game" %>
     <%= if assigns[:page_title], do: live_title_tag(assigns[:page_title], suffix: " · #{title}"), else: live_title_tag(title) %>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
-    <link rel="icon" href={Routes.static_path(@conn, "/favicon.svg")}>
+    <link phx-track-static rel="icon" href={Routes.static_path(@conn, "/images/favicon.svg")}>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
   <body>

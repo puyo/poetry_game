@@ -15,16 +15,16 @@ defmodule PoetryGame.Live.UserLive do
     max_name_length = @max_name_length
 
     ~H"""
-    <div class="h-full bg-black/30 py-20 absolute inset-0" style={"z-index: 10000; #{if @show, do: "display: block;", else: "display: none;"}"}
+    <div class="h-full bg-black/30 absolute inset-0 place-content-center" style={"z-index: 10000; #{if @show, do: "display: flex;", else: "display: none;"}"}
       phx-capture-click="hide"
     >
       <form action="#"
-        class="shadow overflow-hidden rounded-lg max-w-sm bg-white p-4 mx-auto relative"
+        class="shadow overflow-hidden rounded-lg max-w-sm bg-white p-4 mx-auto my-auto relative min-w-max"
         phx-change="change"
         phx-debounce="200"
         phx-hook="UserForm"
         phx-key="escape"
-        phx-click-off="hide"
+        phx-window-keydown="hide"
         id={"user_form-#{@user.id}"}
       >
         <a href="#" class="phx-modal-close absolute top-0 right-0 p-2 z-10" phx-click={"hide"}>✖</a>

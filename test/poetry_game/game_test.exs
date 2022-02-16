@@ -54,11 +54,11 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{word: nil}]}
              ] = game.seats
 
-      {:ok, game} = Game.set_word(game, "1", "foo")
+      {:ok, game} = Game.set_word(game, "1", "foo", "a")
 
       assert [
                %{papers: []},
-               %{papers: [%{word: nil}, %{word: "foo"}]},
+               %{papers: [%{word: nil}, %{word: %{value: "foo", author: "a"}}]},
                %{papers: [%{word: nil}]}
              ] = game.seats
     end
@@ -75,11 +75,11 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{question: nil}]}
              ] = game.seats
 
-      {:ok, game} = Game.set_question(game, "1", "foo")
+      {:ok, game} = Game.set_question(game, "1", "foo", "a")
 
       assert [
                %{papers: []},
-               %{papers: [%{question: nil}, %{question: "foo"}]},
+               %{papers: [%{question: nil}, %{question: %{value: "foo", author: "a"}}]},
                %{papers: [%{question: nil}]}
              ] = game.seats
     end
@@ -96,10 +96,10 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{poem: nil}]}
              ] = game.seats
 
-      {:ok, game} = Game.set_poem(game, "1", "foo")
+      {:ok, game} = Game.set_poem(game, "1", "foo", "a")
 
       assert [
-               %{papers: [%{poem: "foo"}]},
+               %{papers: [%{poem: %{value: "foo", author: "a"}}]},
                %{papers: [%{poem: nil}]},
                %{papers: [%{poem: nil}]}
              ] = game.seats

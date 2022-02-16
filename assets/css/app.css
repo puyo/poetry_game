@@ -90,6 +90,13 @@
   border-top: 2px dashed rgba(0, 0, 0, 0.2);
 }
 
+.paper .attribution {
+  margin-top: 0.25rem;
+  color: hsl(0, 0%, 50%);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .paper [contenteditable]:empty:before {
   content: attr(data-placeholder);
   color: #9ca3af;

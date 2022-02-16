@@ -82,20 +82,20 @@ defmodule PoetryGame.Game do
     end
   end
 
-  def set_word(game, user_id, word) do
-    with {:ok, game} <- set_value(game, user_id, :word, word) do
+  def set_word(game, user_id, word, author) do
+    with {:ok, game} <- set_value(game, user_id, :word, word, author) do
       move_paper_to_next_seat(game, user_id)
     end
   end
 
-  def set_question(game, user_id, question) do
-    with {:ok, game} <- set_value(game, user_id, :question, question) do
+  def set_question(game, user_id, question, author) do
+    with {:ok, game} <- set_value(game, user_id, :question, question, author) do
       move_paper_to_next_seat(game, user_id)
     end
   end
 
-  def set_poem(game, user_id, poem) do
-    set_value(game, user_id, :poem, poem)
+  def set_poem(game, user_id, poem, author) do
+    set_value(game, user_id, :poem, poem, author)
   end
 
   def player_list(game) do
@@ -127,11 +127,17 @@ defmodule PoetryGame.Game do
            game.seats
            |> put_in(
              [Access.all(), :papers, Access.all(), :word],
-             "word #{Enum.random(0..10)}"
+             %{
+               value: "word #{Enum.random(0..10)}",
+               author: "Author #{Enum.random(0..10)}"
+             }
            )
            |> put_in(
              [Access.all(), :papers, Access.all(), :question],
-             "question #{Enum.random(0..10)}"
+             %{
+               value: "question #{Enum.random(0..10)}",
+               author: "Author #{Enum.random(0..10)}"
+             }
            )
      }}
   end
@@ -145,9 +151,15 @@ defmodule PoetryGame.Game do
     }
   end
 
-  defp set_value(game, user_id, key, value) do
+  defp set_value(game, user_id, key, value, author) do
     index = user_seat_index(game, user_id)
-    seats = put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], value)
+
+    seats =
+      put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], %{
+        value: value,
+        author: author
+      })
+
     {:ok, %{game | seats: seats}}
   rescue
     KeyError -> {:error, :invalid}

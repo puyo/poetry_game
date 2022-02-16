@@ -186,7 +186,10 @@ defmodule PoetryGame.Live.GameLive do
         <form action="#" phx-submit="submit_value">
           <%= if paper.word do %>
             <section class="word">
-              <span class="label">Word: </span><span class="value"><%= paper.word %></span>
+              <span class="label">Word: </span><span class="value"><%= paper.word.value %></span>
+              <div class="attribution">
+                &ndash;&nbsp;<%= paper.word.author %>
+              </div>
             </section>
           <% else %>
             <section class="word">
@@ -196,7 +199,10 @@ defmodule PoetryGame.Live.GameLive do
 
           <%= if paper.question do %>
             <section class="question">
-              <span class="label">Question: </span><span class="value"><%= paper.question %></span>
+              <span class="label">Question: </span><span class="value"><%= paper.question.value %></span>
+              <div class="attribution">
+                &ndash;&nbsp;<%= paper.question.author %>
+              </div>
             </section>
           <% else %>
             <%= if paper.word do %>
@@ -209,9 +215,12 @@ defmodule PoetryGame.Live.GameLive do
           <%= if paper.poem do %>
             <section class="poem">
               <div class="poem">
-                <%= for line <- String.split(paper.poem || "", "\n") do %>
+                <%= for line <- String.split(paper.poem.value || "", "\n") do %>
                   <div class="line"><%= line %></div>
                 <% end %>
+                <div class="attribution">
+                  &ndash;&nbsp;<%= paper.poem.author %>
+                </div>
               </div>
             </section>
             <%= if not @game_finished do %>
@@ -318,7 +327,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"word" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_word(game_id, user.id, value)
+    GameServer.set_word(game_id, user.id, value, user.name)
     {:noreply, socket}
   end
 
@@ -327,7 +336,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"question" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_question(game_id, user.id, value)
+    GameServer.set_question(game_id, user.id, value, user.name)
     {:noreply, socket}
   end
 
@@ -336,7 +345,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"poem" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_poem(game_id, user.id, value)
+    GameServer.set_poem(game_id, user.id, value, user.name)
     {:noreply, socket}
   end
 

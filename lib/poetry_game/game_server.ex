@@ -36,16 +36,16 @@ defmodule PoetryGame.GameServer do
     GenServer.call(via(game_id), :start_game)
   end
 
-  def set_word(game_id, user_id, word) do
-    GenServer.call(via(game_id), {:set_word, user_id, word})
+  def set_word(game_id, user_id, word, author) do
+    GenServer.call(via(game_id), {:set_word, user_id, word, author})
   end
 
-  def set_question(game_id, user_id, question) do
-    GenServer.call(via(game_id), {:set_question, user_id, question})
+  def set_question(game_id, user_id, question, author) do
+    GenServer.call(via(game_id), {:set_question, user_id, question, author})
   end
 
-  def set_poem(game_id, user_id, poem) do
-    GenServer.call(via(game_id), {:set_poem, user_id, poem})
+  def set_poem(game_id, user_id, poem, author) do
+    GenServer.call(via(game_id), {:set_poem, user_id, poem, author})
   end
 
   def bootstrap(game_id) do
@@ -110,20 +110,20 @@ defmodule PoetryGame.GameServer do
 
   def handle_call({:set_word, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
-  def handle_call({:set_word, user_id, word}, _from, game) do
-    handle_game_change(game, do: Game.set_word(game, user_id, word))
+  def handle_call({:set_word, user_id, word, author}, _from, game) do
+    handle_game_change(game, do: Game.set_word(game, user_id, word, author))
   end
 
   def handle_call({:set_question, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
-  def handle_call({:set_question, user_id, question}, _from, game) do
-    handle_game_change(game, do: Game.set_question(game, user_id, question))
+  def handle_call({:set_question, user_id, question, author}, _from, game) do
+    handle_game_change(game, do: Game.set_question(game, user_id, question, author))
   end
 
   def handle_call({:set_poem, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
 
-  def handle_call({:set_poem, user_id, poem}, _from, game) do
-    handle_game_change(game, do: Game.set_poem(game, user_id, poem))
+  def handle_call({:set_poem, user_id, poem, author}, _from, game) do
+    handle_game_change(game, do: Game.set_poem(game, user_id, poem, author))
   end
 
   def handle_call(:bootstrap, _from, game) do

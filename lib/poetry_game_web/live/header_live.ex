@@ -53,6 +53,7 @@ defmodule PoetryGame.Live.HeaderLive do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_info(%{event: "update_user", payload: user}, socket) do
     {:noreply, assign(socket, user: user)}
   end

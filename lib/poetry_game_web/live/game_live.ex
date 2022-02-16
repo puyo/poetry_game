@@ -358,7 +358,7 @@ defmodule PoetryGame.Live.GameLive do
     {:noreply, assign(socket, user: new_user)}
   end
 
-  def handle_info(%{event: "presence_diff", payload: payload}, socket) do
+  def handle_info(%{event: "presence_diff", payload: _payload}, socket) do
     # IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
     {:noreply, assign(socket, users: users)}

@@ -3,7 +3,6 @@ defmodule PoetryGame.Live.UserLive do
     container: {:div, class: "user-live"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
-  alias Phoenix.LiveView.JS
   alias PoetryGameWeb.Endpoint
 
   import PoetryGameWeb.LiveHelpers

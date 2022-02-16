@@ -102,7 +102,7 @@
   transform: initial;
   min-height: initial;
   display: inline-block;
-  transition: initial;
+  transition: initial !important;
   margin: 1rem;
 }
 

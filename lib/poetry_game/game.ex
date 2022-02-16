@@ -119,6 +119,23 @@ defmodule PoetryGame.Game do
     Enum.find_index(game.seats, fn seat -> seat.member_id == user_id end)
   end
 
+  def bootstrap(game) do
+    {:ok,
+     %{
+       game
+       | seats:
+           game.seats
+           |> put_in(
+             [Access.all(), :papers, Access.all(), :word],
+             "word #{Enum.random(0..10)}"
+           )
+           |> put_in(
+             [Access.all(), :papers, Access.all(), :question],
+             "question #{Enum.random(0..10)}"
+           )
+     }}
+  end
+
   defp initial_paper() do
     %{
       id: Ecto.UUID.generate(),

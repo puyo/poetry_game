@@ -48,6 +48,10 @@ defmodule PoetryGame.GameServer do
     GenServer.call(via(game_id), {:set_poem, user_id, poem})
   end
 
+  def bootstrap(game_id) do
+    GenServer.call(via(game_id), :bootstrap)
+  end
+
   defp via(game_id) do
     {:via, Registry, {:game_registry, game_id}}
   end
@@ -120,6 +124,10 @@ defmodule PoetryGame.GameServer do
 
   def handle_call({:set_poem, user_id, poem}, _from, game) do
     handle_game_change(game, do: Game.set_poem(game, user_id, poem))
+  end
+
+  def handle_call(:bootstrap, _from, game) do
+    handle_game_change(game, do: Game.bootstrap(game))
   end
 
   def handle_call(:player_list, _from, game) do

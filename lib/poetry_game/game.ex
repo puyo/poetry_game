@@ -2,16 +2,14 @@ defmodule PoetryGame.Game do
   defstruct(
     id: nil,
     members: %{},
-    seats: [],
-    chat_messages: []
+    seats: []
   )
 
   def init(game_id) do
     %__MODULE__{
       id: game_id,
       members: %{},
-      seats: [],
-      chat_messages: []
+      seats: []
     }
   end
 

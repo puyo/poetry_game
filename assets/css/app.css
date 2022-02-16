@@ -26,6 +26,18 @@
   width: 50vw;
 }
 
+.board {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.finished .board {
+  overflow: auto;
+  position: initial;
+  height: 100%;
+}
+
 .seat, .paper {
   min-width: 300px;
   min-height: 400px;
@@ -43,6 +55,10 @@
   border-radius: 5px;
   background: rgba(255, 255, 255, 1.0);
   font-weight: 600;
+}
+
+.finished .seat {
+  display: none;
 }
 
 .paper {
@@ -74,20 +90,22 @@
   border-top: 2px dashed rgba(0, 0, 0, 0.2);
 }
 
-[contenteditable]:empty:before {
+.paper [contenteditable]:empty:before {
   content: attr(data-placeholder);
   color: #9ca3af;
   width: calc(300px - 8px - 2rem);
   display: block;
 }
 
-.board {
-  overflow: hidden;
-  position: relative;
-  height: 100%;
+.finished .paper {
+  position: initial;
+  transform: initial;
+  min-height: initial;
+  display: inline-block;
+  transition: initial;
+  margin: 1rem;
 }
 
-.game.settled .paper {
+.settled .paper {
   transition: all 1s;
 }
-

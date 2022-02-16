@@ -46,7 +46,11 @@ defmodule PoetryGame.Game do
   end
 
   def can_start?(game) do
-    map_size(game.members) >= @min_players
+    !started?(game) && map_size(game.members) >= @min_players
+  end
+
+  def number_of_extra_players_needed(game) do
+    max(@min_players - map_size(game.members), 0)
   end
 
   def paper_index_within_seat(game, paper_id) do

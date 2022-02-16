@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.GameLive do
   use Phoenix.LiveView,
-    container: {:div, class: "game-live h-full bg-red-800 text-white"},
+    container: {:div, class: "game-live h-full bg-red-800 text-white relative"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.{Endpoint, Presence}
@@ -16,6 +16,7 @@ defmodule PoetryGame.Live.GameLive do
         assigns,
         %{
           game_started: Game.started?(game),
+          game_can_start: Game.can_start?(game),
           game_finished: Game.finished?(game),
           user_seat_index: Game.user_seat_index(game, user.id) || 0,
           nseats: length(game.seats)
@@ -23,9 +24,10 @@ defmodule PoetryGame.Live.GameLive do
       )
 
     papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
+    class = if assigns.game_finished, do: "finished", else: ""
 
     ~H"""
-    <div id={"game_#{@game_id}"} class={"game h-full #{@settled}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
+    <div id={"game_#{@game_id}"} class={"game h-full #{@settled} #{class}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
       <%= if @game_started do %>
         <div class="board">
           <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
@@ -36,7 +38,18 @@ defmodule PoetryGame.Live.GameLive do
           <% end %>
         </div>
       <% else %>
-        GAME NOT STARTED YET
+        <div class="h-full bg-black/30 absolute inset-0 flex place-content-center">
+          <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max">
+            <%= if @game_can_start do %>
+              <button class="p-2 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md"
+                phx-click="start">
+                Start Game
+              </button>
+            <% else %>
+              Waiting for <%= Game.number_of_extra_players_needed(@game) %> more
+            <% end %>
+          </div>
+        </div>
       <% end %>
     </div>
     """
@@ -117,34 +130,54 @@ defmodule PoetryGame.Live.GameLive do
     offset = paper_i * 10
 
     own_paper = paper_i == 0 && user_seat_index == seat_i
-    poetry_time = own_paper && paper.word && paper.question && !paper.poem
-
-    paperx =
-      if poetry_time do
-        cx
-      else
-        cx + radius * :math.cos(angle_offset + paper_angle) + offset
-      end
-
-    papery =
-      if poetry_time do
-        cy
-      else
-        cy + squish * radius * :math.sin(angle_offset + paper_angle) -
-          offset
-      end
-
-    paperz = trunc(100 * (1 + :math.cos(paper_angle))) - offset
+    composing = own_paper && paper.word && paper.question && !paper.poem
     visible = game_finished || own_paper
 
-    max_width = width
-    max_height = height - papery / 2
+    c =
+      cond do
+        composing ->
+          %{
+            x: "#{cx}px",
+            y: "#{cy}px",
+            z: "#{trunc(100 * (1 + :math.cos(paper_angle))) - offset}",
+            position: "absolute",
+            max_width: "#{width}px",
+            max_height: "#{height - cy / 2}px",
+            transform: "",
+            class: "composing"
+          }
+
+        game_finished ->
+          %{
+            x: "0",
+            y: "0",
+            z: "0",
+            position: "initial",
+            max_width: "#{width}px",
+            max_height: "#{height}px",
+            class: "finished"
+          }
+
+        true ->
+          x = cx + radius * :math.cos(angle_offset + paper_angle) + offset
+          y = cy + squish * radius * :math.sin(angle_offset + paper_angle) - offset
+
+          %{
+            x: "#{x}px",
+            y: "#{y}px",
+            z: "#{trunc(100 * (1 + :math.cos(paper_angle))) - offset}",
+            position: "absolute",
+            max_width: "#{width}px",
+            max_height: "#{height - y / 2}px",
+            class: "playing"
+          }
+      end
 
     ~H"""
     <div
-      class="paper"
+      class={"paper #{c.class}"}
       id={"paper-#{paper.id}"}
-      style={"top: #{papery}px; left: #{paperx}px; z-index: #{paperz}; max-width: #{max_width}px; max-height: #{max_height}px;"}
+      style={"top: #{c.y}; left: #{c.x}; z-index: #{c.z}; max-width: #{c.max_width}; max-height: #{c.max_height};"}
       data-width={"#{@width}"}
       data-height={"#{@height}"}>
 
@@ -276,13 +309,7 @@ defmodule PoetryGame.Live.GameLive do
   end
 
   defp ensure_player_joins(game_id, user) do
-    with {:ok, game} <- GameServer.add_member(game_id, user) do
-      if length(game.seats) == 0 && Game.can_start?(game) do
-        GameServer.start_game(game_id)
-      else
-        {:ok, game}
-      end
-    end
+    GameServer.add_member(game_id, user)
   end
 
   @impl true
@@ -335,8 +362,15 @@ defmodule PoetryGame.Live.GameLive do
     }
   end
 
+  def handle_event("start", _, %{assigns: %{game_id: game_id}} = socket) do
+    with {:ok, game} <- GameServer.start_game(game_id) do
+      {:noreply, assign(socket, game: game)}
+    else
+      {:error, _} -> {:noreply, socket}
+    end
+  end
+
   @impl true
-  # GameServer pubsub events (broadcast_game_update!)
   def handle_info(%{event: "game_state_update", payload: game}, socket) do
     {:noreply, assign(socket, game: game)}
   end

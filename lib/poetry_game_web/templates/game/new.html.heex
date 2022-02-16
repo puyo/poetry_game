@@ -1,8 +1,10 @@
-<h1>New Game</h1>
+<div class="container mx-auto">
+  <h1>New Game</h1>
 
-<form action={Routes.game_path(@conn, :create)} method="post">
-  <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-  <input type="submit"/>
-</form>
+  <form action={Routes.game_path(@conn, :create)} method="post">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <button type="submit">Start New Game</button>
+  </form>
 
-<span><%= link "Back", to: Routes.game_path(@conn, :index) %></span>
+  <span><%= link "Back", to: Routes.game_path(@conn, :index) %></span>
+</div>

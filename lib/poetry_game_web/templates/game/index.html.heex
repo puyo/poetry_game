@@ -1,18 +1,6 @@
 <div class="container mx-auto">
-  <h1>Listing Games</h1>
-
-  <table>
-    <tbody>
-      <%= for game <- @games do %>
-        <tr>
-          <td><%= game.uuid %></td>
-          <td>
-            <span><%= link "Show", to: Routes.game_path(@conn, :show, game) %></span>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-
-  <span><%= link "New Game", to: Routes.game_path(@conn, :new) %></span>
+  <form action={Routes.game_path(@conn, :create)} method="post">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <button type="submit">Start New Game</button>
+  </form>
 </div>

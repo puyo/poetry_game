@@ -5,6 +5,7 @@ defmodule PoetryGame.Live.GameLive do
 
   alias PoetryGameWeb.{Endpoint, Presence}
   alias PoetryGame.{Game, GameServer, GameSupervisor, LiveMonitor, PubSub}
+  alias PoetryGameWeb.Router.Helpers, as: Routes
 
   import PoetryGameWeb.LiveHelpers
 
@@ -26,6 +27,8 @@ defmodule PoetryGame.Live.GameLive do
     papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
     class = if assigns.game_finished, do: "finished", else: ""
 
+    players_needed = Game.number_of_extra_players_needed(assigns.game)
+
     ~H"""
     <div id={"game_#{@game_id}"} class={"game h-full #{@settled} #{class}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
       <%= if @game_started do %>
@@ -46,7 +49,16 @@ defmodule PoetryGame.Live.GameLive do
                 Start Game
               </button>
             <% else %>
-              Waiting for <%= Game.number_of_extra_players_needed(@game) %> more
+              <p class="mb-4">
+                Waiting for <%= players_needed %> more
+                <%= if players_needed == 1, do: "player", else: "players" %>
+              </p>
+              <p class="mb-4">
+                Copy the game's link and send it to your friends
+              </p>
+              <p class="font-semibold">
+                <%= Routes.game_url(@socket, :show, @game_id) %>
+              </p>
             <% end %>
           </div>
         </div>

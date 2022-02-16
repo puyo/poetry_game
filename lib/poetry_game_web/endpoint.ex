@@ -7,7 +7,8 @@ defmodule PoetryGameWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_poetry_game_key",
-    signing_salt: "g+CmhhPa"
+    signing_salt: "g+CmhhPa",
+    extra: "SameSite=Strict"
   ]
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]

@@ -60,7 +60,7 @@ Hooks.TextAreaSave = {
   },
 };
 
-Hooks.SaveSessionOnSubmit = {
+Hooks.UserForm = {
   mounted() {
     this.el.addEventListener("submit", (e) => {
       e.preventDefault();

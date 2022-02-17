@@ -10,14 +10,13 @@
     @apply list-inside;
     @apply mb-4;
   }
+
+  html, body { @apply h-full; }
 }
 
 /* base ---------------------------------------------------- */
 
-html, body { height: 100%; }
-
-a { color: blue; }
-
+/*
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .h-full { height: 100%; }
@@ -25,8 +24,11 @@ a { color: blue; }
 .shrink { flex-shrink: 1; }
 .grow { flex-grow: 1; }
 .items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
 .justify-center { justify-content: center; }
+.justify-end { justify-content: end; }
 .hidden { display: none; }
+*/
 
 .container {
   margin: 0 auto;

@@ -20,7 +20,7 @@ defmodule PoetryGameWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    resources "/games", GameController, only: [:index, :new, :create, :show]
+    resources "/games", GameController, only: [:create, :show]
   end
 
   scope "/api", PoetryGameWeb do

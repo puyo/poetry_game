@@ -1,17 +1,16 @@
 <div class="container">
   <p>
-    This is a silly game where you write poetry on pieces of paper with
-    your friends.
+    This is a silly game where you write poetry with your friends.
   </p>
 
   <ol>
     <li>Start a new game</li>
     <li>Send a link to your friends so they can join</li>
-    <li>Follow the prompts</li>
-    <li>Laugh with your witty friends</li>
+    <li>Follow the prompts on your piece of paper</li>
+    <li>Laugh and chat with your witty friends</li>
   </ol>
 
-  <form action={Routes.game_path(@conn, :create)} method="post">
+  <form action={Routes.game_path(@conn, :create)} method="post" class="text-center">
     <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
     <button type="submit" class="btn btn-primary btn-lg">Start New Game</button>
   </form>

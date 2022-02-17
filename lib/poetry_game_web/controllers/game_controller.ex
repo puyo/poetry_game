@@ -1,15 +1,6 @@
 defmodule PoetryGameWeb.GameController do
   use PoetryGameWeb, :controller
 
-  def index(conn, _params) do
-    games = []
-    render(conn, "index.html", games: games)
-  end
-
-  def new(conn, _params) do
-    render(conn, "new.html")
-  end
-
   def create(conn, _params) do
     redirect(conn, to: Routes.game_path(conn, :show, Ecto.UUID.generate()))
   end

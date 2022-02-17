@@ -3,7 +3,7 @@
     <div class="container">
       <div class="flex justify-between items-center">
         <div class="justify-start">
-          <img class="logo" src={Routes.static_path(@conn, "/images/poetry-game.svg")} alt="Poetry Game"/>
+          <a href="/"><img class="logo" src={Routes.static_path(@conn, "/images/poetry-game.svg")} alt="Poetry Game"/></a>
         </div>
         <%= if assigns[:user] do %>
           <div class="justify-end">

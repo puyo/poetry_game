@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.GameLive do
   use Phoenix.LiveView,
-    container: {:div, class: "game-live h-full bg-red-800 text-white relative"},
+    container: {:div, class: "game-live h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.{Endpoint, Presence}
@@ -23,8 +23,12 @@ defmodule PoetryGame.Live.GameLive do
       )
 
     ~H"""
-    <% class = if Game.finished?(@game), do: "finished", else: "" %>
-    <div id={"game_#{@game_id}"} class={"game h-full #{@settled} #{class}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
+    <% finished_class = if Game.finished?(@game), do: "finished", else: "" %>
+    <div class={"game h-full #{@settled} #{finished_class}"}
+        id={"game-hook-#{@game_id}"}
+        phx-hook="GameSize"
+        data-width={@width}
+        data-height={@height}>
       <%= if Game.started?(@game) do %>
         <div class="game-board">
           <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
@@ -37,17 +41,14 @@ defmodule PoetryGame.Live.GameLive do
         </div>
       <% else %>
         <div class="modal-bg">
-          <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max text-center">
-            <%= if Game.can_start?(@game) do %>
-              <button class="p-4 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md mb-4"
-                phx-click="start">
-                Start Game
-              </button>
-            <% else %>
-              <button class="p-4 font-semibold text-xl outline-none text-white bg-stone-700 rounded-md mb-4" disabled>
-                Start Game
-              </button>
-            <% end %>
+          <div class="modal pre-game-info">
+            <p>
+              <%= if Game.can_start?(@game) do %>
+                <button class="btn btn-primary btn-lg" phx-click="start">Start Game</button>
+              <% else %>
+                <button class="btn btn-primary btn-lg" disabled>Start Game</button>
+              <% end %>
+            </p>
             <p>
               <% players_needed = max(0, 3 - map_size(@users)) %>
               Waiting for <%= players_needed %> more
@@ -56,11 +57,12 @@ defmodule PoetryGame.Live.GameLive do
             <p>
               To get more players, copy the link below and send it to your friends
             </p>
-            <p class="font-semibold">
-              <input class="game-url w-full p-2 bg-stone-100" type="text" value={Routes.game_url(@socket, :show, @game_id)} />
+            <p>
+              <input class="game-url" type="text" value={Routes.game_url(@socket, :show, @game_id)} />
             </p>
-            <div>
-              <button id={"copy-to-clipboard-button-#{@game_id}"} class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200 rounded-md"
+            <div class="buttons">
+              <button class="btn btn-secondary"
+                id={"copy-to-clipboard-#{@game_id}"}
                 phx-hook="CopyToClipboard"
                 data-copy=".game-url">Copy Link</button>
             </div>
@@ -99,12 +101,12 @@ defmodule PoetryGame.Live.GameLive do
     seaty = cy + squish * radius * :math.sin(angle_offset + seat_angle)
 
     ~H"""
-    <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={"#{@width}"} data-height={"#{@height}"}>
+    <div class="seat" id={"seat-#{seat_i}"} style={"top: #{seaty}px; left: #{seatx}px"} data-width={@width} data-height={@height}>
       <% user = Game.user_at_seat(@game, seat_i) %>
       <%= if user do %>
         <span class="user-name" style={user_hsl(user_color(assigns, user.id))}><%= user_name(assigns, user.id) %></span>
       <% else %>
-        <span class="user-name text-black">(VACANT)</span>
+        <span class="user-name">(VACANT)</span>
       <% end %>
     </div>
     """
@@ -195,14 +197,14 @@ defmodule PoetryGame.Live.GameLive do
       class={"paper #{c.class}"}
       id={"paper-#{paper.id}"}
       style={"top: #{c.y}; left: #{c.x}; z-index: #{c.z}; max-width: #{c.max_width}; max-height: #{c.max_height};"}
-      data-width={"#{@width}"}
-      data-height={"#{@height}"}>
+      data-width={@width}
+      data-height={@height}>
 
       <%= if visible do %>
 
-        <form action="#" phx-submit="submit_value">
+        <form action="#" phx-submit="submit_value" autocomplete="off">
           <%= if paper.word do %>
-            <section class="word">
+            <div class="paper-section word">
               <%= if paper.question do %>
                 <span class="label">Word: </span><span class="value"><%= paper.word.value %></span>
                 <div class="attribution">
@@ -211,30 +213,30 @@ defmodule PoetryGame.Live.GameLive do
               <% else %>
                 (folded over)
               <% end %>
-            </section>
+            </div>
           <% else %>
-            <section class="word">
-              <input type="text" name="word" placeholder="Enter a word" class="outline-none" />
-            </section>
+            <div class="paper-section word">
+              <input type="text" name="word" placeholder="Enter a word" />
+            </div>
           <% end %>
 
           <%= if paper.question do %>
-            <section class="question">
+            <div class="paper-section question">
               <span class="label">Question: </span><span class="value"><%= paper.question.value %></span>
               <div class="attribution">
                 &ndash;&nbsp;<%= paper.question.author %>
               </div>
-            </section>
+            </div>
           <% else %>
             <%= if paper.word do %>
-              <section class="question">
-                <input type="text" name="question" placeholder="Enter a question" class="outline-none" />
-              </section>
+              <div class="paper-section question">
+                <input type="text" name="question" placeholder="Enter a question" />
+              </div>
             <% end %>
           <% end %>
 
           <%= if paper.poem do %>
-            <section class="poem">
+            <div class="paper-section poem">
               <div class="poem">
                 <%= for line <- String.split(paper.poem.value || "", "\n") do %>
                   <div class="line"><%= line %></div>
@@ -243,15 +245,15 @@ defmodule PoetryGame.Live.GameLive do
                   &ndash;&nbsp;<%= paper.poem.author %>
                 </div>
               </div>
-            </section>
+            </div>
             <%= if not @game_finished do %>
-              <section class="hint text-slate-500 text-sm">
+              <div class="paper-section hint">
                 <p>Waiting on other players...</p>
-              </section>
+              </div>
             <% end %>
           <% else %>
             <%= if paper.word && paper.question do %>
-              <section class="poem">
+              <div class="paper-section poem">
                 <div
                   id={"poem_input-#{@game_id}"}
                   class="input outline-none"
@@ -262,12 +264,8 @@ defmodule PoetryGame.Live.GameLive do
                   phx-update="ignore"
                 ></div>
                 <textarea name="poem" style="display: none" id={"poem_text_area-#{@game_id}"}></textarea>
-                <button
-                  class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200"
-                  >
-                  Save
-                </button>
-              </section>
+                <button class="btn btn-secondary" type="submit">Save</button>
+              </div>
             <% end %>
           <% end %>
         </form>

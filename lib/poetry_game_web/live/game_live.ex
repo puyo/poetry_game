@@ -77,7 +77,7 @@ defmodule PoetryGame.Live.GameLive do
   def render(%{game_id: game_id, width: width, height: height} = assigns) do
     ~H"""
     <div id={"game_#{game_id}"} class="grow" phx-hook="GameSize" data-width={width} data-height={height}>
-      NO USER
+      &nbsp;
     </div>
     """
   end

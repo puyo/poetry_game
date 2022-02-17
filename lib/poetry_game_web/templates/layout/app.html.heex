@@ -1,12 +1,17 @@
-<% user = %{
-  id: Plug.Conn.get_session(@conn, :user_id),
-  color: Plug.Conn.get_session(@conn, :user_color),
-  name: Plug.Conn.get_session(@conn, :user_name),
-} %>
-<%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"user" => user}) %>
 <div class="flex flex-col h-full">
   <header class="shrink">
-    <%= live_render(@conn, PoetryGame.Live.HeaderLive, session: %{"user" => user}) %>
+    <div class="container">
+      <div class="flex justify-between items-center">
+        <div class="justify-start">
+          <img class="logo" src={Routes.static_path(@conn, "/images/poetry-game.svg")} alt="Poetry Game"/>
+        </div>
+        <%= if assigns[:user] do %>
+          <div class="justify-end">
+            <%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"user" => @user}) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </header>
   <main class="grow">
     <%= @inner_content %>

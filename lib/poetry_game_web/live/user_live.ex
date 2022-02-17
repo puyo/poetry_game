@@ -4,6 +4,7 @@ defmodule PoetryGame.Live.UserLive do
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.Endpoint
+  alias PoetryGameWeb.Router.Helpers, as: Routes
 
   import PoetryGameWeb.LiveHelpers
 
@@ -14,54 +15,55 @@ defmodule PoetryGame.Live.UserLive do
     max_name_length = @max_name_length
 
     ~H"""
-    <div class="user-form modal-bg" style={if @show, do: "display: flex;", else: "display: none;"} phx-capture-click="hide">
-      <form action="#"
-        class="modal"
-        phx-change="change"
-        phx-debounce="200"
-        phx-hook="UserForm"
-        phx-key="escape"
-        phx-window-keydown="hide"
-        id={"user_form-#{@user.id}"}
-      >
-        <a href="#" class="modal-close btn btn-transparent" phx-click={"hide"}>✖</a>
+    <button class="btn btn-transparent btn-lg" phx-click="show">
+      <% color = @user.color %>
+      <% name = @user.name %>
+      <span class="user-name" style={user_hsl(color)}><%= name %></span>
+      <img class="icon edit-icon" src={Routes.static_path(@socket, "/images/quill.svg")} alt="Rename"/>
+    </button>
+    <%= if @show do %>
+      <div class="user-form modal-bg" style={if @show, do: "display: flex;", else: "display: none;"} phx-capture-click="hide">
+        <form action="#"
+          class="modal"
+          phx-change="change"
+          phx-debounce="200"
+          phx-hook="UserForm"
+          phx-key="escape"
+          phx-window-keydown="hide"
+          id={"user_form-#{@user.id}"}
+        >
+          <a href="#" class="modal-close btn btn-transparent" phx-click={"hide"}>✖</a>
 
-        <div class="field">
-          <label for="name" class="block-label">Name</label>
-          <input id="name" type="text" name="user[name]" autocomplete="given-name" maxlength={max_name_length}
-            class="user-name"
-            style={user_hsl(@user.color)}
-            value={@user.name}>
-        </div>
-
-        <div class="field">
-          <label for="color" class="block-label">Color</label>
-          <input id="color" type="range" min="0" max="359" value={@user.color} name="user[color]">
-          <div class="rainbow-bg">
-            &nbsp;
+          <div class="field">
+            <label for="name" class="block-label">Name</label>
+            <input id="name" type="text" name="user[name]" autocomplete="given-name" maxlength={max_name_length}
+              class="user-name"
+              style={user_hsl(@user.color)}
+              value={@user.name}>
           </div>
-        </div>
 
-        <div class="buttons">
-          <button type="submit" class="btn btn-secondary">Save</button>
-        </div>
-      </form>
-    </div>
+          <div class="field">
+            <label for="color" class="block-label">Color</label>
+            <input id="color" type="range" min="0" max="359" value={@user.color} name="user[color]">
+            <div class="rainbow-bg">
+              &nbsp;
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button type="submit" class="btn btn-secondary">Save</button>
+          </div>
+        </form>
+      </div>
+    <% end %>
     """
   end
 
   @impl true
   def mount(_params, %{"user" => user}, socket) do
-    Endpoint.subscribe("user_form:#{user.id}")
+    Endpoint.subscribe("user:#{user.id}")
 
-    {
-      :ok,
-      assign(
-        socket,
-        user: user,
-        show: false
-      )
-    }
+    {:ok, assign(socket, user: user, show: false)}
   end
 
   @impl true
@@ -81,6 +83,10 @@ defmodule PoetryGame.Live.UserLive do
     {:noreply, assign(socket, show: false)}
   end
 
+  def handle_event("show", _, socket) do
+    {:noreply, assign(socket, show: true)}
+  end
+
   @impl true
   def handle_info(%{event: "update_user", payload: user}, socket) do
     socket =
@@ -91,10 +97,6 @@ defmodule PoetryGame.Live.UserLive do
       end
 
     {:noreply, socket}
-  end
-
-  def handle_info(%{event: "user_form", payload: %{show: show}}, socket) do
-    {:noreply, assign(socket, show: show)}
   end
 
   defp sanitize_input(%{"user" => %{"name" => name, "color" => color}}) do

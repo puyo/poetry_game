@@ -44,6 +44,11 @@ p {
   line-height: 1.25rem;
 }
 
+/* liveview errors ----------------------------------------- */
+
+.phx-error {
+}
+
 /* main layout --------------------------------------------- */
 
 main > .container {
@@ -57,7 +62,7 @@ main > .container {
 .modal-bg {
   height: 100%;
   background-color: rgb(0 0 0 / 0.3);
-  z-index: 1;
+  z-index: 1000;
   place-content: center;
   display: flex;
   top: 0;

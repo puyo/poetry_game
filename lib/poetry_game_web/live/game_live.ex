@@ -198,10 +198,14 @@ defmodule PoetryGame.Live.GameLive do
         <form action="#" phx-submit="submit_value">
           <%= if paper.word do %>
             <section class="word">
-              <span class="label">Word: </span><span class="value"><%= paper.word.value %></span>
-              <div class="attribution">
-                &ndash;&nbsp;<%= paper.word.author %>
-              </div>
+              <%= if paper.question do %>
+                <span class="label">Word: </span><span class="value"><%= paper.word.value %></span>
+                <div class="attribution">
+                  &ndash;&nbsp;<%= paper.word.author %>
+                </div>
+              <% else %>
+                (folded over)
+              <% end %>
             </section>
           <% else %>
             <section class="word">

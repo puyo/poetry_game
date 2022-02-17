@@ -24,6 +24,8 @@ a { color: blue; }
 .w-full { width: 100%; }
 .shrink { flex-shrink: 1; }
 .grow { flex-grow: 1; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
 
 .container {
   margin: 0 auto;
@@ -62,12 +64,12 @@ main > section {
   background-color: hsl(217, 90%, 65%);
 }
 
-.btn-optional {
+.btn-secondary {
   color: black;
   padding: 0.5rem;
   background-color: hsl(48, 90%, 80%);
 }
-.btn-optional:hover {
+.btn-secondary:hover {
   background-color: hsl(48, 90%, 85%);
 }
 .btn[disabled] {
@@ -174,4 +176,48 @@ main > section {
 
 .game .settled .paper {
   transition: all 1s;
+}
+
+/* chat ---------------------------------------------------- */
+
+.chat {
+  border-left: 4px solid black;
+}
+
+.chat .user-list {
+  border-bottom: 4px solid hsl(20, 5%, 90%);
+  padding: 0.5rem;
+  background-color: hsl(20, 5%, 95%);
+}
+
+.user-name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chat-messages {
+  border-bottom: 4px solid hsl(20, 5%, 90%);
+  background-color: hsl(20, 5%, 98%);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  position: relative;
+}
+.chat-messages-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+  padding: 0.25rem;
+}
+.chat-input input[type=text] {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: hsl(20, 5%, 97%)
+}
+.chat-input button {
+  border-radius: 0;
 }

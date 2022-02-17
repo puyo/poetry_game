@@ -9,36 +9,33 @@ defmodule PoetryGame.Live.ChatLive do
 
   def render(assigns) do
     ~H"""
-    <div class="h-full flex flex-col text-black max-w-sm border-l-2 border-stone-300">
+    <div class="h-full flex flex-col">
       <div class="hidden"><%= @rerender %></div>
-      <div class="user-list shrink p-1 bg-stone-100 border-b-4 border-stone-200 border-solid">
+      <div class="user-list shrink">
         <%= for {_id, user} <- Map.to_list(@users) do %>
-          <span class="font-semibold" style={user_hsl(user.color)}><%= user.name %></span>
+          <span class="user-name" style={user_hsl(user.color)}><%= user.name %></span>
         <% end %>
       </div>
-      <div class="messages grow bg-stone-50" style="position: relative;">
-        <div id={"scroll-to-bottom-#{@topic}"}
-            class="overflow-y-scroll p-1 text-sm border-b-4 border-stone-200 border-solid"
-            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"
-            phx-hook="ScrollToBottomOnInput">
+      <div class="chat-messages grow">
+        <div id={"scroll-to-bottom-#{@topic}"} class="chat-messages-inner" phx-hook="ScrollToBottomOnInput">
           <%= for message <- Enum.reverse(@messages) do %>
             <% name = message["user_name"] %> <% color = message["color"] %>
             <% content = message["content"] %>
-            <p><span class="font-semibold" style={user_hsl(color)}><%= name %></span>&nbsp;:&nbsp;<%= content %></p>
+            <div><span class="user-name" style={user_hsl(color)}><%= name %></span>&nbsp;:&nbsp;<%= content %></div>
           <% end %>
         </div>
       </div>
-      <div class="entry-form shrink bg-white text-sm">
+      <div class="chat-input shrink">
         <form action="#" phx-submit="submit" autocomplete="off">
           <input type="hidden" name="message[user_id]" value={@user.id}>
           <input type="hidden" name="message[user_name]" value={@user.name}>
           <input type="hidden" name="message[color]" value={@user.color}>
-          <div class="input-group flex items-center justify-center">
+          <div class="flex items-center justify-center">
             <div class="grow">
-              <input class="w-full outline-none p-2 shadow-inner bg-stone-50" type="text" name="message[content]" value={@message} />
+              <input type="text" name="message[content]" value={@message} />
             </div>
             <div class="shrink">
-              <button class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200" type="submit">Send</button>
+              <button class="btn btn-secondary" type="submit">Send</button>
             </div>
           </div>
         </form>

@@ -14,6 +14,6 @@
   <section>
     <form action={Routes.game_path(@conn, :create)} method="post">
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <button type="submit" class="btn btn-primary">Start New Game</button>
+      <button type="submit" class="btn btn-primary btn-lg">Start New Game</button>
     </form>
   </section>

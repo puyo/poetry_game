@@ -175,9 +175,12 @@ header .logo {
 
 /* game ---------------------------------------------------- */
 
-.game-board {
+.game {
   color: white;
   background-color: hsl(0, 70%, 35%);
+}
+
+.game-board {
   overflow: hidden;
   position: relative;
   height: 100%;

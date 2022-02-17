@@ -51,7 +51,7 @@ defmodule PoetryGame.Live.UserLive do
   end
 
   @impl true
-  def mount(_params, %{"user" => user, "game_id" => game_id}, socket) do
+  def mount(_params, %{"user" => user}, socket) do
     Endpoint.subscribe("user_form:#{user.id}")
 
     {
@@ -59,7 +59,6 @@ defmodule PoetryGame.Live.UserLive do
       assign(
         socket,
         user: user,
-        game_id: game_id,
         show: false
       )
     }

@@ -1,4 +1,3 @@
-<%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"user" => @user, "game_id" => @id}) %>
 <div class="flex h-full">
   <div class="grow game">
     <%= live_render(@conn, PoetryGame.Live.GameLive, session: %{"id" => @id, "user" => @user}) %>

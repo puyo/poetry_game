@@ -45,21 +45,6 @@ Hooks.ScrollToBottomOnInput = {
   },
 };
 
-Hooks.TextAreaSave = {
-  mounted() {
-    const updateTextAreaValue = () => {
-      const text = this.el.innerText.trim();
-      this.textArea.value = text;
-      if (text === "") {
-        this.el.innerText = "";
-      }
-    };
-    const textAreaId = this.el.dataset.textareaId;
-    this.textArea = document.querySelector(`#${textAreaId}`);
-    this.el.addEventListener("input", updateTextAreaValue);
-  },
-};
-
 Hooks.UserForm = {
   mounted() {
     this.el.addEventListener("submit", (e) => {

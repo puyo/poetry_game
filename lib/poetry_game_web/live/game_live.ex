@@ -216,7 +216,7 @@ defmodule PoetryGame.Live.GameLive do
             </div>
           <% else %>
             <div class="paper-section word">
-              <input type="text" name="word" placeholder="Enter a word" />
+              <input class="word-input" type="text" name="word" placeholder="Enter a word" />
             </div>
           <% end %>
 
@@ -230,7 +230,7 @@ defmodule PoetryGame.Live.GameLive do
           <% else %>
             <%= if paper.word do %>
               <div class="paper-section question">
-                <input type="text" name="question" placeholder="Enter a question" />
+                <input class="question-input" type="text" name="question" placeholder="Enter a question" />
               </div>
             <% end %>
           <% end %>
@@ -254,17 +254,12 @@ defmodule PoetryGame.Live.GameLive do
           <% else %>
             <%= if paper.word && paper.question do %>
               <div class="paper-section poem">
-                <div
-                  id={"poem_input-#{@game_id}"}
-                  class="input outline-none"
-                  contenteditable
-                  data-placeholder="Write a poem using the word and question above"
-                  phx-hook="TextAreaSave"
-                  data-textarea-id={"poem_text_area-#{@game_id}"}
-                  phx-update="ignore"
-                ></div>
-                <textarea name="poem" style="display: none" id={"poem_text_area-#{@game_id}"}></textarea>
-                <button class="btn btn-secondary" type="submit">Save</button>
+                <div class="poem-input-wrapper">
+                  <textarea class="poem-input" name="poem" onInput="this.parentNode.dataset.value = this.value" rows="2" placeholder="Write a poem using the word and question above"></textarea>
+                </div>
+                <div class="buttons">
+                  <button class="btn btn-secondary" type="submit">Save</button>
+                </div>
               </div>
             <% end %>
           <% end %>
@@ -346,7 +341,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"word" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_word(game_id, user.id, value, user.name)
+    GameServer.set_word(game_id, user.id, String.trim(value), user.name)
     {:noreply, socket}
   end
 
@@ -355,7 +350,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"question" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_question(game_id, user.id, value, user.name)
+    GameServer.set_question(game_id, user.id, String.trim(value), user.name)
     {:noreply, socket}
   end
 
@@ -364,7 +359,7 @@ defmodule PoetryGame.Live.GameLive do
         %{"poem" => value},
         %{assigns: %{game_id: game_id, user: user}} = socket
       ) do
-    GameServer.set_poem(game_id, user.id, value, user.name)
+    GameServer.set_poem(game_id, user.id, String.trim(value), user.name)
     {:noreply, socket}
   end
 

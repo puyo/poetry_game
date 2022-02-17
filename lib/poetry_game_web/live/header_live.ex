@@ -18,7 +18,7 @@ defmodule PoetryGame.Live.HeaderLive do
         </div>
         <%= if @user do %>
           <div class="justify-end">
-            <button class="btn-show-user-form" phx-click="show_form">
+            <button class="btn btn-transparent btn-lg" phx-click="show_form">
               <% color = @user.color %>
               <% name = @user.name %>
               <span class="user-name" style={user_hsl(color)}><%= name %></span>

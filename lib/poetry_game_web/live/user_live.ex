@@ -14,11 +14,9 @@ defmodule PoetryGame.Live.UserLive do
     max_name_length = @max_name_length
 
     ~H"""
-    <div class="h-full bg-black/30 absolute inset-0 place-content-center" style={"z-index: 10000; #{if @show, do: "display: flex;", else: "display: none;"}"}
-      phx-capture-click="hide"
-    >
+    <div class="user-form modal-bg" style={if @show, do: "display: flex;", else: "display: none;"} phx-capture-click="hide">
       <form action="#"
-        class="shadow overflow-hidden rounded-lg max-w-sm bg-white p-4 mx-auto my-auto relative min-w-max"
+        class="modal"
         phx-change="change"
         phx-debounce="200"
         phx-hook="UserForm"
@@ -26,32 +24,26 @@ defmodule PoetryGame.Live.UserLive do
         phx-window-keydown="hide"
         id={"user_form-#{@user.id}"}
       >
-        <a href="#" class="phx-modal-close absolute top-0 right-0 p-2 z-10" phx-click={"hide"}>✖</a>
+        <a href="#" class="modal-close btn btn-transparent" phx-click={"hide"}>✖</a>
 
-        <%= if !@user.name || !@user.color do %>
-          <p class="mb-4 text-sm text-slate-500">You will need to set your name before you can join a game.</p>
-        <% end %>
-
-        <div class="mb-4">
-          <label for="name" class="font-bold text-gray-700 mb-1 block">Name</label>
+        <div class="field">
+          <label for="name" class="block-label">Name</label>
           <input id="name" type="text" name="user[name]" autocomplete="given-name" maxlength={max_name_length}
-            class="text-xl p-2 font-semibold shadow-inner focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-md border border-stone-300"
+            class="user-name"
             style={user_hsl(@user.color)}
             value={@user.name}>
         </div>
 
-        <div class="mb-4">
-          <label for="color" class="block font-bold text-gray-700 mb-1 block">Color</label>
-          <input id="color" type="range" min="0" max="359" value={@user.color} name="user[color]" class="slider block w-full mb-2">
-          <div class="py-2"
-            style="background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);">
+        <div class="field">
+          <label for="color" class="block-label">Color</label>
+          <input id="color" type="range" min="0" max="359" value={@user.color} name="user[color]">
+          <div class="rainbow-bg">
+            &nbsp;
           </div>
         </div>
 
-        <div>
-          <button type="submit" class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200">
-            Save
-          </button>
+        <div class="buttons">
+          <button type="submit" class="btn btn-secondary">Save</button>
         </div>
       </form>
     </div>

@@ -36,7 +36,7 @@ defmodule PoetryGame.Live.GameLive do
           <% end %>
         </div>
       <% else %>
-        <div class="h-full bg-black/30 absolute inset-0 flex place-content-center">
+        <div class="modal-bg">
           <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max text-center">
             <%= if Game.can_start?(@game) do %>
               <button class="p-4 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md mb-4"

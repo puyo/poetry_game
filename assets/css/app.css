@@ -5,19 +5,76 @@
 @tailwind utilities;
 
 @layer base {
-  h1 {
-    @apply text-xl;
-    @apply font-semibold;
-    @apply mb-2;
+  ol {
+    @apply list-decimal;
+    @apply list-inside;
+    @apply mb-4;
   }
-  a {
-    @apply text-blue-900;
-  }
-  main > .container {
-    @apply pt-4;
-  }
-  html, body { @apply h-full; }
 }
+
+/* base ---------------------------------------------------- */
+
+html, body { height: 100%; }
+
+a { color: blue; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.h-full { height: 100%; }
+.w-full { width: 100%; }
+.shrink { flex-shrink: 1; }
+.grow { flex-grow: 1; }
+
+.container {
+  margin: 0 auto;
+  max-width: 80.0rem;
+  padding: 0 2.0rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* sections ------------------------------------------------ */
+
+main > section {
+  margin: 1rem auto;
+  max-width: 80.0rem;
+  padding: 0 2.0rem;
+}
+
+/* buttons ------------------------------------------------- */
+
+.btn {
+  border-radius: 0.375rem;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  font-weight: 600;
+}
+.btn-primary {
+  color: white;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  padding: 1rem;
+  background-color: hsl(217, 90%, 60%);
+}
+.btn-primary:hover {
+  background-color: hsl(217, 90%, 65%);
+}
+
+.btn-optional {
+  color: black;
+  padding: 0.5rem;
+  background-color: hsl(48, 90%, 80%);
+}
+.btn-optional:hover {
+  background-color: hsl(48, 90%, 85%);
+}
+.btn[disabled] {
+  background-color: hsl(0, 0%, 50%) !important;
+}
+
+/* alerts -------------------------------------------------- */
 
 .live-alerts {
   position: absolute;
@@ -26,26 +83,28 @@
   width: 50vw;
 }
 
-.board {
+/* game ---------------------------------------------------- */
+
+.game-board {
   overflow: hidden;
   position: relative;
   height: 100%;
 }
 
-.finished .board {
+.finished .game-board {
   overflow: auto;
   position: initial;
   height: 100%;
 }
 
-.seat, .paper {
+.game .seat, .game .paper {
   min-width: 300px;
   min-height: 400px;
   position: absolute;
   transform: translate(-50%, -50%);
 }
 
-.seat .user-name {
+.game .seat .user-name {
   position: absolute;
   bottom: -1.5em;
   right: 2rem;
@@ -57,11 +116,11 @@
   font-weight: 600;
 }
 
-.finished .seat {
+.game .finished .seat {
   display: none;
 }
 
-.paper {
+.game .paper {
   background-color: white;
   color: black;
   border: 4px solid black;
@@ -70,41 +129,41 @@
   overflow: auto;
 }
 
-.paper [contenteditable] {
+.game .paper [contenteditable] {
   /* bigger click region to focus */
   margin: 0 -1rem 1rem -1rem;
   padding: 0 1rem;
 }
-.paper button {
+.game .paper button {
 }
 
-.paper .label {
+.game .paper .label {
   display: none;
 }
 
-.paper section {
+.game .paper section {
   padding: 1rem;
 }
 
-.paper section:not(:first-child) {
+.game .paper section:not(:first-child) {
   border-top: 2px dashed rgba(0, 0, 0, 0.2);
 }
 
-.paper .attribution {
+.game .paper .attribution {
   margin-top: 0.25rem;
   color: hsl(0, 0%, 50%);
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
 
-.paper [contenteditable]:empty:before {
+.game .paper [contenteditable]:empty:before {
   content: attr(data-placeholder);
   color: #9ca3af;
   width: calc(300px - 8px - 2rem);
   display: block;
 }
 
-.finished .paper {
+.game .finished .paper {
   position: initial;
   transform: initial;
   min-height: initial;
@@ -113,6 +172,6 @@
   margin: 1rem;
 }
 
-.settled .paper {
+.game .settled .paper {
   transition: all 1s;
 }

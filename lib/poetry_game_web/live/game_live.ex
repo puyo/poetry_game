@@ -12,11 +12,21 @@ defmodule PoetryGame.Live.GameLive do
   @impl true
   def render(%{width: width, height: height, game: game, user: user} = assigns)
       when width > 0 and height > 0 do
+    assigns =
+      Map.merge(
+        assigns,
+        %{
+          game_finished: Game.finished?(game),
+          user_seat_index: Game.user_seat_index(game, user.id) || 0,
+          nseats: length(game.seats)
+        }
+      )
+
     ~H"""
     <% class = if Game.finished?(@game), do: "finished", else: "" %>
     <div id={"game_#{@game_id}"} class={"game h-full #{@settled} #{class}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
       <%= if Game.started?(@game) do %>
-        <div class="board">
+        <div class="game-board">
           <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
             <%= render_seat(seat_i, assigns) %>
           <% end %>
@@ -38,15 +48,15 @@ defmodule PoetryGame.Live.GameLive do
                 Start Game
               </button>
             <% end %>
-            <p class="mb-4">
+            <p>
               <% players_needed = max(0, 3 - map_size(@users)) %>
               Waiting for <%= players_needed %> more
               <%= if players_needed == 1, do: "player", else: "players" %>
             </p>
-            <p class="mb-4">
+            <p>
               To get more players, copy the link below and send it to your friends
             </p>
-            <p class="mb-4 font-semibold">
+            <p class="font-semibold">
               <input class="game-url w-full p-2 bg-stone-100" type="text" value={Routes.game_url(@socket, :show, @game_id)} />
             </p>
             <div>

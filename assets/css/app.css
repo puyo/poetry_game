@@ -64,7 +64,7 @@ main > .container {
   right: 0;
   bottom: 0;
   left: 0;
-  position: absolute;
+  position: fixed;
 }
 
 .modal {
@@ -80,12 +80,13 @@ main > .container {
 }
 
 .modal-close {
+  color: black;
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
   padding: 0.5rem;
   line-height: 1;
-  z-index: 10;
+  z-index: 1;
 }
 
 /* buttons ------------------------------------------------- */
@@ -165,7 +166,6 @@ form .block-label {
 header {
   background-color: white;
   border-bottom: 4px solid black;
-  z-index: 2;
 }
 
 header .logo {

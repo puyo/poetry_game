@@ -1,12 +1,12 @@
+<% user = %{
+  id: Plug.Conn.get_session(@conn, :user_id),
+  color: Plug.Conn.get_session(@conn, :user_color),
+  name: Plug.Conn.get_session(@conn, :user_name),
+} %>
+<%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"user" => user}) %>
 <div class="flex flex-col h-full">
   <header class="shrink">
-    <%=
-      live_render(@conn, PoetryGame.Live.HeaderLive, session: %{"user" => %{
-        id: Plug.Conn.get_session(@conn, :user_id),
-        color: Plug.Conn.get_session(@conn, :user_color),
-        name: Plug.Conn.get_session(@conn, :user_name),
-      }})
-    %>
+    <%= live_render(@conn, PoetryGame.Live.HeaderLive, session: %{"user" => user}) %>
   </header>
   <main class="grow">
     <%= @inner_content %>

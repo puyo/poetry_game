@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.HeaderLive do
   use Phoenix.LiveView,
-    container: {:div, class: "shrink"},
+    container: {:div, class: "header-live"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.Endpoint
@@ -11,7 +11,6 @@ defmodule PoetryGame.Live.HeaderLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <%= live_render(@socket, PoetryGame.Live.UserLive, id: @user.id, session: %{"user" => @user}) %>
     <div class="container">
       <div class="flex justify-between items-center">
         <div class="justify-start">

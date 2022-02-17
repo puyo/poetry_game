@@ -78,4 +78,25 @@ Hooks.UserForm = {
   },
 };
 
+Hooks.CopyToClipboard = {
+  mounted() {
+    const oldText = this.el.textContent;
+    const onClick = (e) => {
+      e.preventDefault();
+      const input = document.querySelector(this.el.dataset.copy);
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      input.setSelectionRange(0, 0);
+      input.blur();
+      this.el.innerText = "Copied!";
+      const timer = setTimeout(() => {
+        this.el.innerText = oldText;
+      }, 1000);
+    };
+
+    this.el.addEventListener("click", onClick);
+  },
+};
+
 export default Hooks;

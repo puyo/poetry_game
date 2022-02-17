@@ -27,28 +27,37 @@ defmodule PoetryGame.Live.GameLive do
         </div>
       <% else %>
         <div class="h-full bg-black/30 absolute inset-0 flex place-content-center">
-          <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max">
+          <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max text-center">
             <%= if Game.can_start?(@game) do %>
-              <button class="p-2 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md"
+              <button class="p-4 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md mb-4"
                 phx-click="start">
                 Start Game
               </button>
             <% else %>
-              <p class="mb-4">
-                <% players_needed = max(0, 3 - map_size(@users)) %>
-                Waiting for <%= players_needed %> more
-                <%= if players_needed == 1, do: "player", else: "players" %>
-              </p>
-              <p class="mb-4">
-                Copy the game's link and send it to your friends
-              </p>
-              <p class="font-semibold">
-                <%= Routes.game_url(@socket, :show, @game_id) %>
-              </p>
+              <button class="p-4 font-semibold text-xl outline-none text-white bg-stone-700 rounded-md mb-4" disabled>
+                Start Game
+              </button>
             <% end %>
+            <p class="mb-4">
+              <% players_needed = max(0, 3 - map_size(@users)) %>
+              Waiting for <%= players_needed %> more
+              <%= if players_needed == 1, do: "player", else: "players" %>
+            </p>
+            <p class="mb-4">
+              To get more players, copy the link below and send it to your friends
+            </p>
+            <p class="mb-4 font-semibold">
+              <input class="game-url w-full p-2 bg-stone-100" type="text" value={Routes.game_url(@socket, :show, @game_id)} />
+            </p>
+            <div>
+              <button id={"copy-to-clipboard-button-#{@game_id}"} class="p-2 font-semibold outline-none bg-amber-100 focus:bg-amber-200 hover:bg-amber-200 rounded-md"
+                phx-hook="CopyToClipboard"
+                data-copy=".game-url">Copy Link</button>
+            </div>
           </div>
         </div>
       <% end %>
+      <input class="game-url hidden" type="text" value={Routes.game_url(@socket, :show, @game_id)} />
     </div>
     """
   end

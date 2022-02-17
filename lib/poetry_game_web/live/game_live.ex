@@ -12,30 +12,15 @@ defmodule PoetryGame.Live.GameLive do
   @impl true
   def render(%{width: width, height: height, game: game, user: user} = assigns)
       when width > 0 and height > 0 do
-    assigns =
-      Map.merge(
-        assigns,
-        %{
-          game_started: Game.started?(game),
-          game_can_start: Game.can_start?(game),
-          game_finished: Game.finished?(game),
-          user_seat_index: Game.user_seat_index(game, user.id) || 0,
-          nseats: length(game.seats)
-        }
-      )
-
-    papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end)
-    class = if assigns.game_finished, do: "finished", else: ""
-
-    players_needed = Game.number_of_extra_players_needed(assigns.game)
-
     ~H"""
+    <% class = if Game.finished?(@game), do: "finished", else: "" %>
     <div id={"game_#{@game_id}"} class={"game h-full #{@settled} #{class}"} phx-hook="GameSize" data-width={@width} data-height={@height}>
-      <%= if @game_started do %>
+      <%= if Game.started?(@game) do %>
         <div class="board">
           <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
             <%= render_seat(seat_i, assigns) %>
           <% end %>
+          <% papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end) %>
           <%= for paper <- papers do %>
             <%= render_paper(paper, assigns) %>
           <% end %>
@@ -43,13 +28,14 @@ defmodule PoetryGame.Live.GameLive do
       <% else %>
         <div class="h-full bg-black/30 absolute inset-0 flex place-content-center">
           <div class="shadow overflow-hidden rounded-lg max-w-sm text-black bg-white p-8 mx-auto my-auto relative min-w-max">
-            <%= if @game_can_start do %>
+            <%= if Game.can_start?(@game) do %>
               <button class="p-2 font-semibold text-xl outline-none text-white bg-blue-700 focus:bg-blue-800 hover:bg-blue-800 rounded-md"
                 phx-click="start">
                 Start Game
               </button>
             <% else %>
               <p class="mb-4">
+                <% players_needed = max(0, 3 - map_size(@users)) %>
                 Waiting for <%= players_needed %> more
                 <%= if players_needed == 1, do: "player", else: "players" %>
               </p>
@@ -417,10 +403,13 @@ defmodule PoetryGame.Live.GameLive do
     {:noreply, assign(socket, user: new_user)}
   end
 
-  def handle_info(%{event: "presence_diff", payload: _payload}, socket) do
-    # IO.inspect(game_live: socket.assigns.user.name, presence_diff: payload)
+  def handle_info(%{event: "presence_diff", payload: payload}, socket) do
     users = users(socket.assigns.topic)
-    {:noreply, assign(socket, users: users)}
+
+    {:noreply,
+     assign(socket,
+       users: users
+     )}
   end
 
   defp users(topic) do

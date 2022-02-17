@@ -44,9 +44,9 @@ p {
   line-height: 1.25rem;
 }
 
-/* sections ------------------------------------------------ */
+/* main layout --------------------------------------------- */
 
-main > section {
+main > .container {
   margin: 1rem auto;
   max-width: 80.0rem;
   padding: 0 2.0rem;
@@ -178,6 +178,7 @@ header .logo {
 .game {
   color: white;
   background-color: hsl(0, 70%, 35%);
+  position: relative;
 }
 
 .game-board {

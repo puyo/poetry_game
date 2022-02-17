@@ -11,13 +11,13 @@ defmodule PoetryGame.Live.HeaderLive do
   @impl true
   def render(assigns) do
     ~H"""
+    <%= live_render(@socket, PoetryGame.Live.UserLive, id: @user.id, session: %{"user" => @user}) %>
     <div class="container">
       <div class="flex justify-between items-center">
         <div class="justify-start">
           <img class="logo" src={Routes.static_path(@socket, "/images/poetry-game.svg")} alt="Poetry Game"/>
         </div>
         <%= if @user do %>
-          <%= live_render(@socket, PoetryGame.Live.UserLive, id: @user.id, session: %{"user" => @user}) %>
           <div class="justify-end">
             <button class="btn btn-transparent btn-lg" phx-click="show_form">
               <% color = @user.color %>

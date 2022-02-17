@@ -51,6 +51,10 @@ p {
 .phx-error {
 }
 
+.phx-loading {
+  cursor: wait;
+}
+
 /* main layout --------------------------------------------- */
 
 main {

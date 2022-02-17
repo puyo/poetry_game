@@ -40,7 +40,7 @@ defmodule PoetryGame.Live.GameLive do
           <% end %>
         </div>
       <% else %>
-        <div class="modal-bg">
+        <div class="modal-bg modal-bg-local">
           <div class="modal pre-game-info">
             <p>
               <%= if Game.can_start?(@game) do %>

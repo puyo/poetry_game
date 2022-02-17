@@ -82,6 +82,11 @@ main .container {
   position: fixed;
 }
 
+.modal-bg-local {
+  position: absolute !important;
+  z-index: initial;
+}
+
 .modal {
   color: black;
   background-color: white;
@@ -189,6 +194,12 @@ header .logo {
 }
 
 /* game ---------------------------------------------------- */
+
+.game {
+  /* constrain start game info to this area as it uses position absolute, so
+   * that players can chat to each other */
+  position: relative;
+}
 
 .game-board {
   overflow: hidden;
@@ -343,6 +354,7 @@ header .logo {
 .chat-messages {
   border-bottom: 4px solid hsl(20, 5%, 90%);
   background-color: hsl(20, 5%, 98%);
+  color: black;
   font-size: 0.875rem;
   line-height: 1.25rem;
   position: relative;
@@ -360,6 +372,7 @@ header .logo {
   outline: none;
   width: 100%;
   padding: 0.5rem;
+  color: black;
   background-color: hsl(20, 5%, 97%)
 }
 .chat-input button {

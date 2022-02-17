@@ -15,7 +15,7 @@ defmodule PoetryGame.Live.UserLive do
     max_name_length = @max_name_length
 
     ~H"""
-    <button class="btn btn-transparent btn-lg" phx-click="show">
+    <button class="btn btn-transparent" phx-click="show">
       <% color = @user.color %>
       <% name = @user.name %>
       <span class="user-name" style={user_hsl(color)}><%= name %></span>

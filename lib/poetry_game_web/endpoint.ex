@@ -25,7 +25,7 @@ defmodule PoetryGameWeb.Endpoint do
     at: "/",
     from: :poetry_game,
     gzip: false,
-    only: ~w(assets fonts images robots.txt)
+    only: ~w(assets fonts images robots.txt favicon.ico)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

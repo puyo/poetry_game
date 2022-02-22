@@ -10,8 +10,19 @@
     <%= csrf_meta_tag() %>
     <% title = "Poetry Game" %>
     <%= if assigns[:page_title], do: live_title_tag(assigns[:page_title], suffix: " · #{title}"), else: live_title_tag(title) %>
+    <%# css %>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
-    <link phx-track-static rel="icon" href={Routes.static_path(@conn, "/images/favicon.svg")}>
+    <%# favicons %>
+    <link phx-track-static rel="shortcut icon" href={Routes.static_path(@conn, "/images/favicon/favicon.svg")}>
+    <link phx-track-static rel="apple-touch-icon" sizes="180x180"  href={Routes.static_path(@conn, "/images/favicon/apple-touch-icon.png")} />
+    <link phx-track-static rel="icon" type="image/png" sizes="32x32" href={Routes.static_path(@conn, "/images/favicon/favicon-32x32.png")} />
+    <link phx-track-static rel="icon" type="image/png" sizes="16x16" href={Routes.static_path(@conn, "/images/favicon/favicon-16x16.png")} />
+    <link phx-track-static rel="manifest" href={Routes.static_path(@conn, "/images/favicon/site.webmanifest")} />
+    <link phx-track-static rel="mask-icon" href={Routes.static_path(@conn, "/images/favicon/safari-pinned-tab.svg")} color="#5bbad5" />
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta phx-track-static name="msapplication-config" content={Routes.static_path(@conn, "/images/favicon/browserconfig.xml")}>
+    <meta name="theme-color" content="#ffffff"/>
+    <%# javascript %>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
   <body>

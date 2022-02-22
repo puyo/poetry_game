@@ -1,8 +1,8 @@
-<div class="flex h-full">
+<div class="flex h-full flex-col md:flex-row">
   <div class="grow game">
     <%= live_render(@conn, PoetryGame.Live.GameLive, session: %{"id" => @id, "user" => @user}) %>
   </div>
-  <div class="shrink chat">
+  <div class="shrink chat border-t-4 md:border-t-0 md:border-l-4 border-black">
     <%= live_render(@conn, PoetryGame.Live.ChatLive, session: %{"game_id" => @id, "user" => @user}) %>
   </div>
 </div>

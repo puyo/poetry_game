@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.ChatLive do
   use Phoenix.LiveView,
-    container: {:div, class: "chat-live h-full"},
+    container: {:div, class: "chat h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.{Endpoint, Presence}

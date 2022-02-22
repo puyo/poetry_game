@@ -1,6 +1,6 @@
 defmodule PoetryGame.Live.GameLive do
   use Phoenix.LiveView,
-    container: {:div, class: "game-live h-full"},
+    container: {:div, class: "game h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
 
   alias PoetryGameWeb.{Endpoint, Presence}
@@ -24,20 +24,36 @@ defmodule PoetryGame.Live.GameLive do
 
     ~H"""
     <% finished_class = if Game.finished?(@game), do: "finished", else: "" %>
-    <div class={"game h-full #{@settled} #{finished_class}"}
+    <div class={"h-full #{@settled} #{finished_class}"}
         id={"game-hook-#{@game_id}"}
         phx-hook="GameSize"
         data-width={@width}
         data-height={@height}>
       <%= if Game.started?(@game) do %>
-        <div class="game-board">
-          <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
-            <%= render_seat(seat_i, assigns) %>
-          <% end %>
-          <% papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end) %>
-          <%= for paper <- papers do %>
-            <%= render_paper(paper, assigns) %>
-          <% end %>
+        <div class="game-board-wrapper">
+          <div class="game-board">
+            <div class="seats">
+              <%= for {_seat, seat_i} <- Enum.with_index(@game.seats) do %>
+                <%= render_seat(seat_i, assigns) %>
+              <% end %>
+            </div>
+            <div class="papers">
+              <% papers = Game.paper_list(game) |> Enum.sort_by(fn p -> p.id end) %>
+              <%= for paper <- papers do %>
+                <%= render_paper(paper, assigns) %>
+              <% end %>
+            </div>
+            <div class="hidden box">
+              <p>
+                The game is finished! Please copy your poems if you want to keep them.
+              </p>
+
+              <form action={Routes.game_path(@socket, :create)} method="post" class="text-center">
+                <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+                <button type="submit" class="btn btn-primary btn-lg">Start New Game</button>
+              </form>
+            </div>
+          </div>
         </div>
       <% else %>
         <div class="modal-bg modal-bg-local">

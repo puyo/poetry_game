@@ -96,6 +96,7 @@ main .box {
   bottom: 0;
   left: 0;
   position: fixed;
+  padding: 1rem;
 }
 
 .modal-bg-local {
@@ -202,7 +203,6 @@ header {
   background-color: white;
   border-bottom: 4px solid black;
 }
-
 header .logo {
   padding: 0.5rem 0;
   display: block;
@@ -211,22 +211,30 @@ header .logo {
 /* game ---------------------------------------------------- */
 
 .game {
-  /* constrain start game info to this area as it uses position absolute, so
+  /* constrain start game modal to this area as it uses position absolute, so
    * that players can chat to each other */
   position: relative;
 }
-
 .game-board {
-  overflow: hidden;
+  position: relative; /* papers */
+  height: 100%;
+}
+.game-board-wrapper {
+  color-scheme: light;
   position: relative;
   height: 100%;
+  background-color: hsl(0, 70%, 35%);
+  overflow: hidden;
+}
+.game-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
-.finished .game-board {
-  overflow: auto;
-  position: initial;
-  height: 100%;
-}
+/* game seats and papers ----------------------------------- */
 
 .game .seat, .game .paper {
   min-width: 300px;
@@ -246,10 +254,6 @@ header .logo {
   background-color: white;
   color: black;
   font-weight: 600;
-}
-
-.game .finished .seat {
-  display: none;
 }
 
 .game .paper {
@@ -339,19 +343,36 @@ header .logo {
   display: block;
 }
 
-.game .finished .paper {
-  vertical-align: top;
+.game .settled .paper {
+  transition: top 1s, left 1s;
+}
+
+/* finished game ------------------------------------------- */
+
+.finished .box {
+  display: block;
+  margin: 1rem 0;
+}
+.finished .seat {
+  display: none;
+}
+.finished .game-board {
+  padding: 1rem;
+}
+.finished .game-board-wrapper {
+  overflow: auto;
+}
+.finished .papers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.finished .paper {
   position: initial;
   transform: initial;
   min-height: initial;
-  max-width: 40em !important;
-  display: inline-block;
   transition: initial !important;
-  margin: 1rem;
-}
-
-.game .settled .paper {
-  transition: top 1s, left 1s;
+  resize: none;
 }
 
 /* chat ---------------------------------------------------- */

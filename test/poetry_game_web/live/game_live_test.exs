@@ -3,37 +3,69 @@ defmodule PoetryGameWeb.GameLiveTest do
 
   import Phoenix.LiveViewTest
 
-  alias PoetryGameWeb.Presence
+  test "successfully gets ready to start the game", %{conn: conn} do
+    game_id = "1"
+    user1 = %{id: "1", color: 1, name: "user1"}
+    user2 = %{id: "2", color: 2, name: "user2"}
+    user3 = %{id: "3", color: 3, name: "user3"}
 
-  describe "first mount" do
-    test "displays something", %{conn: conn} do
-      user1 = %{id: "1", color: 1, name: "user1"}
-      user2 = %{id: "2", color: 2, name: "user2"}
-      user3 = %{id: "3", color: 3, name: "user3"}
+    assert {:ok, view1, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user1}
+             )
 
-      assert {:ok, view, _html} =
-               live_isolated(conn, PoetryGameWeb.Live.GameLive,
-                 session: %{"id" => "1", "user" => user1}
-               )
+    assert render_hook(view1, "resize", %{width: 800, height: 1000}) =~
+             "Waiting for 2 more players"
 
-      assert render_hook(view, "resize", %{width: 800, height: 1000}) =~
-               "Waiting for 2 more players"
+    assert {:ok, view2, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user2}
+             )
 
-      Presence.track(self(), "game:1", user2.id, user2)
+    assert render_hook(view2, "resize", %{width: 800, height: 1000}) =~
+             "Waiting for 1 more player"
 
-      PoetryGame.GameServer.game("1")
-      |> IO.inspect()
+    assert render(view1) =~ "Waiting for 1 more player"
 
-      assert render(view) =~ "Waiting for 1 more player"
+    assert {:ok, view3, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user3}
+             )
 
-      Presence.track(self(), "game:1", user3.id, user3)
+    assert render_hook(view3, "resize", %{width: 800, height: 1000}) =~
+             "Waiting for 0 more players"
 
-      assert render(view) =~ "Waiting for 0 more players"
+    assert render(view1) =~ "Waiting for 0 more players"
+    assert render(view2) =~ "Waiting for 0 more players"
 
-      PoetryGame.GameServer.game("1")
-      |> IO.inspect()
+    assert view1 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+    assert view2 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+    assert view3 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+  end
 
-      assert view |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
-    end
+  test "the bug?", %{conn: conn} do
+    game_id = "1"
+    user1 = %{id: "1", color: 1, name: "user1"}
+    user2 = %{id: "2", color: 2, name: "user2"}
+    user3 = %{id: "3", color: 3, name: "user3"}
+
+    assert {:ok, view1, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user1}
+             )
+
+    assert {:ok, view2, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user2}
+             )
+
+    assert {:ok, view3, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user3}
+             )
+
+    assert view1 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+    assert view2 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+    assert view3 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
   end
 end

@@ -10,8 +10,23 @@ defmodule PoetryGameWeb.Live.GameLive do
   import PoetryGameWeb.LiveHelpers
 
   @impl true
-  def render(%{width: width, height: height, game: game, user: user} = assigns)
-      when width > 0 and height > 0 do
+  def render(%{error: error} = assigns) when not is_nil(error) do
+    ~H"""
+    <div class="h-full"
+        id={"game-hook-#{@game_id}"}
+        phx-hook="GameSize"
+        data-width="0"
+        data-height="0">
+      <div class="modal-bg modal-bg-local">
+        <div class="modal error">
+          <%= error %>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  def render(%{width: width, height: height, game: game, user: user} = assigns) do
     assigns =
       Map.merge(
         assigns,
@@ -29,7 +44,7 @@ defmodule PoetryGameWeb.Live.GameLive do
         phx-hook="GameSize"
         data-width={@width}
         data-height={@height}>
-      <%= if Game.started?(@game) do %>
+      <%= if Game.started?(@game) && width > 0 && height > 0 do %>
         <div class="game-board-wrapper">
           <div class="game-board">
             <div class="seats">
@@ -66,7 +81,7 @@ defmodule PoetryGameWeb.Live.GameLive do
               <% end %>
             </p>
             <p>
-              <% players_needed = max(0, 3 - map_size(@users)) %>
+              <% players_needed = Game.number_of_extra_players_needed(@game) %>
               Waiting for <%= players_needed %> more <%= if players_needed == 1, do: "player", else: "players" %>
             </p>
             <p>
@@ -88,16 +103,6 @@ defmodule PoetryGameWeb.Live.GameLive do
     </div>
     """
   end
-
-  def render(%{game_id: game_id, width: width, height: height} = assigns) do
-    ~H"""
-    <div id={"game_#{game_id}"} class="grow" phx-hook="GameSize" data-width={width} data-height={height}>
-      &nbsp;
-    </div>
-    """
-  end
-
-  def render(assigns), do: ~H""
 
   defp render_seat(seat_i, assigns) do
     %{
@@ -288,13 +293,13 @@ defmodule PoetryGameWeb.Live.GameLive do
   def mount(_params, %{"id" => game_id, "user" => user}, socket) do
     topic = "game:#{game_id}"
 
-    # all user updates like name/color changes
-    Endpoint.subscribe("user:all")
-
-    # user joins/leaves
-    Presence.track(self(), topic, user.id, user)
+    socket = assign(socket, game_id: game_id, user: user, error: nil)
 
     with true <- connected?(socket),
+         # all user updates like name/color changes
+         :ok <- Endpoint.subscribe("user:all"),
+         # user joins/leaves
+         {:ok, _phx_id} <- Presence.track(self(), topic, user.id, user),
          {:ok, _pid} <- ensure_game_process_exists(game_id),
          :ok <- subscribe_to_updates(game_id),
          {:ok, game} <- ensure_player_joins(game_id, user),
@@ -304,9 +309,7 @@ defmodule PoetryGameWeb.Live.GameLive do
         assign(
           socket,
           game: game,
-          game_id: game_id,
           topic: topic,
-          user: user,
           rotate: 0.0,
           width: 0,
           height: 0,
@@ -321,7 +324,12 @@ defmodule PoetryGameWeb.Live.GameLive do
         )
       }
     else
-      _ -> {:ok, socket}
+      false ->
+        {:ok, assign(socket, error: "Connecting...")}
+
+      err ->
+        IO.inspect(err)
+        {:ok, assign(socket, error: "Error")}
     end
   end
 

@@ -46,10 +46,17 @@ defmodule PoetryGameWeb.GameLiveTest do
     assert view1 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
     assert view2 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
     assert view3 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
+
+    assert view1
+           |> element("button.start-game")
+           |> render_click() =~ "Enter a word"
+
+    assert view2 |> render() =~ "Enter a word"
+    assert view3 |> render() =~ "Enter a word"
   end
 
   test "without resize events", %{conn: conn} do
-    game_id = "1"
+    game_id = "2"
     user1 = %{id: "1", color: 1, name: "user1"}
     user2 = %{id: "2", color: 2, name: "user2"}
     user3 = %{id: "3", color: 3, name: "user3"}

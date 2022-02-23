@@ -3,7 +3,12 @@ defmodule PoetryGameWeb.GameLiveTest do
 
   import Phoenix.LiveViewTest
 
-  test "successfully gets ready to start the game", %{conn: conn} do
+  test "disconnected", %{conn: conn} do
+    conn = get(conn, "/games/1")
+    assert html_response(conn, 200) =~ "Connecting..."
+  end
+
+  test "successful game", %{conn: conn} do
     game_id = "1"
     user1 = %{id: "1", color: 1, name: "user1"}
     user2 = %{id: "2", color: 2, name: "user2"}
@@ -43,7 +48,7 @@ defmodule PoetryGameWeb.GameLiveTest do
     assert view3 |> element("button.start-game:not([disabled])") |> render() =~ "Start Game"
   end
 
-  test "the bug?", %{conn: conn} do
+  test "without resize events", %{conn: conn} do
     game_id = "1"
     user1 = %{id: "1", color: 1, name: "user1"}
     user2 = %{id: "2", color: 2, name: "user2"}

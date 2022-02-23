@@ -60,9 +60,9 @@ defmodule PoetryGameWeb.Live.GameLive do
           <div class="modal pre-game-info">
             <p>
               <%= if Game.can_start?(@game) do %>
-                <button class="btn btn-primary btn-lg" phx-click="start">Start Game</button>
+                <button class="start-game btn btn-primary btn-lg" phx-click="start">Start Game</button>
               <% else %>
-                <button class="btn btn-primary btn-lg" disabled>Start Game</button>
+                <button class="start-game btn btn-primary btn-lg" disabled>Start Game</button>
               <% end %>
             </p>
             <p>

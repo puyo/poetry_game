@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="grid grid-cols-1 md:grid-cols-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
     <div class="box">
       <h1>About this game</h1>
       <p>
@@ -19,15 +19,14 @@
         <button type="submit" class="btn btn-primary btn-lg">Start New Game</button>
       </form>
     </div>
-  </div>
+    <div class="box md:col-span-2">
+      <h1>Instructions for playing with pens and paper</h1>
 
-  <div class="box">
-    <h1>Instructions for playing with pens and paper</h1>
-
-    <%# At small sizes, let them click to open in a new tab %>
-    <img class="hidden md:block w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
-    <a class="block md:hidden" target="_blank" href={Routes.static_path(@conn, "/images/intro.svg")}>
-      <img class="w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
-    </a>
+      <%# At small sizes, let them click to open in a new tab %>
+      <img class="hidden md:block w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
+      <a class="block md:hidden" target="_blank" href={Routes.static_path(@conn, "/images/intro.svg")}>
+        <img class="w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
+      </a>
+    </div>
   </div>
 </div>

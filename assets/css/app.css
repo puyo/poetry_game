@@ -75,7 +75,6 @@ main {
 }
 
 main .box {
-  margin: 1rem;
   max-width: 80rem;
   background-color: white;
   color: black;

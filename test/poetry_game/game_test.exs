@@ -11,6 +11,59 @@ defmodule PoetryGame.GameTest do
     end
   end
 
+  describe "started?/1" do
+    test "false until game starts, then true even if game finishes" do
+      {:ok, game} = demo_game()
+      assert Game.started?(game) == false
+      {:ok, game} = Game.start(game)
+      assert Game.started?(game) == true
+      {:ok, game} = finish_demo_game(game)
+      assert Game.started?(game) == true
+    end
+  end
+
+  describe "finished?/1" do
+    test "false until the game is finished" do
+      {:ok, game} = demo_game()
+      assert Game.finished?(game) == false
+      {:ok, game} = Game.start(game)
+      assert Game.finished?(game) == false
+      {:ok, game} = finish_demo_game(game)
+      assert Game.finished?(game) == true
+    end
+  end
+
+  describe "number_of_extra_players_needed/1" do
+    test "starts at 3, goes to 0 when players are joined, does not go below 0" do
+      game = Game.init("game_id")
+      assert Game.number_of_extra_players_needed(game) == 3
+      {:ok, game} = demo_game()
+      assert Game.number_of_extra_players_needed(game) == 0
+      {:ok, game} = Game.add_member(game, %{id: "4"})
+      assert Game.number_of_extra_players_needed(game) == 0
+    end
+  end
+
+  describe "paper_index_within_seat/2" do
+    test "" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      paper1_id = get_in(game.seats, [Access.at(0), :papers, Access.at(0), :id])
+      {:ok, game} = Game.set_word(game, "1", "w1", "user1")
+      assert Game.paper_index_within_seat(game, paper1_id) == 1
+    end
+  end
+
+  describe "bootstrap/1" do
+    test "sets words and questions in a started game" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      {:ok, game} = Game.bootstrap(game)
+      paper_word = get_in(game.seats, [Access.at(0), :papers, Access.at(0), :word, :value])
+      assert not is_nil(paper_word)
+    end
+  end
+
   describe "user_at_seat/2" do
     test "success" do
       {:ok, game} = demo_game()
@@ -62,6 +115,19 @@ defmodule PoetryGame.GameTest do
                %{papers: [%{word: nil}]}
              ] = game.seats
     end
+
+    test "failure, no such user" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      assert {:error, :invalid} = Game.set_word(game, "non-existant", "foo", "a")
+    end
+
+    test "failure, user has no paper" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      {:ok, game} = Game.set_word(game, "1", "foo", "a")
+      assert {:error, :invalid} = Game.set_word(game, "1", "foo", "a")
+    end
   end
 
   describe "set_question/3" do
@@ -111,6 +177,20 @@ defmodule PoetryGame.GameTest do
          {:ok, game} <- Game.add_member(game, %{id: "1"}),
          {:ok, game} <- Game.add_member(game, %{id: "2"}),
          {:ok, game} <- Game.add_member(game, %{id: "3"}) do
+      {:ok, game}
+    end
+  end
+
+  defp finish_demo_game(game) do
+    with {:ok, game} <- Game.set_word(game, "1", "w1", "user1"),
+         {:ok, game} <- Game.set_word(game, "2", "w2", "user2"),
+         {:ok, game} <- Game.set_word(game, "3", "w3", "user3"),
+         {:ok, game} <- Game.set_question(game, "1", "q1", "user1"),
+         {:ok, game} <- Game.set_question(game, "2", "q2", "user2"),
+         {:ok, game} <- Game.set_question(game, "3", "q3", "user3"),
+         {:ok, game} <- Game.set_poem(game, "1", "p1", "user1"),
+         {:ok, game} <- Game.set_poem(game, "2", "p2", "user2"),
+         {:ok, game} <- Game.set_poem(game, "3", "p3", "user3") do
       {:ok, game}
     end
   end

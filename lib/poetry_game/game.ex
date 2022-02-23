@@ -35,8 +35,9 @@ defmodule PoetryGame.Game do
   end
 
   def finished?(game) do
-    paper_list(game)
-    |> Enum.all?(&paper_finished?/1)
+    length(game.seats) > 0 &&
+      paper_list(game)
+      |> Enum.all?(&paper_finished?/1)
   end
 
   def paper_finished?(paper) do
@@ -83,19 +84,21 @@ defmodule PoetryGame.Game do
   end
 
   def set_word(game, user_id, word, author) do
-    with {:ok, game} <- set_value(game, user_id, :word, word, author) do
-      move_paper_to_next_seat(game, user_id)
+    with {:ok, game, user_index} <- set_value(game, user_id, :word, word, author) do
+      move_paper_to_next_seat(game, user_index)
     end
   end
 
   def set_question(game, user_id, question, author) do
-    with {:ok, game} <- set_value(game, user_id, :question, question, author) do
-      move_paper_to_next_seat(game, user_id)
+    with {:ok, game, user_index} <- set_value(game, user_id, :question, question, author) do
+      move_paper_to_next_seat(game, user_index)
     end
   end
 
   def set_poem(game, user_id, poem, author) do
-    set_value(game, user_id, :poem, poem, author)
+    with {:ok, game, _user_index} <- set_value(game, user_id, :poem, poem, author) do
+      {:ok, game}
+    end
   end
 
   def player_list(game) do
@@ -152,26 +155,29 @@ defmodule PoetryGame.Game do
   end
 
   defp set_value(game, user_id, key, value, author) do
-    index = user_seat_index(game, user_id)
+    case user_seat_index(game, user_id) do
+      nil ->
+        {:error, :invalid}
 
-    seats =
-      put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], %{
-        value: value,
-        author: author
-      })
+      index ->
+        seats =
+          put_in(game.seats, [Access.at!(index), :papers, Access.at!(0), key], %{
+            value: value,
+            author: author
+          })
 
-    {:ok, %{game | seats: seats}}
+        {:ok, %{game | seats: seats}, index}
+    end
   rescue
-    KeyError -> {:error, :invalid}
+    Enum.OutOfBoundsError -> {:error, :invalid}
   end
 
-  defp move_paper_to_next_seat(game, user_id) do
-    old_index = user_seat_index(game, user_id)
+  defp move_paper_to_next_seat(game, user_index) do
     num_seats = length(game.seats)
-    insert_index = rem(old_index + 1, num_seats)
+    insert_index = rem(user_index + 1, num_seats)
 
     # remove paper from current seat paper list
-    {paper, seats} = pop_in(game.seats, [Access.at!(old_index), :papers, Access.at!(0)])
+    {paper, seats} = pop_in(game.seats, [Access.at!(user_index), :papers, Access.at!(0)])
 
     # append it to the new seat paper list
     seats =
@@ -182,7 +188,5 @@ defmodule PoetryGame.Game do
       )
 
     {:ok, %{game | seats: seats}}
-  rescue
-    KeyError -> {:error, :invalid}
   end
 end

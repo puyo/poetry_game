@@ -1,4 +1,4 @@
-defmodule PoetryGame.Live.UserLive do
+defmodule PoetryGameWeb.Live.UserLive do
   use Phoenix.LiveView,
     container: {:div, class: "user-live"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}

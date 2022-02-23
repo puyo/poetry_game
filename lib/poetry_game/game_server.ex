@@ -108,19 +108,19 @@ defmodule PoetryGame.GameServer do
     handle_game_change(game, do: Game.start(game))
   end
 
-  def handle_call({:set_word, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+  def handle_call({:set_word, _, "", _}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_word, user_id, word, author}, _from, game) do
     handle_game_change(game, do: Game.set_word(game, user_id, word, author))
   end
 
-  def handle_call({:set_question, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+  def handle_call({:set_question, _, "", _}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_question, user_id, question, author}, _from, game) do
     handle_game_change(game, do: Game.set_question(game, user_id, question, author))
   end
 
-  def handle_call({:set_poem, _, ""}, _from, game), do: {:reply, {:error, :invalid}, game}
+  def handle_call({:set_poem, _, "", _}, _from, game), do: {:reply, {:error, :invalid}, game}
 
   def handle_call({:set_poem, user_id, poem, author}, _from, game) do
     handle_game_change(game, do: Game.set_poem(game, user_id, poem, author))

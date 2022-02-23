@@ -7,7 +7,7 @@
         </div>
         <%= if assigns[:user] do %>
           <div class="justify-end">
-            <%= live_render(@conn, PoetryGame.Live.UserLive, session: %{"user" => @user}) %>
+            <%= live_render(@conn, PoetryGameWeb.Live.UserLive, session: %{"user" => @user}) %>
           </div>
         <% end %>
       </div>

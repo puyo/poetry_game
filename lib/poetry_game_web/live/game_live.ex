@@ -1,4 +1,4 @@
-defmodule PoetryGame.Live.GameLive do
+defmodule PoetryGameWeb.Live.GameLive do
   use Phoenix.LiveView,
     container: {:div, class: "game h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}
@@ -67,8 +67,7 @@ defmodule PoetryGame.Live.GameLive do
             </p>
             <p>
               <% players_needed = max(0, 3 - map_size(@users)) %>
-              Waiting for <%= players_needed %> more
-              <%= if players_needed == 1, do: "player", else: "players" %>
+              Waiting for <%= players_needed %> more <%= if players_needed == 1, do: "player", else: "players" %>
             </p>
             <p>
               To get more players, copy the link below and send it to your friends

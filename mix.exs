@@ -10,7 +10,9 @@ defmodule PoetryGame.MixProject do
       compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: preferred_cli_env()
     ]
   end
 
@@ -35,6 +37,7 @@ defmodule PoetryGame.MixProject do
     [
       {:ecto_sql, "~> 3.6"},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
+      {:excoveralls, "~> 0.10", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
@@ -66,6 +69,15 @@ defmodule PoetryGame.MixProject do
         "esbuild default --minify",
         "phx.digest"
       ]
+    ]
+  end
+
+  def preferred_cli_env do
+    [
+      coveralls: :test,
+      "coveralls.detail": :test,
+      "coveralls.post": :test,
+      "coveralls.html": :test
     ]
   end
 end

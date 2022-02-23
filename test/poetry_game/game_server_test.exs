@@ -49,36 +49,36 @@ defmodule PoetryGame.GameServerTest do
   describe "set_word/3" do
     test "success" do
       start_demo_game()
-      assert {:ok, _state} = GameServer.set_word(@id, "1", "foo")
+      assert {:ok, _state} = GameServer.set_word(@id, "1", "foo", "author")
     end
 
     test "invalid" do
       start_demo_game()
-      assert {:error, :invalid} = GameServer.set_word(@id, "1", "")
+      assert {:error, :invalid} = GameServer.set_word(@id, "1", "", "author")
     end
   end
 
   describe "set_question/3" do
     test "success" do
       start_demo_game()
-      assert {:ok, _state} = GameServer.set_question(@id, "1", "foo")
+      assert {:ok, _state} = GameServer.set_question(@id, "1", "foo", "author")
     end
 
     test "invalid" do
       start_demo_game()
-      assert {:error, :invalid} = GameServer.set_question(@id, "1", "")
+      assert {:error, :invalid} = GameServer.set_question(@id, "1", "", "author")
     end
   end
 
   describe "set_poem/3" do
     test "success" do
       start_demo_game()
-      assert {:ok, _state} = GameServer.set_poem(@id, "1", "foo")
+      assert {:ok, _state} = GameServer.set_poem(@id, "1", "foo", "author")
     end
 
     test "invalid" do
       start_demo_game()
-      assert {:error, :invalid} = GameServer.set_poem(@id, "1", "")
+      assert {:error, :invalid} = GameServer.set_poem(@id, "1", "", "author")
     end
   end
 

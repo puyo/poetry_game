@@ -1,4 +1,4 @@
-defmodule PoetryGame.Live.ChatLive do
+defmodule PoetryGameWeb.Live.ChatLive do
   use Phoenix.LiveView,
     container: {:div, class: "chat h-full"},
     layout: {PoetryGameWeb.LayoutView, "live.html"}

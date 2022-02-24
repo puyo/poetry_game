@@ -222,7 +222,7 @@ defmodule PoetryGameWeb.Live.GameLive do
 
       <%= if visible do %>
 
-        <form action="#" phx-submit="submit_value" autocomplete="off">
+        <form class="submit-value" action="#" phx-submit="submit_value" autocomplete="off">
           <%= if paper.word do %>
             <div class="paper-section word">
               <%= if paper.question do %>

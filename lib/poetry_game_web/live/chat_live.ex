@@ -47,14 +47,16 @@ defmodule PoetryGameWeb.Live.ChatLive do
   def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do
     topic = "chat:#{game_id}"
 
-    # chat messages
-    Endpoint.subscribe(topic)
+    if connected?(socket) do
+      # chat messages
+      Endpoint.subscribe(topic)
 
-    # all user updates like name/color changes
-    Endpoint.subscribe("user:all")
+      # all user updates like name/color changes
+      Endpoint.subscribe("user:all")
 
-    # user joins/leaves
-    Presence.track(self(), topic, user.id, user)
+      # user joins/leaves
+      Presence.track(self(), topic, user.id, user)
+    end
 
     {
       :ok,
@@ -87,8 +89,15 @@ defmodule PoetryGameWeb.Live.ChatLive do
   end
 
   def handle_info(%{event: "presence_diff", payload: _payload}, socket) do
-    # IO.inspect(chat_live: socket.assigns.user.name, presence_diff: payload)
     users = users(socket.assigns.topic)
+
+    # IO.inspect(
+    #   pid: self(),
+    #   chat_live: socket.assigns.user.name,
+    #   presence_diff: payload,
+    #   users: users
+    # )
+
     {:noreply, assign(socket, users: users)}
   end
 

@@ -61,7 +61,9 @@ defmodule PoetryGameWeb.Live.UserLive do
 
   @impl true
   def mount(_params, %{"user" => user}, socket) do
-    Endpoint.subscribe("user:#{user.id}")
+    if connected?(socket) do
+      Endpoint.subscribe("user:#{user.id}")
+    end
 
     {:ok, assign(socket, user: user, show: false)}
   end

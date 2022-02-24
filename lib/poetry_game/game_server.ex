@@ -52,6 +52,12 @@ defmodule PoetryGame.GameServer do
     GenServer.call(via(game_id), :bootstrap)
   end
 
+  def terminate(game_id) do
+    [{pid, _} | _] = Registry.lookup(:game_registry, game_id)
+    send(pid, :terminate)
+    :ok
+  end
+
   defp via(game_id) do
     {:via, Registry, {:game_registry, game_id}}
   end

@@ -47,19 +47,7 @@ defmodule PoetryGameWeb.Live.ChatLive do
   def mount(_params, %{"game_id" => game_id, "user" => user}, socket) do
     topic = "chat:#{game_id}"
 
-    if connected?(socket) do
-      # chat messages
-      Endpoint.subscribe(topic)
-
-      # all user updates like name/color changes
-      Endpoint.subscribe("user:all")
-
-      # user joins/leaves
-      Presence.track(self(), topic, user.id, user)
-    end
-
-    {
-      :ok,
+    socket =
       assign(
         socket,
         user: user,
@@ -70,7 +58,20 @@ defmodule PoetryGameWeb.Live.ChatLive do
         rerender: false,
         users: %{}
       )
-    }
+
+    if connected?(socket) do
+      with :ok <- Endpoint.subscribe("user:all"),
+           :ok <- Endpoint.subscribe(topic),
+           {:ok, _phx_id} <- Presence.track(self(), topic, user.id, user) do
+        {:ok, assign(socket, status: nil)}
+      else
+        err ->
+          IO.inspect(err)
+          {:ok, assign(socket, status: "Error")}
+      end
+    else
+      {:ok, assign(socket, status: "Connecting...")}
+    end
   end
 
   def handle_event("submit", %{"message" => message}, %{assigns: %{topic: topic}} = socket) do

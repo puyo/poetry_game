@@ -15,7 +15,7 @@ defmodule PoetryGameWeb.Live.UserLive do
     max_name_length = @max_name_length
 
     ~H"""
-    <button class="btn btn-transparent" phx-click="show">
+    <button class="show-user-form btn btn-transparent" phx-click="show">
       <% color = @user.color %>
       <% name = @user.name %>
       <span class="user-name" style={user_hsl(color)}><%= name %></span>
@@ -61,11 +61,19 @@ defmodule PoetryGameWeb.Live.UserLive do
 
   @impl true
   def mount(_params, %{"user" => user}, socket) do
-    if connected?(socket) do
-      Endpoint.subscribe("user:#{user.id}")
-    end
+    socket = assign(socket, user: user, show: false)
 
-    {:ok, assign(socket, user: user, show: false)}
+    if connected?(socket) do
+      with :ok <- Endpoint.subscribe("user:#{user.id}") do
+        {:ok, assign(socket, status: nil)}
+      else
+        err ->
+          IO.inspect(err)
+          {:ok, assign(socket, status: "Error")}
+      end
+    else
+      {:ok, assign(socket, status: "Connecting...")}
+    end
   end
 
   @impl true

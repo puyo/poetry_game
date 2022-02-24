@@ -10,7 +10,7 @@ defmodule PoetryGameWeb.Live.GameLive do
   import PoetryGameWeb.LiveHelpers
 
   @impl true
-  def render(%{error: error} = assigns) when not is_nil(error) do
+  def render(%{status: status} = assigns) when not is_nil(status) do
     ~H"""
     <div class="h-full"
         id={"game-hook-#{@game_id}"}
@@ -18,8 +18,8 @@ defmodule PoetryGameWeb.Live.GameLive do
         data-width="0"
         data-height="0">
       <div class="modal-bg modal-bg-local">
-        <div class="modal error">
-          <%= error %>
+        <div class="modal status">
+          <%= status %>
         </div>
       </div>
     </div>
@@ -293,43 +293,42 @@ defmodule PoetryGameWeb.Live.GameLive do
   def mount(_params, %{"id" => game_id, "user" => user}, socket) do
     topic = "game:#{game_id}"
 
-    socket = assign(socket, game_id: game_id, user: user, error: nil)
+    socket = assign(socket, game_id: game_id, user: user, status: nil)
 
-    with true <- connected?(socket),
-         # all user updates like name/color changes
-         :ok <- Endpoint.subscribe("user:all"),
-         # user joins/leaves
-         {:ok, _phx_id} <- Presence.track(self(), topic, user.id, user),
-         {:ok, _pid} <- ensure_game_process_exists(game_id),
-         :ok <- subscribe_to_updates(game_id),
-         {:ok, game} <- ensure_player_joins(game_id, user),
-         :ok <- monitor_live_view_process(game_id, user) do
-      {
-        :ok,
-        assign(
-          socket,
-          game: game,
-          topic: topic,
-          rotate: 0.0,
-          width: 0,
-          height: 0,
-          settled: "",
-          paper_height: 400,
-          squish: 0.25,
-          angle_offset: 0.5 * :math.pi(),
-          cx: 0,
-          cy: 0,
-          radius: 0,
-          users: users(topic)
-        )
-      }
+    if connected?(socket) do
+      with :ok <- Endpoint.subscribe("user:all"),
+           # user joins/leaves
+           {:ok, _phx_id} <- Presence.track(self(), topic, user.id, user),
+           {:ok, _pid} <- ensure_game_process_exists(game_id),
+           :ok <- subscribe_to_updates(game_id),
+           {:ok, game} <- ensure_player_joins(game_id, user),
+           :ok <- monitor_live_view_process(game_id, user) do
+        {
+          :ok,
+          assign(
+            socket,
+            game: game,
+            topic: topic,
+            rotate: 0.0,
+            width: 0,
+            height: 0,
+            settled: "",
+            paper_height: 400,
+            squish: 0.25,
+            angle_offset: 0.5 * :math.pi(),
+            cx: 0,
+            cy: 0,
+            radius: 0,
+            users: users(topic)
+          )
+        }
+      else
+        err ->
+          IO.inspect(err)
+          {:ok, assign(socket, status: "Error")}
+      end
     else
-      false ->
-        {:ok, assign(socket, error: "Connecting...")}
-
-      err ->
-        IO.inspect(err)
-        {:ok, assign(socket, error: "Error")}
+      {:ok, assign(socket, status: "Connecting...")}
     end
   end
 

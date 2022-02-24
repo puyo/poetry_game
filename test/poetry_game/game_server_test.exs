@@ -19,8 +19,10 @@ defmodule PoetryGame.GameServerTest do
   describe "start_game/1" do
     test "successfully" do
       start_demo_game()
-      {:ok, list} = GameServer.player_list(@id)
-      assert length(list) == 3
+      {:ok, player_list} = GameServer.player_list(@id)
+      {:ok, paper_list} = GameServer.paper_list(@id)
+      assert length(player_list) == 3
+      assert length(paper_list) == 3
     end
 
     test "too few players" do
@@ -79,6 +81,38 @@ defmodule PoetryGame.GameServerTest do
     test "invalid" do
       start_demo_game()
       assert {:error, :invalid} = GameServer.set_poem(@id, "1", "", "author")
+    end
+  end
+
+  describe "bootstrap/1" do
+    test "success" do
+      start_demo_game()
+      assert {:ok, game} = GameServer.bootstrap(@id)
+      paper_word = get_in(game.seats, [Access.at(0), :papers, Access.at(0), :word, :value])
+      assert not is_nil(paper_word)
+    end
+
+    test "invalid" do
+      start_demo_game()
+      assert {:error, :invalid} = GameServer.set_poem(@id, "1", "", "author")
+    end
+  end
+
+  describe "terminate/1" do
+    test "does not terminate the game if there are still members" do
+      game_id = "not_terminated_because_not_empty"
+      {:ok, _pid} = GameServer.start_link(game_id)
+      {:ok, _} = GameServer.add_member(game_id, %{id: "1", name: "A", color: 1})
+      :ok = GameServer.terminate(game_id)
+      refute GameServer.game(game_id) == nil
+    end
+
+    test "terminates the game if there are no members" do
+      game_id = "terminated_because_empty"
+      assert GameServer.game(game_id) == nil
+      PoetryGame.GameSupervisor.start_child({GameServer, game_id})
+      :ok = GameServer.terminate(game_id)
+      assert GameServer.game(game_id) == nil
     end
   end
 

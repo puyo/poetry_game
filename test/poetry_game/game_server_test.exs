@@ -109,10 +109,20 @@ defmodule PoetryGame.GameServerTest do
 
     test "terminates the game if there are no members" do
       game_id = "terminated_because_empty"
-      assert GameServer.game(game_id) == nil
+      assert {:noproc, _} = game_server_get_state(game_id)
       PoetryGame.GameSupervisor.start_child({GameServer, game_id})
       :ok = GameServer.terminate(game_id)
-      assert GameServer.game(game_id) == nil
+      assert {:shutdown, _} = game_server_get_state(game_id)
+    end
+  end
+
+  defp game_server_get_state(game_id) do
+    try do
+      {:ok, game} = GameServer.game(game_id)
+      game
+    catch
+      :exit, value ->
+        value
     end
   end
 

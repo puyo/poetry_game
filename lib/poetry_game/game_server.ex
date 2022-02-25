@@ -1,6 +1,8 @@
 defmodule PoetryGame.GameServer do
   use GenServer, restart: :transient
 
+  require Logger
+
   alias PoetryGame.{Game, GameSupervisor}
 
   @terminate_timeout_ms 60_000
@@ -146,7 +148,7 @@ defmodule PoetryGame.GameServer do
 
   def handle_info(:terminate, game) do
     if map_size(game.members) == 0 do
-      IO.puts("Game timed out, terminating: #{game.id}")
+      Logger.info("Game timed out, terminating: #{game.id}")
       GameSupervisor.terminate_child(game.id)
     end
 

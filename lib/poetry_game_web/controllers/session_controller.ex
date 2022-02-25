@@ -5,6 +5,6 @@ defmodule PoetryGameWeb.SessionController do
     conn
     |> put_session(:user_name, name)
     |> put_session(:user_color, color)
-    |> json("OK!")
+    |> json("{}")
   end
 end

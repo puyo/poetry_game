@@ -42,6 +42,7 @@ defmodule PoetryGame.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:mock, "~> 0.3.0", only: :test},
       {:phoenix, "~> 1.6.6"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.6"},

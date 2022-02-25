@@ -1,6 +1,7 @@
 defmodule PoetryGameWeb.ChatLiveTest do
   use PoetryGameWeb.ConnCase
 
+  import Mock
   import Phoenix.LiveViewTest
 
   test "successful chat", %{conn: conn} do
@@ -35,5 +36,19 @@ defmodule PoetryGameWeb.ChatLiveTest do
 
     assert view1 |> render() =~ "UPDATED_NAME"
     assert view2 |> render() =~ "UPDATED_NAME"
+  end
+
+  test_with_mock "with an error during mount",
+                 %{conn: conn},
+                 PoetryGameWeb.Endpoint,
+                 [:passthrough],
+                 subscribe: fn _topic -> {:error, "error subscribing"} end do
+    game_id = "1"
+    user1 = %{id: "1", color: 1, name: "user1"}
+
+    assert {:ok, _view1, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.ChatLive,
+               session: %{"game_id" => game_id, "user" => user1}
+             )
   end
 end

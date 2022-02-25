@@ -133,17 +133,11 @@ defmodule PoetryGameWeb.Live.GameLive do
   end
 
   defp user_name(assigns, user_id) do
-    case Map.get(assigns.users, user_id) do
-      nil -> ""
-      user -> user.name
-    end
+    get_in(assigns.users, [user_id, :name]) || "(unknown)"
   end
 
   defp user_color(assigns, user_id) do
-    case Map.get(assigns.users, user_id) do
-      nil -> 0
-      user -> user.color
-    end
+    get_in(assigns.users, [user_id, :color]) || 0
   end
 
   defp render_paper(paper, assigns) do
@@ -290,8 +284,9 @@ defmodule PoetryGameWeb.Live.GameLive do
   end
 
   @impl true
-  def mount(_params, %{"id" => game_id, "user" => user}, socket) do
+  def mount(_params, %{"id" => game_id, "user" => user} = session, socket) do
     topic = "game:#{game_id}"
+    settle_ms = Map.get(session, "settle_ms", 1_000)
 
     socket = assign(socket, game_id: game_id, user: user, status: nil)
 
@@ -319,12 +314,12 @@ defmodule PoetryGameWeb.Live.GameLive do
             cx: 0,
             cy: 0,
             radius: 0,
-            users: users(topic)
+            users: users(topic),
+            settle_ms: settle_ms
           )
         }
       else
-        err ->
-          IO.inspect(err)
+        _err ->
           {:ok, assign(socket, status: "Error")}
       end
     else
@@ -337,10 +332,10 @@ defmodule PoetryGameWeb.Live.GameLive do
   end
 
   defp ensure_game_process_exists(game_id) do
-    case GameSupervisor.start_child({GameServer, game_id}) do
-      {:ok, _pid} -> {:ok, game_id}
+    with {:ok, _pid} <- GameSupervisor.start_child({GameServer, game_id}) do
+      {:ok, game_id}
+    else
       {:error, {:already_started, _pid}} -> {:ok, game_id}
-      _ -> {:error, game_id}
     end
   end
 
@@ -388,7 +383,7 @@ defmodule PoetryGameWeb.Live.GameLive do
   def handle_event("resize", %{"width" => width, "height" => height}, socket) do
     # Allow width/height to trigger, allow layout to settle, then apply card
     # transition css
-    Process.send_after(self(), :settle, 1_000)
+    Process.send_after(self(), :settle, socket.assigns.settle_ms)
     radius = width / 3
     cx = width / 2
     cy = height / 2

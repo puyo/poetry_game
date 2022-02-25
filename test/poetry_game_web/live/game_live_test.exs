@@ -1,6 +1,7 @@
 defmodule PoetryGameWeb.GameLiveTest do
   use PoetryGameWeb.ConnCase
 
+  import Mock
   import Phoenix.LiveViewTest
 
   test "disconnected", %{conn: conn} do
@@ -181,5 +182,32 @@ defmodule PoetryGameWeb.GameLiveTest do
     view1 |> render()
 
     assert view1 |> render() =~ "UPDATED_NAME"
+  end
+
+  test_with_mock "with an error during mount",
+                 %{conn: conn},
+                 PoetryGameWeb.Endpoint,
+                 [:passthrough],
+                 subscribe: fn _topic -> {:error, "error subscribing"} end do
+    game_id = "1"
+    user1 = %{id: "1", color: 1, name: "user1"}
+
+    assert {:ok, _view1, _html} =
+             live_isolated(conn, PoetryGameWeb.Live.GameLive,
+               session: %{"id" => game_id, "user" => user1}
+             )
+  end
+
+  test "settle", %{conn: conn} do
+    game_id = "2"
+    user1 = %{id: "1", color: 1, name: "user1"}
+
+    {:ok, view1, _html} =
+      live_isolated(conn, PoetryGameWeb.Live.GameLive,
+        session: %{"id" => game_id, "user" => user1}
+      )
+
+    send(view1.pid, :settle)
+    assert render(view1) =~ "settled"
   end
 end

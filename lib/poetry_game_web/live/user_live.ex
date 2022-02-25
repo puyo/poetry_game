@@ -67,8 +67,7 @@ defmodule PoetryGameWeb.Live.UserLive do
       with :ok <- Endpoint.subscribe("user:#{user.id}") do
         {:ok, assign(socket, status: nil)}
       else
-        err ->
-          IO.inspect(err)
+        _err ->
           {:ok, assign(socket, status: "Error")}
       end
     else
@@ -99,14 +98,7 @@ defmodule PoetryGameWeb.Live.UserLive do
 
   @impl true
   def handle_info(%{event: "update_user", payload: user}, socket) do
-    socket =
-      if user.id == socket.assigns.user.id do
-        assign(socket, user: user)
-      else
-        socket
-      end
-
-    {:noreply, socket}
+    {:noreply, assign(socket, user: user)}
   end
 
   defp sanitize_input(%{"user" => %{"name" => name, "color" => color}}) do

@@ -65,8 +65,7 @@ defmodule PoetryGameWeb.Live.ChatLive do
            {:ok, _phx_id} <- Presence.track(self(), topic, user.id, user) do
         {:ok, assign(socket, status: nil)}
       else
-        err ->
-          IO.inspect(err)
+        _err ->
           {:ok, assign(socket, status: "Error")}
       end
     else

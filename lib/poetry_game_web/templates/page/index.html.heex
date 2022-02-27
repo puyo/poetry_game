@@ -21,12 +21,7 @@
     </div>
     <div class="box md:col-span-2">
       <h1>Instructions for playing with pens and paper</h1>
-
-      <%# At small sizes, let them click to open in a new tab %>
-      <img class="hidden md:block w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
-      <a class="block md:hidden" target="_blank" href={Routes.static_path(@conn, "/images/intro.svg")}>
-        <img class="w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
-      </a>
+      <img class="w-full p-4" style="" src={Routes.static_path(@conn, "/images/intro.svg")} />
     </div>
   </div>
 </div>

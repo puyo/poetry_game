@@ -141,7 +141,22 @@ defmodule PoetryGameWeb.GameLiveTest do
     assert view1_html =~ "q3"
     assert view1_html =~ "p3"
     assert view1_html =~ "Please copy your poems if you want to keep them."
-    assert view1_html =~ "Start New Game"
+    assert view1_html =~ "Ready to play again"
+
+    # play again
+
+    view1
+    |> render_change("again", again: "on")
+
+    view2
+    |> render_change("again", again: "on")
+
+    view3
+    |> render_change("again", again: "on")
+
+    assert view1 |> render() =~ "Enter a word"
+    assert view2 |> render() =~ "Enter a word"
+    assert view3 |> render() =~ "Enter a word"
   end
 
   test "updating user", %{conn: conn} do
@@ -209,5 +224,21 @@ defmodule PoetryGameWeb.GameLiveTest do
 
     send(view1.pid, :settle)
     assert render(view1) =~ "settled"
+  end
+
+  test "with an error during ready change", %{conn: conn} do
+    game_id = "2"
+
+    {:ok, view1, _html} =
+      live_isolated(conn, PoetryGameWeb.Live.GameLive,
+        session: %{"id" => game_id, "user" => %{id: "1", color: 1, name: "user1"}}
+      )
+
+    with_mock(PoetryGame.Game, [:passthrough],
+      set_player_ready: fn _, _, _ -> {:error, :invalid} end
+    ) do
+      view1
+      |> render_change("again", again: "on")
+    end
   end
 end

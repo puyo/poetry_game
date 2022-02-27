@@ -63,10 +63,22 @@ defmodule PoetryGameWeb.Live.GameLive do
                 The game is finished! Please copy your poems if you want to keep them.
               </p>
 
-              <form action={Routes.game_path(@socket, :create)} method="post" class="text-center">
-                <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-                <button type="submit" class="btn btn-primary btn-lg">Start New Game</button>
-              </form>
+              <div class="flex items-center justify-center">
+                <form class="again" action="#" phx-change="again">
+                  <label for="toogleButton" class="flex items-center cursor-pointer">
+                    <div class="px-2">Ready to play again</div>
+                    <div class="relative">
+                      <%= if game.members |> Map.get(user.id) |> Map.get(:ready, false) do %>
+                        <input id="toogleButton" name="again" type="checkbox" class="hidden" checked="checked" />
+                      <% else %>
+                        <input id="toogleButton" name="again" type="checkbox" class="hidden" />
+                      <% end %>
+                      <div class="toggle-path bg-gray-200 w-9 h-5 rounded-full shadow-inner"></div>
+                      <div class="toggle-circle absolute w-3.5 h-3.5 bg-white rounded-full shadow inset-y-0 left-0"></div>
+                    </div>
+                  </label>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -423,6 +435,18 @@ defmodule PoetryGameWeb.Live.GameLive do
       {:noreply, assign(socket, game: game)}
     else
       {:error, _} -> {:noreply, socket}
+    end
+  end
+
+  def handle_event("again", params, %{assigns: %{user: user, game_id: game_id}} = socket) do
+    again = Map.get(params, "again", nil) != nil
+
+    case GameServer.set_player_ready(game_id, user.id, again) do
+      {:ok, game} ->
+        {:noreply, assign(socket, game: game)}
+
+      _err ->
+        {:noreply, assign(socket, status: "Error")}
     end
   end
 

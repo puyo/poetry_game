@@ -84,6 +84,13 @@ defmodule PoetryGame.GameServerTest do
     end
   end
 
+  describe "restart/3" do
+    test "success" do
+      start_demo_game()
+      assert {:ok, _state} = GameServer.restart(@id)
+    end
+  end
+
   describe "bootstrap/1" do
     test "success" do
       start_demo_game()

@@ -172,6 +172,23 @@ defmodule PoetryGame.GameTest do
     end
   end
 
+  describe "set_player_ready/3" do
+    test "success" do
+      {:ok, game} = demo_game()
+      {:ok, game} = Game.start(game)
+      {:ok, game} = finish_demo_game(game)
+      {:ok, game} = Game.set_player_ready(game, "1", true)
+      {:ok, game} = Game.set_player_ready(game, "2", true)
+      {:ok, game} = Game.set_player_ready(game, "3", true)
+
+      assert [
+               %{papers: [%{poem: nil}]},
+               %{papers: [%{poem: nil}]},
+               %{papers: [%{poem: nil}]}
+             ] = game.seats
+    end
+  end
+
   defp demo_game() do
     with game = Game.init("game_id"),
          {:ok, game} <- Game.add_member(game, %{id: "1"}),

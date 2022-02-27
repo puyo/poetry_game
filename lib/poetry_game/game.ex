@@ -123,26 +123,47 @@ defmodule PoetryGame.Game do
   end
 
   def bootstrap(game) do
-    {:ok,
-     %{
-       game
-       | seats:
-           game.seats
-           |> put_in(
-             [Access.all(), :papers, Access.all(), :word],
-             %{
-               value: "word #{Enum.random(0..10)}",
-               author: "Author #{Enum.random(0..10)}"
-             }
-           )
-           |> put_in(
-             [Access.all(), :papers, Access.all(), :question],
-             %{
-               value: "question #{Enum.random(0..10)}",
-               author: "Author #{Enum.random(0..10)}"
-             }
-           )
-     }}
+    new_seats =
+      game.seats
+      |> put_in(
+        [Access.all(), :papers, Access.all(), :word],
+        %{
+          value: "word #{Enum.random(0..10)}",
+          author: "Author #{Enum.random(0..10)}"
+        }
+      )
+      |> put_in(
+        [Access.all(), :papers, Access.all(), :question],
+        %{
+          value: "question #{Enum.random(0..10)}",
+          author: "Author #{Enum.random(0..10)}"
+        }
+      )
+
+    {:ok, %{game | seats: new_seats}}
+  end
+
+  def set_player_ready(game, user_id, ready) do
+    new_members = put_in(game.members, [user_id, :ready], ready)
+
+    if all_ready?(new_members) do
+      new_members =
+        new_members
+        |> Enum.map(fn {id, m} -> {id, Map.put(m, :ready, false)} end)
+        |> Enum.into(%{})
+
+      restart(%{game | members: new_members})
+    else
+      {:ok, %{game | members: new_members}}
+    end
+  end
+
+  def all_ready?(members) do
+    Enum.all?(members, fn {_, u} -> Map.get(u, :ready, false) end)
+  end
+
+  def restart(game) do
+    start(game)
   end
 
   defp initial_paper() do

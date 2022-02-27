@@ -54,6 +54,14 @@ defmodule PoetryGame.GameServer do
     GenServer.call(via(game_id), :bootstrap)
   end
 
+  def set_player_ready(game_id, user_id, ready) do
+    GenServer.call(via(game_id), {:set_player_ready, user_id, ready})
+  end
+
+  def restart(game_id) do
+    GenServer.call(via(game_id), :restart)
+  end
+
   def terminate(game_id) do
     [{pid, _} | _] = Registry.lookup(:game_registry, game_id)
     send(pid, :terminate)
@@ -136,6 +144,14 @@ defmodule PoetryGame.GameServer do
 
   def handle_call(:bootstrap, _from, game) do
     handle_game_change(game, do: Game.bootstrap(game))
+  end
+
+  def handle_call({:set_player_ready, user_id, ready}, _from, game) do
+    handle_game_change(game, do: Game.set_player_ready(game, user_id, ready))
+  end
+
+  def handle_call(:restart, _from, game) do
+    handle_game_change(game, do: Game.restart(game))
   end
 
   def handle_call(:player_list, _from, game) do

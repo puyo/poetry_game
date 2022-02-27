@@ -187,6 +187,22 @@ form .block-label {
   display: block;
 }
 
+.toggle-path {
+  transition: background 0.3s ease-in-out;
+  background-color: hsl(0, 0%, 80%);
+}
+.toggle-circle {
+  top: 0.2rem;
+  left: 0.25rem;
+  transition: all 0.2s ease-in-out;
+}
+input:checked ~ .toggle-circle {
+  transform: translateX(100%);
+}
+input:checked ~ .toggle-path {
+  background-color: hsl(217, 90%, 60%);
+}
+
 /* alerts -------------------------------------------------- */
 
 .live-alerts {

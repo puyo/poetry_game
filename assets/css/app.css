@@ -273,30 +273,12 @@ header .logo {
   resize: both;
 }
 
-/* https://css-tricks.com/auto-growing-inputs-textareas/ */
-.poem-input-wrapper {
-  display: inline-grid;
-  position: relative;
-  vertical-align: top;
-  width: auto;
-}
-
 .poem-input-wrapper .poem-input {
   border: none;
   display: block;
-  grid-area: 1 / 1;
+  width: 100%;
+  resize: both;
   outline: none;
-  overflow: hidden;
-  resize: none;
-}
-
-/* takes up the right amount of space, but is otherwise invisible */
-.poem-input-wrapper::after {
-  content: attr(data-value) ' ';
-  font: inherit;
-  grid-area: 1 / 1;
-  visibility: hidden;
-  white-space: pre-wrap;
 }
 
 .game .paper .buttons {
@@ -372,6 +354,8 @@ header .logo {
   min-height: initial;
   transition: initial !important;
   resize: none;
+  overflow-x: auto;
+  overflow-y: initial;
 }
 
 /* chat ---------------------------------------------------- */

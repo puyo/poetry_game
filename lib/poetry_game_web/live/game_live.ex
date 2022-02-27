@@ -163,31 +163,42 @@ defmodule PoetryGameWeb.Live.GameLive do
     offset = paper_i * 10
 
     own_paper = paper_i == 0 && user_seat_index == seat_i
-    composing = own_paper && paper.word && paper.question && !paper.poem
     visible = game_finished || own_paper
+    composing = !game_finished && own_paper
+
+    min_w = min(300, width)
+    min_h = min(400, height)
 
     c =
       cond do
         composing ->
           %{
-            x: "#{cx}px",
-            y: "#{cy}px",
+            left: "#{cx}px",
+            top: "#{cy}px",
+            bottom: "auto",
+            right: "auto",
             z: "#{trunc(100 * (1 + :math.cos(paper_angle))) - offset}",
             position: "absolute",
-            max_width: "#{width}px",
-            max_height: "#{height - cy / 2}px",
+            max_w: "#{width}px",
+            max_h: "#{height}px",
+            min_w: "#{min_w}px",
+            min_h: "#{min_h}px",
             transform: "",
             class: "composing"
           }
 
         game_finished ->
           %{
-            x: "0",
-            y: "0",
+            left: "0",
+            top: "0",
+            bottom: "0",
+            right: "0",
             z: "0",
             position: "initial",
-            max_width: "#{width}px",
-            max_height: "#{height}px",
+            max_w: "initial",
+            max_h: "initial",
+            min_w: "initial",
+            min_h: "initial",
             class: "finished"
           }
 
@@ -196,12 +207,16 @@ defmodule PoetryGameWeb.Live.GameLive do
           y = cy + squish * radius * :math.sin(angle_offset + paper_angle) - offset
 
           %{
-            x: "#{x}px",
-            y: "#{y}px",
+            left: "#{x}px",
+            top: "#{y}px",
+            bottom: "auto",
+            right: "auto",
             z: "#{trunc(100 * (1 + :math.cos(paper_angle))) - offset}",
             position: "absolute",
-            max_width: "#{width}px",
-            max_height: "#{height - y / 2}px",
+            max_w: "#{width}px",
+            max_h: "#{height - y / 2}px",
+            min_w: "#{min_w}px",
+            min_h: "#{min_h}px",
             class: "playing"
           }
       end
@@ -210,7 +225,8 @@ defmodule PoetryGameWeb.Live.GameLive do
     <div
       class={"paper #{c.class}"}
       id={"paper-#{paper.id}"}
-      style={"top: #{c.y}; left: #{c.x}; z-index: #{c.z}; max-width: #{c.max_width}; max-height: #{c.max_height};"}
+      style={"top: #{c.top}; left: #{c.left}; right: #{c.right}; bottom: #{c.bottom}; z-index: #{c.z};" <>
+        " max-width: #{c.max_w}; max-height: #{c.max_h}; min-width: #{c.min_w}; min-height: #{c.min_h}"}
       data-width={@width}
       data-height={@height}>
 
@@ -269,7 +285,7 @@ defmodule PoetryGameWeb.Live.GameLive do
             <%= if paper.word && paper.question do %>
               <div class="paper-section poem">
                 <div class="poem-input-wrapper">
-                  <textarea class="poem-input" name="poem" onInput="this.parentNode.dataset.value = this.value" rows="2" placeholder="Write a poem using the word and question above"></textarea>
+                  <textarea class="poem-input" name="poem" rows="7" placeholder="Write a poem using the word and question above"></textarea>
                 </div>
                 <div class="buttons">
                   <button class="btn btn-secondary" type="submit">Save</button>
